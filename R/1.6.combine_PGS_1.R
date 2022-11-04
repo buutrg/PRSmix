@@ -18,7 +18,18 @@ opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
 print(opt)
-
+#' Combine PGS
+#'
+#' This function combines multiple PGS into one score
+#'
+#' @param trait The name of the trait
+#' @param anc Intended ancestry
+#' @param pgslist PGS list of the trait
+#' @param phenofile Directory to the phenotype file
+#' @param pheno_name Name of the phenotype column
+#' @param isbinary True if this is binary
+#' @param out Output prefix
+#' @return Prediction accuracy of PRSmix
 #' @export
 combine_PGS = function(
 	trait = "cad",
