@@ -1,23 +1,3 @@
-
-library("optparse")
-# ==========================================================================
-
-# ==========================================================================
-option_list = list(
-  make_option(c("--trait"), type = "character"),
-  make_option(c("--pgslist"), type = "character"),
-  make_option(c("--anc"), type = "character"),
-  make_option(c("--phenofile"), type = "character"),
-  make_option(c("--anc"), type = "character"),
-  make_option(c("--pheno_name"), type = "character"),
-  make_option(c("--isbinary"), type = "logical"),
-  make_option(c("--out"), type = "character")
-);
-
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
-
-print(opt)
 #' Combine PGS
 #'
 #' This function combines multiple PGS into one score
@@ -688,6 +668,7 @@ combine_PGS = function(
 
 
 	all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05/nrow(pred_acc_train_allPGS_summary))
+	all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
 	all_sigpgs = all_sig$pgs
 
 
