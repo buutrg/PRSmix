@@ -19,7 +19,5 @@ Imports:
 	caret,
 	DescTools,
 	rcompanion,
-	xgboost,
-	randomForest,
 	datasets,
 	caret
