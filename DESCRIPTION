@@ -1,6 +1,6 @@
 Package: PRSmix
 Title: An integrative framework for multiple PRS
-Version: 0.0.0.9000
+Version: 1.0
 Authors@R: 
     person("Buu", "Truong", , "btruong@broadinstitute.org", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
