@@ -128,13 +128,13 @@ assess_score = function(
 	# 	out = "eval_bmi_pgsmixpp"
 	# 	)
 
-	# trait = opt$trait
-	# pgslist = opt$pgslist
-	# isbinary = opt$isbinary
-	# ancestry = opt$ancestry
-	# phenofile = opt$phenofile
-	# pheno_name  = opt$pheno_name
-	# out = opt$out
+	# trait = trait
+	# pgslist = pgslist
+	# isbinary = isbinary
+	# ancestry = ancestry
+	# phenofile = phenofile
+	# pheno_name  = pheno_name
+	# out = out
 
 	print(opt)
 
@@ -144,7 +144,7 @@ assess_score = function(
 
 	# sscore_file_list = list.files("~/data/prs_all/")
 	sscore_file_list = list.files(paste0("~/data/optimization/", trait))
-	sscore_file_list = sscore_file_list[which(endsWith(sscore_file_list, "sscore") & startsWith(sscore_file_list, opt$plink_prefix))]
+	sscore_file_list = sscore_file_list[which(endsWith(sscore_file_list, "sscore") & startsWith(sscore_file_list, plink_prefix))]
 
 	writeLines("Read all pgs")
 
@@ -173,7 +173,7 @@ assess_score = function(
 
 
 
-	pheno = fread(opt$phenofile)
+	pheno = fread(phenofile)
 	idx = which(colnames(pheno) %in% c("person_id", pheno_name))
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
@@ -218,7 +218,7 @@ assess_score = function(
 
 	print(paste0("null_", ancestry, "_train_logLik_50rep.txt"))
 
-	if (opt$step1) {
+	if (step1) {
 		null_res = eval_null(train_df, isbinary)
 		write.table(null_res, paste0("null_", ancestry, "_train_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
 		stop("Finish step 1")
@@ -241,11 +241,11 @@ assess_score = function(
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_train_trait_summary)
 
-	fwrite(pred_acc_train_trait_summary, paste0(opt$out, "_", ancestry, "_train_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_train_trait_summary, paste0(out, "_", ancestry, "_train_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 
 	pred_acc_train_trait_detail = pred_acc_train_trait$pred_acc_test_detail
-	fwrite(pred_acc_train_trait_detail, paste0(opt$out, "_", ancestry, "_train_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_train_trait_detail, paste0(out, "_", ancestry, "_train_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	################################ testing #################################
 
@@ -256,12 +256,12 @@ assess_score = function(
 	# head(pred_acc_test_trait_summary)
 
 
-	# fwrite(pred_acc_test_trait_summary, paste0(opt$out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	# fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 
 
 	# pred_acc_test_trait_detail = pred_acc_test_trait$pred_acc_test_detail
-	# fwrite(pred_acc_test_trait_detail, paste0(opt$out, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	# fwrite(pred_acc_test_trait_detail, paste0(out, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	###########################################################################
 	return(pred_acc_train_trait_summary)

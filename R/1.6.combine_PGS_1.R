@@ -402,6 +402,7 @@ combine_PGS = function(
 		# topprs = pred_acc_train_trait_summary %>% filter(pnew < 0.05 / nrow(pred_acc_train_trait_summary))
 		topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05)
 		topprs = topprs$pgs
+		topprs = pred_acc_train_trait_summary$pgs
 		
 		# topprs = pgs_list
 		# topprs = c("PGS000337", "PGS000018")
