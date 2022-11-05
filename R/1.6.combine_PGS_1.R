@@ -22,19 +22,19 @@ combine_PGS = function(
 	out = "test_cad_mixedPRS"
 	) {
 
-	# library(data.table)
-	# library(stringr)
-	# library(dplyr)
-	# library(tidyr)
-	# library(glmnet)
-	# library(caret)
-	# library(DescTools)
-	# library(rcompanion)
+	library(data.table)
+	library(stringr)
+	library(dplyr)
+	library(tidyr)
+	library(glmnet)
+	library(caret)
+	library(DescTools)
+	library(rcompanion)
 
-	# library(xgboost)
-	# library(randomForest)
-	# library(datasets)
-	# library(caret)
+	library(xgboost)
+	library(randomForest)
+	library(datasets)
+	library(caret)
 
 
 	options(datatable.fread.datatable=FALSE)
@@ -696,7 +696,7 @@ combine_PGS = function(
 		
 	reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 
-	fwrite(reported_trait, paste0(out, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(reported_trait, paste0(out, "_reportedTraits_", anc, ".txt"), row.names=F, sep="\t", quote=F)
 	reported_trait
 	dim(reported_trait)
 
@@ -722,7 +722,7 @@ combine_PGS = function(
 	pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1_out[-which(duplicated(pred_acc_train_allPGS_summary1_out$Trait)),]
 	pred_acc_train_allPGS_summary1_out$Trait = str_to_title(pred_acc_train_allPGS_summary1_out$Trait)
 
-	fwrite(pred_acc_train_allPGS_summary1_out, paste0("~/data/optimization/", trait,"/eval_", trait,"_reportedTraits_sig.txt"), row.names=F, quote=F, sep="\t")
+	fwrite(pred_acc_train_allPGS_summary1_out, paste0("~/data/optimization/", trait,"/eval_", trait,"_reportedTraits_sig_", anc, ".txt"), row.names=F, quote=F, sep="\t")
 
 	pgs_list_sig = all_sigpgs
 	print(length(pgs_list_sig))
@@ -765,8 +765,14 @@ combine_PGS = function(
 		
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 		res_lm = eval_prs(test_df1, "newprs", isbinary)
-		res_lm
+		res_lm$summary$pgs = "PRSmix+"
 		
+		res_lm_summary = res_lm$summary
+		res_lm_detail = res_lm$prec_acc
+		
+		
+		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
+		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)		
 		
 		
 	} else {
@@ -818,41 +824,8 @@ combine_PGS = function(
 		
 		
 		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
 		
-		
-		train_tmp = train_data[,c("trait", topprs)]
-		train_tmp$trait = as.factor(train_tmp$trait)
-		# train_tmp = as.matrix(train_tmp)
-		
-		ctrl <- trainControl(method = "repeatedcv",
-	                        number = 5,
-	                        # savePredictions = TRUE,
-	                        verboseIter = T,
-	                        returnResamp = "all")
-		
-		set.seed(123)
-		model <- train(
-		  formula, data = train_tmp, method = "rf", 
-		  trControl = ctrl, family = "binomial", 
-		  # intercept=FALSE,
-		  tuneLength = 100, verbose=T
-		)
-		model$bestTune
-		coef(model$finalModel, model$bestTune$lambda)
-		ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
-		
-		test_df1 = test_df
-		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-		res_lm = eval_prs(test_df1, null_res_test, "newprs", isbinary)
-		res_lm$summary$pgs = "PRSmix+"
-		
-		res_lm_summary = res_lm$summary
-		res_lm_detail = res_lm$prec_acc
-		
-		
-		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 		
 	}
 
@@ -868,7 +841,7 @@ combine_PGS = function(
 	pred_acc_test_trait_summary_out = bind_rows(res_lm_summary, pred_acc_test_trait_summary_out)
 	head(pred_acc_test_trait_summary_out)
 
-	fwrite(pred_acc_test_trait_summary_out, paste0(opt$out, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_summary_out, paste0(opt$out, "_test_summary_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
 
 
 
