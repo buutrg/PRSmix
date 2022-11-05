@@ -78,6 +78,7 @@ get_risk_allele = function(
 		
 		# prs_i = 1
 		print(prs_i)
+		
 		f = paste0("/home/jupyter/data/prs_aou/", pgs_list[prs_i], "_in_aou_", anc,".txt")
 		if (file.exists(f) && file.size(f) > 0) {
 			panel = fread(f)
@@ -86,7 +87,6 @@ get_risk_allele = function(
 			next()
 		}
 		
-		print(prs_i)
 		cc = cc + 1
 		# panel$BETA = scale(panel$BETA) * new_weight[prs_i]
 		panel$BETA = panel$BETA
