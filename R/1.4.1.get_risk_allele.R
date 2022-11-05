@@ -4,7 +4,8 @@
 #'
 #' @param traitname Name of the trait
 #' @param pgslist PGS list of the trait
-#' @param plinkfile Plink file
+#' @param pgsmetafile Metafile from PGS catalog (pgs_all_metadata_scores.csv)
+#' @param freqfile Allele frequency file by plink2, ends with .afreq 
 #' @param anc Ancestry
 #' @param out Output
 #' @return A dataframe of SNP and risk-increasing allele
@@ -12,7 +13,8 @@
 get_risk_allele = function(
 	traitname = "cad",
 	pgslist = "~/data/optimization/cad/cad_list.txt",
-	plinkfile = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur",
+	pgsmetafile = "~/data/pgs_all_metadata_scores.csv",
+	freqfile = "/home/jupyter/data/AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur.afreq",
 	anc = "eur",
 	out = "eval_cad_pgs.txt"
 	) {
@@ -41,7 +43,10 @@ get_risk_allele = function(
 	# plinkfile = opt$plinkfile
 	# phenofile = opt$phenofile
 
-	pgsinfo = fread("~/data/pgs_all_metadata_scores.csv")
+	options(datatable.fread.datatable=FALSE)
+
+
+	pgsinfo = fread(pgsmetafile)
 
 	pgs_list = fread(pgslist, header=F)[,1]
 
@@ -50,13 +55,8 @@ get_risk_allele = function(
 	head(pgsinfo_trait$`Polygenic Score (PGS) ID`)
 	print(table(pgsinfo_trait$`PGS Publication (PGP) ID`))
 
-	# pgsinfo_trait = pgsinfo_trait[-which(duplicated(pgsinfo_trait$`PGS Publication (PGP) ID`)),]
-
-	# pgs_list = pgsinfo_trait$`Polygenic Score (PGS) ID`
-
 	writeLines("reading freq file")
-	# bim = fread(paste0("/home/jupyter/data/", plinkfile, ".bim"))
-	freq = fread(paste0("/home/jupyter/data/", plinkfile, ".afreq"))
+	freq = fread(freqfile)
 
 	snp_weight_all = freq %>% select(ID, ALT, REF)
 	snp_weight_all$BETA = 0
@@ -75,10 +75,9 @@ get_risk_allele = function(
 
 	cc = 0
 	for (prs_i in 1:length(pgs_list)) {
-	# for (prs_i in c(1,2,9)) {
 		
 		# prs_i = 1
-		
+		print(prs_i)
 		f = paste0("/home/jupyter/data/prs_aou/", pgs_list[prs_i], "_in_aou_", anc,".txt")
 		if (file.exists(f) && file.size(f) > 0) {
 			panel = fread(f)
