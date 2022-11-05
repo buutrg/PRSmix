@@ -35,12 +35,11 @@ get_risk_allele = function(
 	# 	out = "eval_ovarian_cancer_pgs.txt"
 	# 	)
 
-	traitname = opt$traitname
-	pgslist = opt$pgslist
-	anc = opt$anc
-	plinkfile = opt$plinkfile
-	phenofile = opt$phenofile
-	isbinary = opt$isbinary
+	# traitname = opt$traitname
+	# pgslist = opt$pgslist
+	# anc = opt$anc
+	# plinkfile = opt$plinkfile
+	# phenofile = opt$phenofile
 
 	pgsinfo = fread("~/data/pgs_all_metadata_scores.csv")
 
