@@ -46,9 +46,9 @@ get_risk_allele = function(
 	options(datatable.fread.datatable=FALSE)
 
 
-	pgsinfo = fread(pgsmetafile)
+	pgsinfo = data.table::fread(pgsmetafile)
 
-	pgs_list = fread(pgslist, header=F)[,1]
+	pgs_list = data.table::fread(pgslist, header=F)[,1]
 
 	pgsinfo_trait = pgsinfo %>% filter(`Polygenic Score (PGS) ID` %in% pgs_list)
 
@@ -56,7 +56,7 @@ get_risk_allele = function(
 	print(table(pgsinfo_trait$`PGS Publication (PGP) ID`))
 
 	writeLines("reading freq file")
-	freq = fread(freqfile)
+	freq = data.table::fread(freqfile)
 
 	snp_weight_all = freq %>% select(ID, ALT, REF)
 	snp_weight_all$BETA = 0
@@ -81,7 +81,7 @@ get_risk_allele = function(
 		
 		f = paste0("/home/jupyter/data/prs_aou/", pgs_list[prs_i], "_in_aou_", anc,".txt")
 		if (file.exists(f) && file.size(f) > 0) {
-			panel = fread(f)
+			panel = data.table::fread(f)
 			colnames(panel) = c("SNP", "A1", "BETA")
 		} else {
 			next()

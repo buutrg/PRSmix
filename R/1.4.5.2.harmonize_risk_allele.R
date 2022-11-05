@@ -20,10 +20,10 @@ harmonize_snpeffect = function(
 
 	# wfile = opt$wfile
 	# out = opt$out
-	ref = fread(ref)
+	ref = data.table::fread(ref)
 
 
-	panel = fread(wfile)
+	panel = data.table::fread(wfile)
 	idx = match(ref$SNP, panel$SNP)
 
 	notmatch_allele = which(ref$A1 != panel$A1[idx])
