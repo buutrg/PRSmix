@@ -39,15 +39,27 @@ get_risk_allele = function(
 	# 	out = "eval_colorectal_cancer_pgs.txt"
 	# 	)
 
-	# traitname = opt$traitname
-	# pgslist = opt$pgslist
-	# anc = opt$anc
-	# plinkfile = opt$plinkfile
-	# pgsmetafile = opt$pgsmetafile
-	# freqfile = opt$freqfile
-	# phenofile = opt$phenofile
-	# isbinary = T
-	# out = opt$out
+	# opt = data.frame(
+	# 	traitname = "prostate_cancer",
+	# 	pgslist = "~/data/optimization/prostate_cancer/prostate_cancer_list.txt",
+	# 	anc = "eur",
+	# 	pgsmetafile = "~/data/pgs_all_metadata_scores.csv",
+	# 	plinkfile = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur",
+	# 	phenofile = "/home/jupyter/data/phenotypes/cancer_phenotypes.csv",
+	# 	isbinary = T,
+	# 	freqfile = "/home/jupyter/data/AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur.afreq",
+	# 	out = "eval_prostate_cancer_pgs.txt"
+	# 	)
+
+	traitname = opt$traitname
+	pgslist = opt$pgslist
+	anc = opt$anc
+	plinkfile = opt$plinkfile
+	pgsmetafile = opt$pgsmetafile
+	freqfile = opt$freqfile
+	phenofile = opt$phenofile
+	isbinary = T
+	out = opt$out
 
 	options(datatable.fread.datatable=FALSE)
 
@@ -55,11 +67,6 @@ get_risk_allele = function(
 	pgsinfo = data.table::fread(pgsmetafile)
 
 	pgs_list = data.table::fread(pgslist, header=F)[,1]
-
-	pgsinfo_trait = pgsinfo %>% filter(`Polygenic Score (PGS) ID` %in% pgs_list)
-
-	head(pgsinfo_trait$`Polygenic Score (PGS) ID`)
-	print(table(pgsinfo_trait$`PGS Publication (PGP) ID`))
 
 	writeLines("reading freq file")
 	freq = data.table::fread(freqfile)
@@ -151,6 +158,13 @@ get_risk_allele = function(
 	
 	snp_weight_all = as.data.frame(snp_weight_all_save)
 	
+	
+	pgs_list = intersect(pgs_list, colnames(snp_weight_all))
+	pgsinfo_trait = pgsinfo %>% filter(`Polygenic Score (PGS) ID` %in% pgs_list)
+
+	head(pgsinfo_trait$`Polygenic Score (PGS) ID`)
+	print(table(pgsinfo_trait$`PGS Publication (PGP) ID`))
+
 	cc = table(pgsinfo_trait$`PGS Publication (PGP) ID`)
 	cc = which(cc > 1)
 	print(length(cc))
@@ -162,6 +176,8 @@ get_risk_allele = function(
 			idx = which(pgsinfo_trait$`PGS Publication (PGP) ID` == studyid)
 			pgsid = pgsinfo_trait$`Polygenic Score (PGS) ID`[idx]
 			idx1 = match(pgsid, colnames(snp_weight_all))
+			
+			if ()
 			subdf = snp_weight_all[,c(1,2,3,idx1)]
 			
 			subdf = apply(snp_weight_all[,idx1], 1, function(x) {
