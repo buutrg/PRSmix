@@ -17,7 +17,7 @@ estimate_PRS = function(
 	start_col = 4) {
 	
 	n = length(fread(pipe(paste0("head -n1 ", ref_file)), header=F)[1,])
-	cmd = system(paste0(plink_exe, " --bfile ", geno, " --score ", ref_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out, " >> log_", out, ".log"))
+	cmd = system(paste0(plink_exe, " --bfile ", geno, " --score ", ref_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
 	
 	print(cmd)
 	system(cmd)
