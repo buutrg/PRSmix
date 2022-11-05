@@ -177,7 +177,6 @@ get_risk_allele = function(
 			pgsid = pgsinfo_trait$`Polygenic Score (PGS) ID`[idx]
 			idx1 = match(pgsid, colnames(snp_weight_all))
 			
-			if ()
 			subdf = snp_weight_all[,c(1,2,3,idx1)]
 			
 			subdf = apply(snp_weight_all[,idx1], 1, function(x) {
