@@ -34,5 +34,6 @@ harmonize_snpeffect = function(
 
 	fwrite(panel, out, row.names=F, sep=" ", quote=F, na=0)
 	
-	return(panel)
+	return(0)
+	# return(panel)
 }

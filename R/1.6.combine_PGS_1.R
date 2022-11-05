@@ -65,7 +65,7 @@ combine_PGS = function(
 
 	opt = data.frame(
 		trait = "breast_cancer",
-		anc = "eur",
+		anc = "afr",
 		# pgslist = "~/data/allPGSid.txt00",
 		pgslist = "breast_cancer_list.txt",
 		pheno_name = "BreastCAFemale",
@@ -247,7 +247,8 @@ combine_PGS = function(
 
 	###########################
 
-
+	source("~/tools/PRSmix/R/utils.R")
+	
 	null_res_train = NULL
 	if (file.exists(paste0("null_", anc, "_train_logLik_50rep.txt"))) {
 		null_res_train = fread(paste0("null_", anc, "_train_logLik_50rep.txt"))[,1]
@@ -279,7 +280,6 @@ combine_PGS = function(
 
 
 	################################ training #################################
-
 
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 		filter(pgs %in% pgs_list)
