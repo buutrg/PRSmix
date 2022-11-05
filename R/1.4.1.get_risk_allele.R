@@ -28,20 +28,26 @@ get_risk_allele = function(
 	# 	)
 
 	# opt = data.frame(
-	# 	traitname = "prostate_cancer",
-	# 	pgslist = "~/data/optimization/ovarian_cancer/ovarian_cancer_list.txt",
+	# 	traitname = "colorectal_cancer",
+	# 	pgslist = "~/data/optimization/colorectal_cancer/colorectal_cancer_list.txt",
 	# 	anc = "eur",
+	# 	pgsmetafile = "~/data/pgs_all_metadata_scores.csv",
 	# 	plinkfile = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur",
 	# 	phenofile = "/home/jupyter/data/phenotypes/cancer_phenotypes.csv",
 	# 	isbinary = T,
-	# 	out = "eval_ovarian_cancer_pgs.txt"
+	# 	freqfile = "/home/jupyter/data/AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur.afreq",
+	# 	out = "eval_colorectal_cancer_pgs.txt"
 	# 	)
 
 	# traitname = opt$traitname
 	# pgslist = opt$pgslist
 	# anc = opt$anc
 	# plinkfile = opt$plinkfile
+	# pgsmetafile = opt$pgsmetafile
+	# freqfile = opt$freqfile
 	# phenofile = opt$phenofile
+	# isbinary = T
+	# out = opt$out
 
 	options(datatable.fread.datatable=FALSE)
 
