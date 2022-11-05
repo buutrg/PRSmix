@@ -18,10 +18,9 @@ harmonize_snpeffect = function(
 	#   stringsAsFactor=F
 	#   )
 
-	wfile = opt$wfile
-	out = opt$out
-
-	ref = fread(opt$ref)
+	# wfile = opt$wfile
+	# out = opt$out
+	ref = fread(ref)
 
 
 	panel = fread(wfile)

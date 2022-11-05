@@ -16,7 +16,7 @@ get_risk_allele = function(
 	pgsmetafile = "~/data/pgs_all_metadata_scores.csv",
 	freqfile = "/home/jupyter/data/AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_eur.afreq",
 	anc = "eur",
-	out = "eval_cad_pgs.txt"
+	out = "RiskAllele_cad_eur.txt"
 	) {
 
 	# opt = data.frame(
@@ -142,12 +142,16 @@ get_risk_allele = function(
 	snp_weight_all_save = snp_weight_all
 	
 	######################################################
-
+	
+	snp_weight_all = as.data.frame(snp_weight_all_save)
+	
 	cc = table(pgsinfo_trait$`PGS Publication (PGP) ID`)
 	cc = which(cc > 1)
-
+	print(length(cc))
+	
 	if (length(cc)>0) {
 		for (i in 1:length(cc)) {
+			print(i)
 			studyid = names(cc)[i]
 			idx = which(pgsinfo_trait$`PGS Publication (PGP) ID` == studyid)
 			pgsid = pgsinfo_trait$`Polygenic Score (PGS) ID`[idx]
@@ -189,7 +193,7 @@ get_risk_allele = function(
 
 	snp_weight_all_out = snp_weight_all %>% select(SNP, A1)
 
-	fwrite(snp_weight_all_out, paste0("RiskAllele_", traitname, "_", anc, ".txt"), row.names=F, sep="\t", quote=F, na=0)
+	fwrite(snp_weight_all_out, out, row.names=F, sep="\t", quote=F, na=0)
 	
 	return(snp_weight_all_out)
 }
