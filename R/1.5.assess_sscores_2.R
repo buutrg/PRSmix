@@ -268,5 +268,5 @@ assess_score = function(
 	# fwrite(pred_acc_test_trait_detail, paste0(out, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	###########################################################################
-	return(pred_acc_train_trait_summary)
+	return(0)
 }
