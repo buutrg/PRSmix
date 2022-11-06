@@ -1,6 +1,6 @@
 options(datatable.fread.datatable=FALSE)
 
-get_acc_prslist_sub1 = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
+get_acc_prslist_sub1 = function(data_df, pgs_list, null_res=NULL, ancestry, isbinary=F) {
 	
 	# pgs_list = "PGS000329"
 	# data_df = train_df
@@ -244,7 +244,12 @@ assess_score = function(
 	print(dim(train_df))
 	print(length(null_res))
 
-	pred_acc_train_trait = get_acc_prslist_sub1(train_df, pgs_list, null_res, isbinary)
+	pred_acc_train_trait = get_acc_prslist_sub1(
+		data_df = train_df, 
+		pgs_list = pgs_list, 
+		null_res = null_res, 
+		ancestry=ancestry, 
+		isbinary = isbinary)
 
 	pred_acc_train_trait_summary = pred_acc_train_trait$pred_acc_test
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
