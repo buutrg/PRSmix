@@ -1,3 +1,5 @@
+options(datatable.fread.datatable=FALSE)
+
 get_acc_prslist_sub1 = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 	
 	# pgs_list = "PGS000329"
@@ -137,7 +139,7 @@ assess_score = function(
 	# out = out
 
 	# print(opt)
-
+	
 	writeLines("Read basic data")
 
 	basic_data = fread("/home/jupyter/data/phenotypes/aou_basic_data.csv")
@@ -217,13 +219,15 @@ assess_score = function(
 	###########################
 
 	print(paste0("null_", ancestry, "_train_logLik_50rep.txt"))
-
+	
+	# source("~/tools/PRSmix/R/utils.R")
+	
 	if (step1) {
 		null_res = eval_null(train_df, isbinary)
 		write.table(null_res, paste0("null_", ancestry, "_train_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
 		stop("Finish step 1")
 	}
-
+	
 	null_res = NULL
 	if (file.exists(paste0("null_", ancestry, "_train_logLik_50rep.txt"))) {
 		null_res = fread(paste0("null_", ancestry, "_train_logLik_50rep.txt"))[,1]
@@ -233,7 +237,7 @@ assess_score = function(
 	writeLines("Evaluating PRS")
 	print(length(pgs_list))
 	print(dim(train_df))
-	print(dim(null_res))
+	print(length(null_res))
 
 	pred_acc_train_trait = get_acc_prslist_sub1(train_df, pgs_list, null_res, isbinary)
 
