@@ -142,7 +142,7 @@ assess_score = function(
 	# print(opt)
 	
 	writeLines("Read basic data")
-
+	
 	basic_data = fread(basic_data_file)
 
 	# sscore_file_list = list.files("~/data/prs_all/")
@@ -151,23 +151,27 @@ assess_score = function(
 
 	writeLines("Read all pgs")
 
-
 	all_scores = NULL
 
 	for (i in 1:length(sscore_file_list)) {
 		print(i)
 		# i=1
 		# dd = fread(paste0("~/data/prs_all/", sscore_file_list[i]))
-		dd = fread(paste0("~/data/optimization/", trait, "/", sscore_file_list[i]))
+		dd = fread(sscore_file_list[i])
 		idx = which(endsWith(colnames(dd), "_SUM"))[-1]
 		
 		dd_sub = dd[,c(2,idx)]
+		
 		if (is.null(all_scores)) {
 			all_scores = dd_sub	
 		} else
 			all_scores = merge(all_scores, dd_sub, by="IID")
+		
+		# return(i)
 	}
 
+	# return(0)
+	
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
 
 
@@ -271,3 +275,4 @@ assess_score = function(
 	###########################################################################
 	return(0)
 }
+
