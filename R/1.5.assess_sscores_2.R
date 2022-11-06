@@ -136,7 +136,7 @@ assess_score = function(
 	# pheno_name  = pheno_name
 	# out = out
 
-	print(opt)
+	# print(opt)
 
 	writeLines("Read basic data")
 

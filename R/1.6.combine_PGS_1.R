@@ -71,7 +71,7 @@ combine_PGS = function(
 		pheno_name = "BreastCAFemale",
 		isbinary=T,
 		phenofile = "~/data/phenotypes/cancer_phenotypes.csv",
-		out = "test_mixedPRS"
+		out = "test_mixedPRS_afr"
 		)
 
 
@@ -404,6 +404,7 @@ combine_PGS = function(
 		topprs = topprs$pgs
 		topprs = pred_acc_train_trait_summary$pgs
 		
+		print(length(topprs))
 		# topprs = pgs_list
 		# topprs = c("PGS000337", "PGS000018")
 		# topprs = pred_acc_test_trait_summary$pgs[1:5]
@@ -421,7 +422,7 @@ combine_PGS = function(
 		} else {
 			
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-					
+			
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			# train_tmp = as.matrix(train_tmp)
@@ -446,16 +447,16 @@ combine_PGS = function(
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			
+			############## OR ###################
 			
-			# model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
 			model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
-			# model = glm(trait ~ scale(PGS000329) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
 			models = summary(model)
 			mm = exp(models$coefficients[2,1])
 			ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
 			uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
 			paste0(mm, " (", ll, "-", uu, ")")
-			# null_res = eval_null(test_df1, isbinary)
+			
+			####################################
 			
 			res_lm1 = eval_prs(test_df1, null_res_test, "newprs", isbinary)
 			res_lm1$summary$pgs = "PRSmix"
