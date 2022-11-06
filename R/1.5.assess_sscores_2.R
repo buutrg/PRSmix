@@ -245,10 +245,10 @@ assess_score = function(
 	print(length(null_res))
 
 	pred_acc_train_trait = get_acc_prslist_sub1(
-		data_df = train_df, 
-		pgs_list = pgs_list, 
-		null_res = null_res, 
-		ancestry=ancestry, 
+		data_df = train_df,
+		pgs_list = pgs_list,
+		null_res = null_res,
+		ancestry = ancestry,
 		isbinary = isbinary)
 
 	pred_acc_train_trait_summary = pred_acc_train_trait$pred_acc_test
