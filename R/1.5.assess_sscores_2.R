@@ -141,6 +141,8 @@ assess_score = function(
 
 	# print(opt)
 	
+	options(datatable.fread.datatable=FALSE)
+	
 	writeLines("Read basic data")
 	
 	basic_data = fread(basic_data_file)
