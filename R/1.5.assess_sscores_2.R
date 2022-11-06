@@ -66,6 +66,7 @@ assess_score = function(
 	phenofile,
 	ancestry,
 	pheno_name,
+	basic_data_file,
 	isbinary,
 	out,
 	step1 = F
@@ -142,10 +143,10 @@ assess_score = function(
 	
 	writeLines("Read basic data")
 
-	basic_data = fread("/home/jupyter/data/phenotypes/aou_basic_data.csv")
+	basic_data = fread(basic_data_file)
 
 	# sscore_file_list = list.files("~/data/prs_all/")
-	sscore_file_list = list.files(paste0("~/data/optimization/", trait))
+	sscore_file_list = list.files(".")
 	sscore_file_list = sscore_file_list[which(endsWith(sscore_file_list, "sscore") & startsWith(sscore_file_list, plink_prefix))]
 
 	writeLines("Read all pgs")
