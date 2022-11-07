@@ -6,6 +6,7 @@
 #' @param anc Intended ancestry
 #' @param pgslist PGS list of the trait
 #' @param phenofile Directory to the phenotype file
+#' @param basic_data_file Directory to covariate information
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
 #' @param out Output prefix
@@ -22,102 +23,27 @@ combine_PGS = function(
 	out = "test_cad_mixedPRS"
 	) {
 
-	library(data.table)
-	library(stringr)
-	library(dplyr)
-	library(tidyr)
-	library(glmnet)
-	library(caret)
-	library(DescTools)
-	library(rcompanion)
+	# library(data.table)
+	# library(stringr)
+	# library(dplyr)
+	# library(tidyr)
+	# library(glmnet)
+	# library(caret)
+	# library(DescTools)
+	# library(rcompanion)
 
-	library(xgboost)
-	library(randomForest)
-	library(datasets)
-	library(caret)
+	# library(xgboost)
+	# library(randomForest)
+	# library(datasets)
+	# library(caret)
 
 
 	options(datatable.fread.datatable=FALSE)
 
 
-	opt = data.frame(
-		trait = "cad",
-		anc = "eur",
-		# pgslist = "~/data/allPGSid.txt00",
-		pgslist = "cad_list.txt",
-		pheno_name = "CAD_case",
-		isbinary=T,
-		phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
-		out = "test_cad_mixedPRS"
-		)
-
-	opt = data.frame(
-		trait = "prostate_cancer",
-		anc = "eur",
-		# pgslist = "~/data/allPGSid.txt00",
-		pgslist = "prostate_cancer_list.txt",
-		pheno_name = "ProstateCA",
-		isbinary=T,
-		phenofile = "~/data/phenotypes/cancer_phenotypes.csv",
-		out = "test_mixedPRS"
-		)
-
-
-	opt = data.frame(
-		trait = "breast_cancer",
-		anc = "afr",
-		# pgslist = "~/data/allPGSid.txt00",
-		pgslist = "breast_cancer_list.txt",
-		pheno_name = "BreastCAFemale",
-		isbinary=T,
-		phenofile = "~/data/phenotypes/cancer_phenotypes.csv",
-		out = "test_mixedPRS_afr"
-		)
-
-
-
-	opt = data.frame(
-		trait = "bmi",
-		anc = "eur",
-		pgslist = "bmi_list.txt",
-		pheno_name="value_as_number",
-		isbinary=F,
-		phenofile = "~/data/phenotypes/bmi.csv",
-		out = "test_mixedPRS_eur"
-		)
-
-	# opt = data.frame(
-	# 	trait = "ovarian_cancer",
-	# 	anc = "eur",
-	# 	pgslist = "ovarian_cancer_list.txt",
-	# 	pheno_name="OvarianCA",
-	# 	isbinary=T,
-	# 	phenofile = "~/data/phenotypes/cancer_phenotypes.csv",
-	# 	out = "eval_ovarian_cancer_pgsmixpp"
-	# 	)
-
-	trait = trait
-	pgslist = pgslist
-	isbinary = isbinary
-	anc = anc
-	phenofile = phenofile
-	pheno_name  = pheno_name
-	anc  = anc
-	out = out
-
-
-
 	writeLines("Read basic data")
 
 	basic_data = fread("/home/jupyter/data/phenotypes/aou_basic_data.csv")
-
-
-
-
-
-	# sscore_file_list = list.files("~/data/prs_all/")
-	# sscore_file_list = list.files(paste0("~/data/optimization/", trait))
-	# sscore_file_list = sscore_file_list[which(endsWith(sscore_file_list, "sscore"))]
 
 	writeLines("Read all pgs")
 
@@ -154,20 +80,14 @@ combine_PGS = function(
 	colnames(pheno) = c("IID", "trait")
 
 
-
-
 	writeLines("Merging files")
 
 
 	pheno_prs = merge(pheno, all_scores, by="IID")
 	pheno_prs_cov = merge(pheno_prs, basic_data, by.x="IID", by.y="person_id")
-
-
 	pheno_prs_cov = pheno_prs_cov[which(!is.na(pheno_prs_cov$trait)),]
 
-
 	############################
-
 
 	irnt = function(x) return(qnorm((rank(x,na.last="keep")-0.5)/sum(!is.na(x))))
 
@@ -176,11 +96,10 @@ combine_PGS = function(
 	  return(as.numeric(s))
 	}
 
-
 	#######################
 
 	set.seed(1)
-	train_idx = sample(1:nrow(pheno_prs_cov), floor(.5*nrow(pheno_prs_cov)))
+	train_idx = sample(1:nrow(pheno_prs_cov), floor(.8*nrow(pheno_prs_cov)))
 	remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
 
 	# set.seed(1)
@@ -254,22 +173,25 @@ combine_PGS = function(
 
 	source("~/tools/PRSmix/R/utils.R")
 	
-	null_res_train = NULL
-	if (file.exists(paste0("null_", anc, "_train_logLik_50rep.txt"))) {
-		null_res_train = fread(paste0("null_", anc, "_train_logLik_50rep.txt"))[,1]
-	} else {
-		null_res_train = eval_null(train_df, isbinary)
-		write.table(null_res_train, paste0("null_", anc, "_train_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
-	}
+	null_res_train = eval_null(train_df, isbinary)
+	null_res_test = eval_null(test_df, isbinary)
+	
+	# null_res_train = NULL
+	# if (file.exists(paste0("null_", anc, "_train_logLik_50rep.txt"))) {
+	# 	null_res_train = fread(paste0("null_", anc, "_train_logLik_50rep.txt"))[,1]
+	# } else {
+	# 	null_res_train = eval_null(train_df, isbinary)
+	# 	write.table(null_res_train, paste0("null_", anc, "_train_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
+	# }
 
 
-	null_res_test = NULL
-	if (file.exists(paste0("null_", anc, "_test_logLik_50rep.txt"))) {
-		null_res_test = fread(paste0("null_", anc, "_test_logLik_50rep.txt"))[,1]
-	} else {
-		null_res_test = eval_null(test_df, isbinary)
-		write.table(null_res_test, paste0("null_", anc, "_test_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
-	}
+	# null_res_test = NULL
+	# if (file.exists(paste0("null_", anc, "_test_logLik_50rep.txt"))) {
+	# 	null_res_test = fread(paste0("null_", anc, "_test_logLik_50rep.txt"))[,1]
+	# } else {
+	# 	null_res_test = eval_null(test_df, isbinary)
+	# 	write.table(null_res_test, paste0("null_", anc, "_test_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
+	# }
 
 
 	# pred_acc_train = NULL
@@ -351,6 +273,38 @@ combine_PGS = function(
 
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 		filter(pgs %in% pgs_list)
+	
+	
+	null_res_train = eval_null(train_df, isbinary)
+	pred_acc_train_trait_summary = get_acc_prslist(
+		data_df = train_df, 
+		pgs_list = pgs_list, 
+		null_res = null_res_train, 
+		isbinary = isbinary)
+	
+	
+	pred_acc_train_trait_summary1 = eval_prs(train_df, null_res_train, pgs_list, isbinary)
+
+
+	formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+	
+	set.seed(2)
+	data_df_sub = train_df[sample(1:nrow(train_df), floor(1*nrow(train_df)), replace=T),]
+	
+	model_null = glm(formula, data=data_df_sub, family="binomial")
+	r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
+	r_null
+
+	prs_name = pgs_list[1]
+	formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+	model_full = glm(formula, data=data_df_sub, family="binomial")
+	
+	m = suppressWarnings(logLik(model_full, REML=FALSE))[1]
+	n = r_null
+	N = nobs(model_full)
+	cs = 1 - exp(-2/N * (m - n))
+	nk = cs/(1 - exp(2/N * n))
+	partial_R2 = nk
 
 	### Linear regression: trait specific
 
@@ -865,7 +819,7 @@ combine_PGS = function(
 	pred_acc_test_trait_summary_out = bind_rows(res_lm_summary, pred_acc_test_trait_summary_out)
 	head(pred_acc_test_trait_summary_out)
 
-	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_test_summary_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_", anc, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 
 

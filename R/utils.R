@@ -25,6 +25,7 @@ wald = function(x) {
 
 eval_null = function(data_df, isbinary=F) {
 	
+	data_df = train_df
 	prec_acc = NULL
 	
 	for (rep in 1:50) {
@@ -75,7 +76,7 @@ eval_prs = function(data_df, null_res, prs_name, isbinary=F, debug=F) {
 			cs = 1 - exp(-2/N * (m - n))
 			nk = cs/(1 - exp(2/N * n))
 			partial_R2 = nk
-			
+			# print(partial_R2)	
 		}
 		
 		prec_acc = c(prec_acc, partial_R2)
@@ -108,7 +109,7 @@ get_acc_prslist = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 		# write.table(null_res_test, "null_train_logLik_50rep.txt", row.names=F, sep="\t", col.names=F, quote=F)
 		# write.table(null_res_test, paste0("null_", anc,"test_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
 	}
-		
+	
 	print("Fitting PRS")
 	pred_acc_test = NULL
 	pred_acc_test_detail = NULL
@@ -116,7 +117,7 @@ get_acc_prslist = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 	for (prs_i in 1:length(pgs_list)) {
 		# prs_i = 2
 		print(prs_i)
-		pred_acc_test_tmp = eval_prs(data_df, null_res_test, pgs_list[prs_i], isbinary=isbinary)
+		pred_acc_test_tmp = eval_prs(data_df, null_res, pgs_list[prs_i], isbinary=isbinary)
 		print(pred_acc_test_tmp$summary)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp$summary)	
 		pred_acc_test_detail = rbind(pred_acc_test_detail, pred_acc_test_tmp$prec_acc$partial_R2)
