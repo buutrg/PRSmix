@@ -51,15 +51,15 @@ get_risk_allele = function(
 	# 	out = "eval_prostate_cancer_pgs.txt"
 	# 	)
 
-	traitname = opt$traitname
-	pgslist = opt$pgslist
-	anc = opt$anc
-	plinkfile = opt$plinkfile
-	pgsmetafile = opt$pgsmetafile
-	freqfile = opt$freqfile
-	phenofile = opt$phenofile
-	isbinary = T
-	out = opt$out
+	# traitname = opt$traitname
+	# pgslist = opt$pgslist
+	# anc = opt$anc
+	# plinkfile = opt$plinkfile
+	# pgsmetafile = opt$pgsmetafile
+	# freqfile = opt$freqfile
+	# phenofile = opt$phenofile
+	# isbinary = T
+	# out = opt$out
 
 	options(datatable.fread.datatable=FALSE)
 

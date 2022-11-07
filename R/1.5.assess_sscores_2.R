@@ -227,7 +227,7 @@ assess_score = function(
 
 	print(paste0("null_", ancestry, "_train_logLik_50rep.txt"))
 	
-	# source("~/tools/PRSmix/R/utils.R")
+	source("~/tools/PRSmix/R/utils.R")
 	
 	if (step1) {
 		null_res = eval_null(train_df, isbinary)

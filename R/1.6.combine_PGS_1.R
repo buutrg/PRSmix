@@ -96,14 +96,14 @@ combine_PGS = function(
 	# 	out = "eval_ovarian_cancer_pgsmixpp"
 	# 	)
 
-	trait = opt$trait
-	pgslist = opt$pgslist
-	isbinary = opt$isbinary
-	anc = opt$anc
-	phenofile = opt$phenofile
-	pheno_name  = opt$pheno_name
-	anc  = opt$anc
-	out = opt$out
+	trait = trait
+	pgslist = pgslist
+	isbinary = isbinary
+	anc = anc
+	phenofile = phenofile
+	pheno_name  = pheno_name
+	anc  = anc
+	out = out
 
 
 
@@ -148,7 +148,7 @@ combine_PGS = function(
 
 
 
-	pheno = fread(opt$phenofile)
+	pheno = fread(phenofile)
 	idx = which(colnames(pheno) %in% c("person_id", pheno_name))
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
@@ -180,7 +180,7 @@ combine_PGS = function(
 	#######################
 
 	set.seed(1)
-	train_idx = sample(1:nrow(pheno_prs_cov), floor(.8*nrow(pheno_prs_cov)))
+	train_idx = sample(1:nrow(pheno_prs_cov), floor(.5*nrow(pheno_prs_cov)))
 	remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
 
 	# set.seed(1)
@@ -190,17 +190,22 @@ combine_PGS = function(
 
 	train_df = pheno_prs_cov[train_idx,]
 	test_df = pheno_prs_cov[-train_idx,]
-
+	
+	set.seed(1)
+	valid_idx = sample(1:nrow(train_df), floor(0.2*nrow(train_df)))
+	valid_df = pheno_prs_cov[valid_idx,]
 
 	if (!isbinary) {
 		train_df$trait = irnt(train_df$trait)
 		test_df$trait = irnt(test_df$trait)
+		valid$trait = irnt(valid$trait)
 	}
 
 
 	cov_list = c("age", paste0("PC", 1:10))
 	for (i in cov_list) train_df[i] = as.numeric(scale(train_df[i]))
 	for (i in cov_list) test_df[i] = as.numeric(scale(test_df[i]))
+	for (i in cov_list) valid_df[i] = as.numeric(scale(valid_df[i]))
 
 
 
@@ -332,14 +337,14 @@ combine_PGS = function(
 	pred_acc_test_trait_summary = data.frame(pred_acc_test_trait_summary)
 	head(pred_acc_test_trait_summary)
 
-	# pred_acc_test_trait_summary = fread(paste0(opt$out, "_test_summary_traitPRS.txt"))
-	# pred_acc_test_trait_detail = fread(paste0(opt$out, "_test_detailed_traitPRS.txt"))
+	# pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
+	# pred_acc_test_trait_detail = fread(paste0(out, "_test_detailed_traitPRS.txt"))
 
 
-	fwrite(pred_acc_test_trait_summary, paste0(opt$out, "_", anc, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_summary, paste0(out, "_", anc, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	pred_acc_test_trait_detail = pred_acc_test_trait$pred_acc_test_detail
-	fwrite(pred_acc_test_trait_detail, paste0(opt$out, "_", anc, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_detail, paste0(out, "_", anc, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	###########################################################################
 	# pred_acc_train_allPGS_summary = pred_acc_train_trait_summary
@@ -393,7 +398,7 @@ combine_PGS = function(
 			res_lm1$summary
 			
 			pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix"=res_lm1$prec_acc$partial_R2)
-			fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 			
 		}
 		
@@ -401,8 +406,9 @@ combine_PGS = function(
 		
 		# topprs = pred_acc_train_trait_summary %>% filter(pnew < 0.05 / nrow(pred_acc_train_trait_summary))
 		topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05)
+		# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
 		topprs = topprs$pgs
-		topprs = pred_acc_train_trait_summary$pgs
+		# topprs = pred_acc_train_trait_summary$pgs
 		
 		print(length(topprs))
 		# topprs = pgs_list
@@ -417,18 +423,24 @@ combine_PGS = function(
 		y_test = as.vector(test_df$trait)
 		test_data = data.frame(x_test,trait=y_test)
 		
+		x_valid = as.matrix(valid_df %>% select(all_of(topprs), -trait))
+		y_valid = as.vector(valid_df$trait)
+		valid_data = data.frame(x_valid,trait=y_valid)
+		
 		if (length(topprs) == 0) {
 			print("No trait-specific significance")
 		} else {
 			
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 			
+			# train_tmp = train_data[,c("trait", topprs)]
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			# train_tmp = as.matrix(train_tmp)
-				
+			
 			ctrl <- trainControl(method = "repeatedcv",
 		                        number = 5,
+		                        # repeats = 5,
 		                        # savePredictions = TRUE,
 		                        verboseIter = T,
 		                        returnResamp = "all")
@@ -438,7 +450,7 @@ combine_PGS = function(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl, family = "binomial", 
 			  # intercept=FALSE,
-			  tuneLength = 100, verbose=T
+			  tuneLength = 50, verbose=T
 			)
 			model$bestTune
 			coef(model$finalModel, model$bestTune$lambda)
@@ -463,9 +475,9 @@ combine_PGS = function(
 			res_lm1$summary
 			
 			pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix"=res_lm1$prec_acc$partial_R2)
-			fwrite(pred_acc_detail_all1, paste0(opt$out, "_", anc, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(pred_acc_detail_all1, paste0(out, "_", anc, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 			
-			# pred_acc_detail_all1 = fread(paste0(opt$out, "_test_detailed_traitPRS_withPRSmix.txt"))
+			# pred_acc_detail_all1 = fread(paste0(out, "_test_detailed_traitPRS_withPRSmix.txt"))
 			
 			
 	# 		train_tmp1 = train_tmp
@@ -513,7 +525,7 @@ combine_PGS = function(
 	pred_acc_test_trait_summary_out = bind_rows(res_lm1$summary, pred_acc_test_trait_summary)
 	head(pred_acc_test_trait_summary_out)
 
-	fwrite(pred_acc_test_trait_summary_out, paste0(opt$out, "_", anc, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_", anc, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 
 
 
@@ -637,7 +649,7 @@ combine_PGS = function(
 
 
 
-	# pred_acc_test_trait_summary_out = fread(paste0(opt$out, "_test_summary_traitPRS_withPRSmix.txt"))
+	# pred_acc_test_trait_summary_out = fread(paste0(out, "_test_summary_traitPRS_withPRSmix.txt"))
 
 	### Linear regression all combined
 
@@ -774,7 +786,7 @@ combine_PGS = function(
 		
 		
 		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)		
+		fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)		
 		
 		
 	} else {
@@ -824,9 +836,19 @@ combine_PGS = function(
 		res_lm_summary = res_lm$summary
 		res_lm_detail = res_lm$prec_acc
 		
+		################### OR ######################
+		
+		model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
+		models = summary(model)
+		mm = exp(models$coefficients[2,1])
+		ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
+		uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
+		paste0(mm, " (", ll, "-", uu, ")")
+		
+		#############################################
 		
 		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(opt$out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
+		fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
 		
 		
 	}
@@ -836,20 +858,15 @@ combine_PGS = function(
 	# head(pred_acc_test_trait_summary_out)
 
 
-	# fwrite(pred_acc_test_trait_summary_out, paste0(opt$out, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+	# fwrite(pred_acc_test_trait_summary_out, paste0(out, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 
 
 	pred_acc_test_trait_summary_out = bind_rows(res_lm_summary, pred_acc_test_trait_summary_out)
 	head(pred_acc_test_trait_summary_out)
 
-	fwrite(pred_acc_test_trait_summary_out, paste0(opt$out, "_test_summary_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
+	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_test_summary_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
 
-
-
-	model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
-
-	summary(model)
 
 
 
