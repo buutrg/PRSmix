@@ -25,7 +25,7 @@ wald = function(x) {
 
 eval_null = function(data_df, isbinary=F) {
 	
-	data_df = train_df
+	# data_df = train_df
 	prec_acc = NULL
 	
 	for (rep in 1:50) {
@@ -100,14 +100,9 @@ eval_prs = function(data_df, null_res, prs_name, isbinary=F, debug=F) {
 
 get_acc_prslist = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 	
-	# pgs_list = "PGS000329"
-	# data_df = test_df
-	
 	if (is.null(null_res)) {	
 		print("Fitting null model")
 		null_res = eval_null(data_df, isbinary)
-		# write.table(null_res_test, "null_train_logLik_50rep.txt", row.names=F, sep="\t", col.names=F, quote=F)
-		# write.table(null_res_test, paste0("null_", anc,"test_logLik_50rep.txt"), row.names=F, sep="\t", col.names=F, quote=F)
 	}
 	
 	print("Fitting PRS")
@@ -122,7 +117,7 @@ get_acc_prslist = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp$summary)	
 		pred_acc_test_detail = rbind(pred_acc_test_detail, pred_acc_test_tmp$prec_acc$partial_R2)
 	}
-
+	
 	pred_acc_test = pred_acc_test[order(pred_acc_test$partial_R2, decreasing=T),]
 	
 	rownames(pred_acc_test_detail) = pgs_list
@@ -130,8 +125,6 @@ get_acc_prslist = function(data_df, pgs_list, null_res=NULL, isbinary=F) {
 	pred_acc_test_detail = t(pred_acc_test_detail)
 	pred_acc_test_detail = as.data.frame(pred_acc_test_detail)
 
-
-	
 	return(list(pred_acc_test=pred_acc_test, pred_acc_test_detail=pred_acc_test_detail))
 }
 
