@@ -171,7 +171,7 @@ combine_PGS = function(
 
 	###########################
 
-	source("~/tools/PRSmix/R/utils.R")
+	# source("~/tools/PRSmix/R/utils.R")
 	
 	null_res_train = eval_null(train_df, isbinary)
 	null_res_test = eval_null(test_df, isbinary)
@@ -397,23 +397,7 @@ combine_PGS = function(
 			paste0(mm, " (", ll, "-", uu, ")")
 			
 			####################################
-			
-			null_res_test = eval_null(test_df1, isbinary)
-			
-			set.seed(1)
-			data_df_sub = test_df1[sample(1:nrow(test_df1), floor(1*nrow(test_df1)), replace=T),]
-			model_null = glm(trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=data_df_sub, family="binomial")
-			model_full = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=data_df_sub, family="binomial")
-						
-			m = suppressWarnings(logLik(model_full, REML=FALSE))[1]
-			n = suppressWarnings(logLik(model_null, REML=FALSE))[1]
-			N = nobs(model_full)
-			cs = 1 - exp(-2/N * (m - n))
-			nk = cs/(1 - exp(2/N * n))
-			partial_R2 = nk
-			
-			
-			
+					
 			
 			res_lm1 = eval_prs(test_df1, null_res_test, "newprs", isbinary)
 			res_lm1$summary$pgs = "PRSmix"
