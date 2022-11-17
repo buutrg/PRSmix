@@ -16,6 +16,8 @@ Depends:
 	dplyr,
 	tidyr,
 	glmnet,
+	foreach,
+	doParallel,
 	caret,
 	DescTools,
 	rcompanion,

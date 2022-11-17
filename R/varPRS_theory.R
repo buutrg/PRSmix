@@ -1,0 +1,69 @@
+
+######################## Get mixing weights with validation set
+
+rr = function(x,digit=10) return(round(x,digit))
+
+eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
+	
+	prec_acc = NULL
+	data_df_sub = data_df
+	formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+	model_full = glm(formula, data=data_df_sub, family="binomial")
+	r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
+	
+	formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+	model_null = glm(formula, data=data_df_sub, family="binomial")
+	r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
+	
+	m = r_full
+	n = r_null
+	N = nobs(model_full)
+	cs = 1 - exp(-2/N * (m - n))
+	nk = cs/(1 - exp(2/N * n))
+	R2 = nk	
+	
+	alpha = 0.05
+	NCP = N * R2 / (1-R2)
+	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
+	
+	vv = (4*R2^2*(1-R2)^2 *(N*2)^2) / ((N^2-1)*(N+3))
+
+	se = sqrt(vv)
+	lower_r2 = R2 - 1.97*se
+	upper_r2 = R2 + 1.97*se
+	pval = pchisq((R2/se)^2, df=1, lower.tail=F)
+	
+	r2_out = paste0(rr(R2), " (", rr(lower_r2), "-", rr(upper_r2), ")")
+	
+	return(data.frame(pgs=prs_name, R2=R2, partial_R2=r2_out, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval_partial_R2=pval, power=power))
+}
+
+
+#' Get risk allele by consensus across multiple PRS snp effect panels
+#'
+#' This function get the risk-increasing allele based on consensus across PRS panels
+#'
+#' @param data_df Data to assess prediction accuracy
+#' @param pgs_list PGS list of the trait
+#' @param isbinary TRUE if binary and FALSE otherwise
+#' @return A dataframe for prediction accuracy of PRS and their power
+#' @export
+get_acc_prslist_optimized = function(data_df, pgs_list, isbinary=F) {
+	
+	# data_df = test_df
+	
+	pred_acc_test = NULL
+	for (prs_i in 1:length(pgs_list)) {
+		
+		if (prs_i %% 100 == 0) print(prs_i)
+		
+		prs_name = pgs_list[prs_i]		
+		pred_acc_test_tmp = eval_prs(data_df, prs_name, isbinary=isbinary)
+		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)	
+	}
+	
+	pred_acc_test = pred_acc_test[order(pred_acc_test$R2, decreasing=T),]
+	
+	return(pred_acc_test)
+}
+

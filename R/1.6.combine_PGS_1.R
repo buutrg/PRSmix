@@ -5,6 +5,7 @@
 #' @param trait The name of the trait
 #' @param anc Intended ancestry
 #' @param pgslist PGS list of the trait
+#' @param score_pref Prefix of score files
 #' @param phenofile Directory to the phenotype file
 #' @param basic_data_file Directory to covariate information
 #' @param pheno_name Name of the phenotype column
@@ -19,7 +20,10 @@ combine_PGS = function(
 	pgslist = "cad_list.txt",
 	pheno_name = "CAD_case",
 	isbinary=T,
+	basic_data_file = "/home/jupyter/data/phenotypes/aou_basic_data.csv",
+	metascore = "~/data/pgs_all_metadata_scores.csv",
 	phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
+	score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", 
 	out = "test_cad_mixedPRS"
 	) {
 
@@ -43,7 +47,7 @@ combine_PGS = function(
 
 	writeLines("Read basic data")
 
-	basic_data = fread("/home/jupyter/data/phenotypes/aou_basic_data.csv")
+	basic_data = fread(basic_data_file)
 
 	writeLines("Read all pgs")
 
@@ -56,7 +60,7 @@ combine_PGS = function(
 		# i=1
 		# dd = fread(paste0("~/data/prs_all/", sscore_file_list[i]))
 		# dd = fread(paste0("~/data/optimization/", trait, "/", sscore_file_list[i]))
-		dd = fread(paste0("AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", anc, "_part", part, ".sscore"))
+		dd = fread(paste0(score_pref, anc, "_part", part, ".sscore"))
 		idx = which(endsWith(colnames(dd), "_SUM"))[-1]
 		
 		dd_sub = dd[,c(2,idx)]
@@ -132,40 +136,40 @@ combine_PGS = function(
 	###########################
 
 
-	pred_acc_train_allPGS_summary = NULL
-	pred_acc_train_allPGS_detail = NULL
+	# pred_acc_train_allPGS_summary = NULL
+	# pred_acc_train_allPGS_detail = NULL
 
 	# all_pgs_list = list.files(paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/"))
 	# all_pgs_list = all_pgs_list[which(endsWith(all_pgs_list,  paste0(anc, "_summary.txt")))]
 	# all_pgs_list = substring(all_pgs_list, 1, 9)
 
-	pgs_annot = fread("~/data/pgs_all_metadata_scores.csv")
-	all_pgs_list = pgs_annot[,1]
+	# pgs_annot = fread("~/data/pgs_all_metadata_scores.csv")
+	# all_pgs_list = pgs_annot[,1]
 
-	for (files_i in 1:length(all_pgs_list)) {
-		filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_summary.txt")
-		# filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_summary.txt")
-		if (!file.exists(filename)) next
-		subdf = fread(filename)
-		pred_acc_train_allPGS_summary = rbind(pred_acc_train_allPGS_summary, subdf)
+	# for (files_i in 1:length(all_pgs_list)) {
+	# 	filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_summary.txt")
+	# 	# filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_summary.txt")
+	# 	if (!file.exists(filename)) next
+	# 	subdf = fread(filename)
+	# 	pred_acc_train_allPGS_summary = rbind(pred_acc_train_allPGS_summary, subdf)
 		
-		filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_detail.txt")
-		subdf = fread(filename)
-		# subdf = fread(paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_detail.txt"))
+	# 	filename = paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_detail.txt")
+	# 	subdf = fread(filename)
+	# 	# subdf = fread(paste0("/home/jupyter/data/optimization/", trait, "/prs_acc/", all_pgs_list[files_i], "_", anc, "_detail.txt"))
 		
-		if (is.null(pred_acc_train_allPGS_detail)) {
-			pred_acc_train_allPGS_detail = subdf 
-		} else {
-			pred_acc_train_allPGS_detail = cbind(pred_acc_train_allPGS_detail, subdf)
-		}
-	}
+	# 	if (is.null(pred_acc_train_allPGS_detail)) {
+	# 		pred_acc_train_allPGS_detail = subdf 
+	# 	} else {
+	# 		pred_acc_train_allPGS_detail = cbind(pred_acc_train_allPGS_detail, subdf)
+	# 	}
+	# }
 
 
-	pred_acc_train_allPGS_summary$pval_partial_R2 = as.numeric(pred_acc_train_allPGS_summary$pval_partial_R2)
-	pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary[order(pred_acc_train_allPGS_summary$pval_partial_R2),]
+	# pred_acc_train_allPGS_summary$pval_partial_R2 = as.numeric(pred_acc_train_allPGS_summary$pval_partial_R2)
+	# pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary[order(pred_acc_train_allPGS_summary$pval_partial_R2),]
 
 
-	dim(pred_acc_train_allPGS_summary)
+	# dim(pred_acc_train_allPGS_summary)
 
 
 
@@ -173,8 +177,8 @@ combine_PGS = function(
 
 	# source("~/tools/PRSmix/R/utils.R")
 	
-	null_res_train = eval_null(train_df, isbinary)
-	null_res_test = eval_null(test_df, isbinary)
+	# null_res_train = eval_null(train_df, isbinary)
+	# null_res_test = eval_null(test_df, isbinary)
 	
 	# null_res_train = NULL
 	# if (file.exists(paste0("null_", anc, "_train_logLik_50rep.txt"))) {
@@ -208,56 +212,79 @@ combine_PGS = function(
 
 	################################ training #################################
 
-	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
-		filter(pgs %in% pgs_list)
+	# pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
+	# 	filter(pgs %in% pgs_list)
 
 
-	pred_acc_train_trait_summary = pred_acc_train_trait_summary %>%
-		rowwise() %>%
-		mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
-		mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
-		mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
-		mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
-		mutate(se = (r2 - lowerCI)/1.97*sqrt(50)) %>%
-		# mutate(se = (r2 - lowerCI)/(1.97*sqrt(1))) %>%
-		# mutate(se = (r2 - lowerCI)/1.97) %>%
-		mutate(newlowerCI = r2 - 1.97*se) %>%
-		mutate(newupperCI = r2 + 1.97*se) %>%
-		mutate(z = r2/se) %>%
-		mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
-		mutate(partial_R2_1 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
+	# pred_acc_train_trait_summary = pred_acc_train_trait_summary %>%
+	# 	rowwise() %>%
+	# 	mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
+	# 	mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
+	# 	mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
+	# 	mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
+	# 	mutate(se = (r2 - lowerCI)/1.97*sqrt(50)) %>%
+	# 	# mutate(se = (r2 - lowerCI)/(1.97*sqrt(1))) %>%
+	# 	# mutate(se = (r2 - lowerCI)/1.97) %>%
+	# 	mutate(newlowerCI = r2 - 1.97*se) %>%
+	# 	mutate(newupperCI = r2 + 1.97*se) %>%
+	# 	mutate(z = r2/se) %>%
+	# 	mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
+	# 	mutate(partial_R2_1 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
 
-	pred_acc_train_trait_summary = data.frame(pred_acc_train_trait_summary)
+	# pred_acc_train_trait_summary = data.frame(pred_acc_train_trait_summary)
+	# head(pred_acc_train_trait_summary)
+
+
+
+	################################ training #################################
+
+	pgs_list_all = colnames(train_df)
+	pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
+	pred_acc_train_allPGS_summary = get_acc_prslist(train_df, pgs_list_all, isbinary)
+	
+	
+	fwrite(pred_acc_train_allPGS_summary, paste0(out, "_", anc, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
+
+	
+	# alpha = 0.05
+	# N = nrow(train_df)
+	# NCP = N * pred_acc_train_trait$R2 / (1-pred_acc_train_trait$R2)
+	# pred_acc_train_trait$power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
+	
+
+
+	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
+	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_train_trait_summary)
-
 
 
 	################################ testing #################################
 
-	pred_acc_test_trait = get_acc_prslist(test_df, pgs_list, null_res_test, isbinary)
+	pred_acc_test_trait = get_acc_prslist(test_df, pgs_list, isbinary)
 
-	pred_acc_test_trait_summary = pred_acc_test_trait$pred_acc_test
+	pred_acc_test_trait_summary = pred_acc_test_trait
 	pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_test_trait_summary)
 
 
-	pred_acc_test_trait_summary = pred_acc_test_trait_summary %>%
-		rowwise() %>%
-		mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
-		mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
-		mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
-		mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
-		mutate(se = (r2 - lowerCI)/1.97*sqrt(50)) %>%
-		# mutate(se = (r2 - lowerCI)/1.97*sqrt(1)) %>%
-		# mutate(se = (r2 - lowerCI)/1.97) %>%
-		mutate(newlowerCI = r2 - 1.97*se) %>%
-		mutate(newupperCI = r2 + 1.97*se) %>%
-		mutate(z = r2/se) %>%
-		mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
-		mutate(partial_R2_1 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
 
-	pred_acc_test_trait_summary = data.frame(pred_acc_test_trait_summary)
-	head(pred_acc_test_trait_summary)
+	# pred_acc_test_trait_summary = pred_acc_test_trait_summary %>%
+	# 	rowwise() %>%
+	# 	mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
+	# 	mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
+	# 	mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
+	# 	mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
+	# 	mutate(se = (r2 - lowerCI)/1.97*sqrt(50)) %>%
+	# 	# mutate(se = (r2 - lowerCI)/1.97*sqrt(1)) %>%
+	# 	# mutate(se = (r2 - lowerCI)/1.97) %>%
+	# 	mutate(newlowerCI = r2 - 1.97*se) %>%
+	# 	mutate(newupperCI = r2 + 1.97*se) %>%
+	# 	mutate(z = r2/se) %>%
+	# 	mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
+	# 	mutate(partial_R2_1 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
+
+	# pred_acc_test_trait_summary = data.frame(pred_acc_test_trait_summary)
+	# head(pred_acc_test_trait_summary)
 
 	# pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
 	# pred_acc_test_trait_detail = fread(paste0(out, "_test_detailed_traitPRS.txt"))
@@ -265,8 +292,8 @@ combine_PGS = function(
 
 	fwrite(pred_acc_test_trait_summary, paste0(out, "_", anc, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
-	pred_acc_test_trait_detail = pred_acc_test_trait$pred_acc_test_detail
-	fwrite(pred_acc_test_trait_detail, paste0(out, "_", anc, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	# pred_acc_test_trait_detail = pred_acc_test_trait$pred_acc_test_detail
+	# fwrite(pred_acc_test_trait_detail, paste0(out, "_", anc, "_test_detailed_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 
 	###########################################################################
 	# pred_acc_train_allPGS_summary = pred_acc_train_trait_summary
@@ -275,10 +302,10 @@ combine_PGS = function(
 		filter(pgs %in% pgs_list)
 	
 	
-	null_res_train = eval_null(train_df, isbinary)
-	pred_acc_train_trait_summary = get_acc_prslist(train_df, pgs_list, null_res_train, isbinary)
+	# null_res_train = eval_null(train_df, isbinary)
+	# pred_acc_train_trait_summary = get_acc_prslist(train_df, pgs_list, null_res_train, isbinary)
 	
-	pred_acc_train_trait_summary = pred_acc_train_trait_summary$pred_acc_test
+	# pred_acc_train_trait_summary = pred_acc_train_trait_summary$pred_acc_test
 	
 	### Linear regression: trait specific
 
@@ -322,8 +349,8 @@ combine_PGS = function(
 			# null_res = eval_null(test_df1, isbinary)
 			
 			res_lm1 = eval_prs(test_df1, null_res_test, "newprs", isbinary)
-			res_lm1$summary$pgs = "PRSmix"
-			res_lm1$summary
+			res_lm1$pgs = "PRSmix"
+			res_lm1
 			
 			pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix"=res_lm1$prec_acc$partial_R2)
 			fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
@@ -333,8 +360,9 @@ combine_PGS = function(
 	} else {	
 		
 		# topprs = pred_acc_train_trait_summary %>% filter(pnew < 0.05 / nrow(pred_acc_train_trait_summary))
-		topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05)
+		# topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05)
 		# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
+		topprs = pred_acc_test_trait_summary %>% filter(power >= 0.95)
 		topprs = topprs$pgs
 		# topprs = pred_acc_train_trait_summary$pgs
 		
@@ -355,59 +383,51 @@ combine_PGS = function(
 		y_valid = as.vector(valid_df$trait)
 		valid_data = data.frame(x_valid,trait=y_valid)
 		
-		if (length(topprs) == 0) {
-			print("No trait-specific significance")
-		} else {
-			
-			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-			
-			# train_tmp = train_data[,c("trait", topprs)]
-			train_tmp = train_data[,c("trait", topprs)]
-			train_tmp$trait = as.factor(train_tmp$trait)
-			# train_tmp = as.matrix(train_tmp)
-			
-			ctrl <- trainControl(method = "repeatedcv",
-		                        number = 5,
-		                        # repeats = 5,
-		                        # savePredictions = TRUE,
-		                        verboseIter = T,
-		                        returnResamp = "all")
-			
-			set.seed(123)
-			model <- train(
-			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl, family = "binomial", 
-			  # intercept=FALSE,
-			  tuneLength = 50, verbose=T
-			)
-			model$bestTune
-			coef(model$finalModel, model$bestTune$lambda)
-			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
-			
-			test_df1 = test_df
-			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-			
-			############## OR ###################
-			
-			model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
-			models = summary(model)
-			mm = exp(models$coefficients[2,1])
-			ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
-			uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
-			paste0(mm, " (", ll, "-", uu, ")")
-			
-			####################################
-					
-			
-			res_lm1 = eval_prs(test_df1, null_res_test, "newprs", isbinary)
-			res_lm1$summary$pgs = "PRSmix"
-			res_lm1$summary
-			
-			pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix"=res_lm1$prec_acc$partial_R2)
-			fwrite(pred_acc_detail_all1, paste0(out, "_", anc, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
-			
-			# pred_acc_detail_all1 = fread(paste0(out, "_test_detailed_traitPRS_withPRSmix.txt"))
-			
+		formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
+		
+		# train_tmp = train_data[,c("trait", topprs)]
+		train_tmp = train_data[,c("trait", topprs)]
+		train_tmp$trait = as.factor(train_tmp$trait)
+		# train_tmp = as.matrix(train_tmp)
+		
+		ctrl <- trainControl(method = "repeatedcv",
+	                        number = 5,
+	                        # repeats = 5,
+	                        # savePredictions = TRUE,
+	                        verboseIter = T,
+	                        returnResamp = "all")
+		
+		set.seed(123)
+		model <- train(
+		  formula, data = train_tmp, method = "glmnet", 
+		  trControl = ctrl, family = "binomial", 
+		  # intercept=FALSE,
+		  tuneLength = 50, verbose=T
+		)
+		model$bestTune
+		coef(model$finalModel, model$bestTune$lambda)
+		ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+		
+		test_df1 = test_df
+		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
+		
+		res_lm1 = eval_prs(test_df1, "newprs", isbinary)
+		res_lm1$pgs = "PRSmix"
+		res_lm1
+		
+		
+		
+		############## OR ###################
+		
+		model1 = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
+		model1s = summary(model1)
+		mm = exp(model1s$coefficients[2,1])
+		ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
+		uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
+		paste0(mm, " (", ll, "-", uu, ")")
+		
+		####################################
+				
 			
 	# 		train_tmp1 = train_tmp
 	# 		train_tmp1[,topprs] = scale(train_tmp1[,topprs])
@@ -427,7 +447,7 @@ combine_PGS = function(
 			
 	# 		test_df1$rf = y_pred
 	# 		res_lm1 = eval_prs(test_df1, null_res_test, "rf", isbinary)
-	# 		res_lm1$summary$pgs = "PRSmix_RF"
+	# 		res_lm1$pgs = "PRSmix_RF"
 			
 	# 		"age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC6", "PC7", "PC8", "PC9", "PC10"
 	# 		feat = c(topprs, "age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC6", "PC7", "PC8", "PC9", "PC10")
@@ -446,18 +466,21 @@ combine_PGS = function(
 	# 		auc(prediction, y_test)
 	# 		err <- mean(as.numeric(y_pred > 0.5) != y_test)
 	# print(paste("test-error=", err))
-		}
 	}
 
-	res_lm1_summary = res_lm1$summary
+	res_lm1_summary = res_lm1
 	res_lm1_summary$pgs = "PRSmix"
-	pred_acc_test_trait_summary_out = bind_rows(res_lm1$summary, pred_acc_test_trait_summary)
+	pred_acc_test_trait_summary_out = bind_rows(res_lm1, pred_acc_test_trait_summary)
 	head(pred_acc_test_trait_summary_out)
 
 	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_", anc, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 
-
-
+	prs_out = test_df1 %>% 
+		select(IID, pred_acc_test_trait_summary_out[2,1], newprs)
+	colnames(prs_out) = c("IID", "pgscat", "prsmix")
+	
+	fwrite(prs_out, paste0(out, "_", anc, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
+	
 	# all_beta = NULL
 
 	# # for (i in 1:length(sscore_file_list)) {
@@ -561,13 +584,13 @@ combine_PGS = function(
 		
 
 	# res_lm1 = eval_prs(test_df1, null_res_test, "newprs", isbinary)
-	# res_lm1$summary$pgs = "PRSmix_max"
-	# res_lm1$summary
+	# res_lm1$pgs = "PRSmix_max"
+	# res_lm1
 
 
 	# res_lm1 = eval_prs(test_df1, null_res_test, "prs_cad", isbinary)
-	# res_lm1$summary$pgs = "PRSmix_max"
-	# res_lm1$summary
+	# res_lm1$pgs = "PRSmix_max"
+	# res_lm1
 
 
 
@@ -592,80 +615,50 @@ combine_PGS = function(
 	# all_sig = pred_acc_train %>% filter(pval_partial_R2 <= 0.05/nrow(pred_acc_train))
 
 
-	pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary %>%
-		rowwise() %>%
-		mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
-		mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
-		mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
-		mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
-		# mutate(se = (r2 - lowerCI)/(1.97*sqrt(50))) %>%
-		mutate(se = (r2 - lowerCI)/(1.97*sqrt(1))) %>%
-		# mutate(se = (r2 - lowerCI)/1.97) %>%
-		mutate(newlowerCI = r2 - 1.97*se) %>%
-		mutate(newupperCI = r2 + 1.97*se) %>%
-		mutate(z = r2/se) %>%
-		mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
-		mutate(partial_R2 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
+	# pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary %>%
+	# 	rowwise() %>%
+	# 	mutate(r2 = as.numeric(unlist(strsplit(partial_R2, split=" "))[1])) %>%
+	# 	mutate(tmp = str_extract_all(partial_R2, "(?<= \\().*(?<=[0-9])")[[1]]) %>%
+	# 	mutate(lowerCI = as.numeric(unlist(strsplit(tmp, split=";"))[1])) %>%
+	# 	mutate(upperCI = as.numeric(unlist(strsplit(tmp, split=";"))[2])) %>%
+	# 	# mutate(se = (r2 - lowerCI)/(1.97*sqrt(50))) %>%
+	# 	mutate(se = (r2 - lowerCI)/(1.97*sqrt(1))) %>%
+	# 	# mutate(se = (r2 - lowerCI)/1.97) %>%
+	# 	mutate(newlowerCI = r2 - 1.97*se) %>%
+	# 	mutate(newupperCI = r2 + 1.97*se) %>%
+	# 	mutate(z = r2/se) %>%
+	# 	mutate(pnew = 2*pnorm(q=z, lower.tail=FALSE)) %>% # two tail
+	# 	mutate(partial_R2 = paste0(rr(r2), " (", rr(newlowerCI), ";", rr(newupperCI), ")"))
 
 	pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
 
 
-	all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05/nrow(pred_acc_train_allPGS_summary))
-	all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
+	# all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05/nrow(pred_acc_train_allPGS_summary))
+	all_sig = pred_acc_train_allPGS_summary %>% filter(power >= 0.95)
+	# all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
 	all_sigpgs = all_sig$pgs
+	print(length(all_sigpgs))
 
 
+	# pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary
+	# pred_acc_train_allPGS_summary1$Trait = pgs_annot$`Reported Trait`[match(pred_acc_train_allPGS_summary1$pgs, pgs_annot$`Polygenic Score (PGS) ID`)]
 
-	pgs_annot = fread("~/data/pgs_all_metadata_scores.csv")
-	pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% all_sigpgs)
-	pgs_annot_sig_df = pgs_annot_sig %>%
-		select(`Polygenic Score (PGS) ID`, `Reported Trait`)
-
-	pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
-
-	reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
-
-	reported_trait = reported_trait %>%
-		rowwise() %>%
-		mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
-		mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
-		mutate(Var1 = str_to_title(Var1)) %>%
-		mutate(Var1 = gsub("Hdl","HDL",Var1)) %>%
-		mutate(Var1 = gsub("Ldl","LDL",Var1)) %>%
-		mutate(Var1 = gsub("Bmi","BMI",Var1)) %>%
-		group_by(Var1) %>%
-		summarise(Freq = sum(Freq))
-		
-		
-	reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
-
-	fwrite(reported_trait, paste0(out, "_reportedTraits_", anc, ".txt"), row.names=F, sep="\t", quote=F)
-	reported_trait
-	dim(reported_trait)
+	# pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1 %>%
+	# 	filter(pgs %in% all_sigpgs)
 
 
+	# pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1 %>%
+	# 	select(pgs, Trait, pval_partial_R2)
+	# colnames(pred_acc_train_allPGS_summary1_out) = c("pgs", "Trait", "P")
 
+	# pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1_out %>%
+	# 	group_by(Trait) %>%
+	# 	mutate(P=min(P))
 
+	# pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1_out[-which(duplicated(pred_acc_train_allPGS_summary1_out$Trait)),]
+	# pred_acc_train_allPGS_summary1_out$Trait = str_to_title(pred_acc_train_allPGS_summary1_out$Trait)
 
-	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary
-	pred_acc_train_allPGS_summary1$Trait = pgs_annot$`Reported Trait`[match(pred_acc_train_allPGS_summary1$pgs, pgs_annot$`Polygenic Score (PGS) ID`)]
-
-	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1 %>%
-		filter(pgs %in% all_sigpgs)
-
-
-	pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1 %>%
-		select(pgs, Trait, pval_partial_R2)
-	colnames(pred_acc_train_allPGS_summary1_out) = c("pgs", "Trait", "P")
-
-	pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1_out %>%
-		group_by(Trait) %>%
-		mutate(P=min(P))
-
-	pred_acc_train_allPGS_summary1_out = pred_acc_train_allPGS_summary1_out[-which(duplicated(pred_acc_train_allPGS_summary1_out$Trait)),]
-	pred_acc_train_allPGS_summary1_out$Trait = str_to_title(pred_acc_train_allPGS_summary1_out$Trait)
-
-	fwrite(pred_acc_train_allPGS_summary1_out, paste0("~/data/optimization/", trait,"/eval_", trait,"_reportedTraits_sig_", anc, ".txt"), row.names=F, quote=F, sep="\t")
+	# fwrite(pred_acc_train_allPGS_summary1_out, paste0("~/data/optimization/", trait,"/eval_", trait,"_reportedTraits_sig_", anc, ".txt"), row.names=F, quote=F, sep="\t")
 
 	pgs_list_sig = all_sigpgs
 	print(length(pgs_list_sig))
@@ -708,9 +701,9 @@ combine_PGS = function(
 		
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 		res_lm = eval_prs(test_df1, "newprs", isbinary)
-		res_lm$summary$pgs = "PRSmix+"
+		res_lm$pgs = "PRSmix+"
 		
-		res_lm_summary = res_lm$summary
+		res_lm_summary = res_lm
 		res_lm_detail = res_lm$prec_acc
 		
 		
@@ -751,19 +744,20 @@ combine_PGS = function(
 		  formula, data = train_tmp, method = "glmnet", 
 		  trControl = ctrl, family = "binomial", 
 		  # intercept=FALSE,
-		  tuneLength = 100, verbose=T
+		  tuneLength = 50, verbose=T
 		)
 		model$bestTune
 		coef(model$finalModel, model$bestTune$lambda)
 		ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+		nonzero_w = names(ww[which(ww!=0)])
 		
 		test_df1 = test_df
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-		res_lm = eval_prs(test_df1, null_res_test, "newprs", isbinary)
-		res_lm$summary$pgs = "PRSmix+"
+		res_lm = eval_prs(test_df1, "newprs", isbinary)
+		res_lm$pgs = "PRSmix+"
 		
-		res_lm_summary = res_lm$summary
-		res_lm_detail = res_lm$prec_acc
+		res_lm_summary = res_lm
+		# res_lm_detail = res_lm$prec_acc
 		
 		################### OR ######################
 		
@@ -774,15 +768,38 @@ combine_PGS = function(
 		uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
 		paste0(mm, " (", ll, "-", uu, ")")
 		
-		#############################################
-		
-		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmixPlus_", anc, ".txt"), row.names=F, sep="\t", quote=F)
-		
 		
 	}
+	
+	
+	pgs_annot = fread(metascore)
+	pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
+	pgs_annot_sig_df = pgs_annot_sig %>%
+		select(`Polygenic Score (PGS) ID`, `Reported Trait`)
 
+	pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
 
+	reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
+
+	reported_trait = reported_trait %>%
+		rowwise() %>%
+		mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
+		mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
+		mutate(Var1 = str_to_title(Var1)) %>%
+		mutate(Var1 = gsub("Hdl","HDL",Var1)) %>%
+		mutate(Var1 = gsub("Ldl","LDL",Var1)) %>%
+		mutate(Var1 = gsub("Bmi","BMI",Var1)) %>%
+		group_by(Var1) %>%
+		summarise(Freq = sum(Freq))
+		
+		
+	reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
+
+	fwrite(reported_trait, paste0(out, "_reportedTraits_", anc, ".txt"), row.names=F, sep="\t", quote=F)
+	reported_trait
+	dim(reported_trait)
+	
+	
 	# pred_acc_test_trait_summary_out = rbind(res_lm_summary, pred_acc_test_trait_summary_out)
 	# head(pred_acc_test_trait_summary_out)
 
@@ -795,9 +812,12 @@ combine_PGS = function(
 	head(pred_acc_test_trait_summary_out)
 
 	fwrite(pred_acc_test_trait_summary_out, paste0(out, "_", anc, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-
-
-
+	
+	prsmixplus = test_df1 %>% select(IID, newprs)
+	
+	fwrite(prsmixplus, paste0(out, "_", anc, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
+	
+	return(prsmixplus)
 
 }
 
