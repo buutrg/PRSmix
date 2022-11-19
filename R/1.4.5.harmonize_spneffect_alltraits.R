@@ -25,10 +25,10 @@ harmonize_snpeffect_toALT = function(
 
 
 
-	pgs_folder = opt$pgs_folder
-	freq_file = opt$freq_file
-	pgs_list = opt$pgs_list
-	out = opt$out
+	# pgs_folder = opt$pgs_folder
+	# freq_file = opt$freq_file
+	# pgs_list = opt$pgs_list
+	# out = opt$out
 
 
 	pgs_list = fread(pgs_list, header=F)[,1]
