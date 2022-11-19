@@ -10,7 +10,11 @@ combine_PGS(
   pgslist = "cad_list.txt",
   pheno_name = "CAD_case",
   isbinary = T,
+  score_files_list = "",
+  basic_data_file = "/home/jupyter/data/phenotypes/aou_basic_data.csv",
+  metascore = "~/data/pgs_all_metadata_scores.csv",
   phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
+  score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_",
   out = "test_cad_mixedPRS"
 )
 }
@@ -25,7 +29,11 @@ combine_PGS(
 
 \item{isbinary}{True if this is binary}
 
+\item{basic_data_file}{Directory to covariate information}
+
 \item{phenofile}{Directory to the phenotype file}
+
+\item{score_pref}{Prefix of score files}
 
 \item{out}{Output prefix}
 }

@@ -11,6 +11,7 @@ assess_score(
   phenofile,
   ancestry,
   pheno_name,
+  basic_data_file,
   isbinary,
   out,
   step1 = F

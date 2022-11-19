@@ -3,5 +3,7 @@
 export(assess_score)
 export(combine_PGS)
 export(estimate_PRS)
+export(get_acc_prslist_optimized)
 export(get_risk_allele)
 export(harmonize_snpeffect)
+export(harmonize_snpeffect_toALT)

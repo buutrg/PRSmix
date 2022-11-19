@@ -6,27 +6,40 @@ rr = function(x,digit=10) return(round(x,digit))
 eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
 	
 	prec_acc = NULL
-	data_df_sub = data_df
-	formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
-	model_full = glm(formula, data=data_df_sub, family="binomial")
-	r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
 	
-	formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
-	model_null = glm(formula, data=data_df_sub, family="binomial")
-	r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
-	
-	m = r_full
-	n = r_null
-	N = nobs(model_full)
-	cs = 1 - exp(-2/N * (m - n))
-	nk = cs/(1 - exp(2/N * n))
-	R2 = nk	
+	if (isbinary) {
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		model_full = glm(formula, data=data_df, family="binomial")
+		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
+		
+		formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		model_null = glm(formula, data=data_df, family="binomial")
+		r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
+		
+		m = r_full
+		n = r_null
+		N = nobs(model_full)
+		cs = 1 - exp(-2/N * (m - n))
+		nk = cs/(1 - exp(2/N * n))
+		R2 = nk	
+	} else {
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		model_full = lm(formula, data=data_df)
+		r_full = summary(model_full)$r.squared
+		
+		formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		model_null = lm(formula, data=data_df)
+		r_null = summary(model_null)$r.squared
+		
+		N = nobs(model_full)
+		R2 = r_full - r_null
+	}
 	
 	alpha = 0.05
 	NCP = N * R2 / (1-R2)
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
 	
-	vv = (4*R2^2*(1-R2)^2 *(N*2)^2) / ((N^2-1)*(N+3))
+	vv = (4*R2^2*(1-R2)^2 *(N-2)^2) / ((N^2-1)*(N+3))
 
 	se = sqrt(vv)
 	lower_r2 = R2 - 1.97*se

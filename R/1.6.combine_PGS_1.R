@@ -20,27 +20,13 @@ combine_PGS = function(
 	pgslist = "cad_list.txt",
 	pheno_name = "CAD_case",
 	isbinary=T,
+	score_files_list = "",
 	basic_data_file = "/home/jupyter/data/phenotypes/aou_basic_data.csv",
 	metascore = "~/data/pgs_all_metadata_scores.csv",
 	phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
 	score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", 
 	out = "test_cad_mixedPRS"
 	) {
-
-	# library(data.table)
-	# library(stringr)
-	# library(dplyr)
-	# library(tidyr)
-	# library(glmnet)
-	# library(caret)
-	# library(DescTools)
-	# library(rcompanion)
-
-	# library(xgboost)
-	# library(randomForest)
-	# library(datasets)
-	# library(caret)
-
 
 	options(datatable.fread.datatable=FALSE)
 
@@ -55,15 +41,19 @@ combine_PGS = function(
 	all_scores = NULL
 
 	# for (i in 1:length(sscore_file_list)) {
-	for (part in 0:8) {
-		print(part)
+	for (score_file_i in 1:length(score_files_list)) {
+		
+		# score_file_i = 1
+		print(score_file_i)
+		score_file = score_files_list[score_file_i]
 		# i=1
 		# dd = fread(paste0("~/data/prs_all/", sscore_file_list[i]))
 		# dd = fread(paste0("~/data/optimization/", trait, "/", sscore_file_list[i]))
-		dd = fread(paste0(score_pref, anc, "_part", part, ".sscore"))
+		dd = fread(score_file)
 		idx = which(endsWith(colnames(dd), "_SUM"))[-1]
 		
 		dd_sub = dd[,c(2,idx)]
+		print(dim(dd_sub))
 		if (is.null(all_scores)) {
 			all_scores = dd_sub	
 		} else
@@ -240,7 +230,7 @@ combine_PGS = function(
 
 	pgs_list_all = colnames(train_df)
 	pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-	pred_acc_train_allPGS_summary = get_acc_prslist(train_df, pgs_list_all, isbinary)
+	pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, isbinary)
 	
 	
 	fwrite(pred_acc_train_allPGS_summary, paste0(out, "_", anc, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
@@ -260,7 +250,7 @@ combine_PGS = function(
 
 	################################ testing #################################
 
-	pred_acc_test_trait = get_acc_prslist(test_df, pgs_list, isbinary)
+	pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list, isbinary)
 
 	pred_acc_test_trait_summary = pred_acc_test_trait
 	pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
@@ -303,7 +293,7 @@ combine_PGS = function(
 	
 	
 	# null_res_train = eval_null(train_df, isbinary)
-	# pred_acc_train_trait_summary = get_acc_prslist(train_df, pgs_list, null_res_train, isbinary)
+	# pred_acc_train_trait_summary = get_acc_prslist_optimized(train_df, pgs_list, null_res_train, isbinary)
 	
 	# pred_acc_train_trait_summary = pred_acc_train_trait_summary$pred_acc_test
 	
@@ -362,7 +352,7 @@ combine_PGS = function(
 		# topprs = pred_acc_train_trait_summary %>% filter(pnew < 0.05 / nrow(pred_acc_train_trait_summary))
 		# topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05)
 		# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
-		topprs = pred_acc_test_trait_summary %>% filter(power >= 0.95)
+		topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
 		topprs = topprs$pgs
 		# topprs = pred_acc_train_trait_summary$pgs
 		
