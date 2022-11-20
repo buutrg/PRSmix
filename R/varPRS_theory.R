@@ -3,6 +3,18 @@
 
 rr = function(x,digit=10) return(round(x,digit))
 
+
+
+#' Evaluate PRS prediction accuracy
+#'
+#' This function get R2 for PRS accuracy
+#'
+#' @param data_df Data to assess prediction accuracy
+#' @param prs_name PGS list of the trait
+#' @param isbinary TRUE if binary and FALSE otherwise
+#' @param debug TRUE to verbose debugging
+#' @return A dataframe for prediction accuracy of PRS and their power
+#' @export
 eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
 	
 	prec_acc = NULL

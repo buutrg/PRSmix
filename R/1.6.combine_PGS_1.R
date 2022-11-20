@@ -232,6 +232,7 @@ combine_PGS = function(
 	pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
 	pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, isbinary)
 	
+	# pred_acc_train_allPGS_summary = fread(paste0(out, "_", anc, "_train_allPRS.txt"))
 	
 	fwrite(pred_acc_train_allPGS_summary, paste0(out, "_", anc, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 
