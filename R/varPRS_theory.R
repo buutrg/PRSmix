@@ -51,7 +51,7 @@ eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
 	NCP = N * R2 / (1-R2)
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
 	
-	vv = (4*R2^2*(1-R2)^2 *(N-2)^2) / ((N^2-1)*(N+3))
+	vv = (4*R2*(1-R2)^2 *(N-2)^2) / ((N^2-1)*(N+3))
 
 	se = sqrt(vv)
 	lower_r2 = R2 - 1.97*se
