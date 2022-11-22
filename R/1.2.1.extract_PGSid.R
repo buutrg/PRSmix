@@ -15,9 +15,9 @@ extract_PGSid = function(
 
   options(datatable.fread.datatable=FALSE)
 
-  efo_list = unlist(strsplit(opt$efo, split=","))
+  efo_list = unlist(strsplit(efo, split=","))
 
-  pgsdata = fread(opt$data)
+  pgsdata = fread(data)
 
   pgsdata = pgsdata %>% 
     rowwise() %>%
@@ -30,7 +30,7 @@ extract_PGSid = function(
   
   res = pgsdata %>% select("Polygenic Score (PGS) ID")
 
-  fwrite(res, paste0(opt$trait, "_list.txt"), row.names=F, col.names=F, quote=F)
+  fwrite(res, paste0(trait, "_list.txt"), row.names=F, col.names=F, quote=F)
 
   return(res)
 }
