@@ -20,7 +20,7 @@ combine_PGS = function(
 	anc,
 	pgslist,
 	pheno_name,
-	isbinar,
+	isbinary,
 	score_files_list,
 	basic_data_file,
 	metascore,
