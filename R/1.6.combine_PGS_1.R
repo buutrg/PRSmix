@@ -27,7 +27,8 @@ combine_PGS = function(
 	phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
 	score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", 
 	out = "test_cad_mixedPRS_eur",
-	read_pred_training = F
+	read_pred_training = F,
+	read_pred_testing = F
 	) {
 
 	options(datatable.fread.datatable=FALSE)
