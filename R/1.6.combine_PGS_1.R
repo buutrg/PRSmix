@@ -194,9 +194,6 @@ combine_PGS = function(
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 			
-			pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix"=res_lm1$prec_acc$partial_R2)
-			fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
-			
 		}
 		
 	} else {	
@@ -321,16 +318,12 @@ combine_PGS = function(
 		coef(model$finalModel, model$bestTune$lambda)
 		ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
 		
+		test_df1 = test_df
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-		res_lm = eval_prs(test_df1, "newprs", isbinary)
-		res_lm$pgs = "PRSmix+"
 		
-		res_lm_summary = res_lm
-		res_lm_detail = res_lm$prec_acc
-		
-		
-		pred_acc_detail_all1 = data.frame(pred_acc_test_trait_detail, "PRSmix+"=res_lm$prec_acc$partial_R2)
-		fwrite(pred_acc_detail_all1, paste0(out, "_test_detailed_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)		
+		res_lm1 = eval_prs(test_df1, "newprs", isbinary)
+		res_lm1$pgs = "PRSmix"
+		res_lm1
 		
 		
 	} else {
