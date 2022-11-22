@@ -7,26 +7,26 @@
 #' @param pgslist PGS list of the trait
 #' @param score_pref Prefix of score files
 #' @param phenofile Directory to the phenotype file
-#' @param basic_data_file Directory to covariate information
+#' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
-#' @param read_pred_training True if the training set PRS assessment already run and can be read from file
+#' @param read_pred_training True if the training set PRS assessment already run and can be read from file (Default: FALSE)
+#' @param read_pred_testing True if the training set PRS assessment already run and can be read from file (Default: FALSE)
 #' @param out Output prefix
 #' @return Prediction accuracy of PRSmix
 #' @export
 combine_PGS = function(
-	trait = "cad",
-	anc = "eur",
-	# pgslist = "~/data/allPGSid.txt00",
-	pgslist = "cad_list.txt",
-	pheno_name = "CAD_case",
-	isbinary=T,
-	score_files_list = "",
-	basic_data_file = "/home/jupyter/data/phenotypes/aou_basic_data.csv",
-	metascore = "~/data/pgs_all_metadata_scores.csv",
-	phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
-	score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", 
-	out = "test_cad_mixedPRS_eur",
+	trait,
+	anc,
+	pgslist,
+	pheno_name,
+	isbinar,
+	score_files_list,
+	basic_data_file,
+	metascore,
+	phenofile,
+	score_pref,
+	out,
 	read_pred_training = F,
 	read_pred_testing = F
 	) {
@@ -212,10 +212,6 @@ combine_PGS = function(
 		y_test = as.vector(test_df$trait)
 		test_data = data.frame(x_test,trait=y_test)
 		
-		x_valid = as.matrix(valid_df %>% select(all_of(topprs), -trait))
-		y_valid = as.vector(valid_df$trait)
-		valid_data = data.frame(x_valid,trait=y_valid)
-		
 		formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 		
 		train_tmp = train_data[,c("trait", topprs)]
@@ -292,9 +288,7 @@ combine_PGS = function(
 		# all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
 		all_sig = pred_acc_train_allPGS_summary %>% filter(power > 0.95)
 		topprs = all_sig$pgs
-	
 		
-			
 		x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
 		y_train = as.vector(train_df$trait)
 		train_data = data.frame(x_train,trait=y_train)
@@ -404,7 +398,7 @@ combine_PGS = function(
 		group_by(Var1) %>%
 		summarise(Freq = sum(Freq))
 		
-		
+	
 	reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 
 	fwrite(reported_trait, paste0(out, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
