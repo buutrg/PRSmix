@@ -2,8 +2,8 @@
 #'
 #' This function extract PGS id from EFO code from PGS Catalog
 #'
+#' @param data directory to metadata score from PGS catalog (pgs_all_metadata_scores.csv)
 #' @param trait The name of the trait
-#' @param data Intended ancestry
 #' @param efo Ontology Trait ID (EFO from PGS catalog)
 #' @return a dataframe of PGS id from PGS catalog
 #' @export
