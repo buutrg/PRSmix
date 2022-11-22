@@ -317,13 +317,14 @@ combine_PGS = function(
 		model$bestTune
 		coef(model$finalModel, model$bestTune$lambda)
 		ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+		nonzero_w = names(ww[which(ww!=0)])
 		
 		test_df1 = test_df
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
+		res_lm = eval_prs(test_df1, "newprs", isbinary)
+		res_lm$pgs = "PRSmix+"
 		
-		res_lm1 = eval_prs(test_df1, "newprs", isbinary)
-		res_lm1$pgs = "PRSmix+"
-		res_lm1
+		res_lm_summary = res_lm
 		
 		
 	} else {
