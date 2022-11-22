@@ -105,6 +105,8 @@ combine_PGS = function(
 
 	################################ training #################################
 	
+	writeLines("Evaluate PRS in training set")
+	
 	if (!read_pred_training) {
 		sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
 		idx = which(sumscore==0)
@@ -128,6 +130,8 @@ combine_PGS = function(
 	
 
 	################################ testing #################################
+
+	writeLines("Evaluate PRS in testing set")
 
 	if (!read_pred_testing) {
 		pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list, isbinary)
