@@ -15,7 +15,9 @@ combine_PGS(
   metascore = "~/data/pgs_all_metadata_scores.csv",
   phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
   score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_",
-  out = "test_cad_mixedPRS"
+  out = "test_cad_mixedPRS_eur",
+  read_pred_training = F,
+  read_pred_testing = F
 )
 }
 \arguments{
@@ -36,6 +38,8 @@ combine_PGS(
 \item{score_pref}{Prefix of score files}
 
 \item{out}{Output prefix}
+
+\item{read_pred_training}{True if the training set PRS assessment already run and can be read from file}
 }
 \value{
 Prediction accuracy of PRSmix

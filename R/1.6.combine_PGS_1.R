@@ -351,15 +351,13 @@ combine_PGS = function(
 		
 		ctrl <- trainControl(method = "repeatedcv",
 	                        number = 5,
-	                        # savePredictions = TRUE,
 	                        verboseIter = T,
 	                        returnResamp = "all")
 		
 		set.seed(123)
 		model <- train(
 		  formula, data = train_tmp, method = "glmnet", 
-		  trControl = ctrl, family = "binomial", 
-		  # intercept=FALSE,
+		  trControl = ctrl, family = "binomial",
 		  tuneLength = 50, verbose=T
 		)
 		model$bestTune
