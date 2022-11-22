@@ -94,21 +94,14 @@ combine_PGS = function(
 	train_df = pheno_prs_cov[train_idx,]
 	test_df = pheno_prs_cov[-train_idx,]
 	
-	# set.seed(1)
-	# valid_idx = sample(1:nrow(train_df), floor(0.2*nrow(train_df)))
-	# valid_df = pheno_prs_cov[valid_idx,]
-
 	if (!isbinary) {
 		train_df$trait = irnt(train_df$trait)
 		test_df$trait = irnt(test_df$trait)
-		# valid$trait = irnt(valid$trait)
 	}
-
 
 	cov_list = c("age", paste0("PC", 1:10))
 	for (i in cov_list) train_df[i] = as.numeric(scale(train_df[i]))
 	for (i in cov_list) test_df[i] = as.numeric(scale(test_df[i]))
-	# for (i in cov_list) valid_df[i] = as.numeric(scale(valid_df[i]))
 
 	################################ training #################################
 	
@@ -224,10 +217,8 @@ combine_PGS = function(
 		
 		formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 		
-		# train_tmp = train_data[,c("trait", topprs)]
 		train_tmp = train_data[,c("trait", topprs)]
 		train_tmp$trait = as.factor(train_tmp$trait)
-		# train_tmp = as.matrix(train_tmp)
 		
 		ctrl <- trainControl(method = "repeatedcv",
 	                        number = 5,
@@ -260,7 +251,8 @@ combine_PGS = function(
 		mm = exp(model1s$coefficients[2,1])
 		ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 		uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
-		paste0(mm, " (", ll, "-", uu, ")")
+		print(paste0(mm, " (", ll, "-", uu, ")"))
+		fwrite(data.frame(mm, ll, uu), paste0(out, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 		
 		####################################
 				
@@ -389,7 +381,8 @@ combine_PGS = function(
 		mm = exp(models$coefficients[2,1])
 		ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
 		uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
-		paste0(mm, " (", ll, "-", uu, ")")
+		print(paste0(mm, " (", ll, "-", uu, ")"))
+		fwrite(data.frame(mm, ll, uu), paste0(out, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 		
 		
 	}
