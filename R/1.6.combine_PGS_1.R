@@ -10,6 +10,7 @@
 #' @param basic_data_file Directory to covariate information
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
+#' @param read_pred_training True if the training set PRS assessment already run and can be read from file
 #' @param out Output prefix
 #' @return Prediction accuracy of PRSmix
 #' @export
@@ -25,7 +26,8 @@ combine_PGS = function(
 	metascore = "~/data/pgs_all_metadata_scores.csv",
 	phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
 	score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_", 
-	out = "test_cad_mixedPRS_eur"
+	out = "test_cad_mixedPRS_eur",
+	read_pred_training = F
 	) {
 
 	options(datatable.fread.datatable=FALSE)
@@ -91,35 +93,39 @@ combine_PGS = function(
 	train_df = pheno_prs_cov[train_idx,]
 	test_df = pheno_prs_cov[-train_idx,]
 	
-	set.seed(1)
-	valid_idx = sample(1:nrow(train_df), floor(0.2*nrow(train_df)))
-	valid_df = pheno_prs_cov[valid_idx,]
+	# set.seed(1)
+	# valid_idx = sample(1:nrow(train_df), floor(0.2*nrow(train_df)))
+	# valid_df = pheno_prs_cov[valid_idx,]
 
 	if (!isbinary) {
 		train_df$trait = irnt(train_df$trait)
 		test_df$trait = irnt(test_df$trait)
-		valid$trait = irnt(valid$trait)
+		# valid$trait = irnt(valid$trait)
 	}
 
 
 	cov_list = c("age", paste0("PC", 1:10))
 	for (i in cov_list) train_df[i] = as.numeric(scale(train_df[i]))
 	for (i in cov_list) test_df[i] = as.numeric(scale(test_df[i]))
-	for (i in cov_list) valid_df[i] = as.numeric(scale(valid_df[i]))
+	# for (i in cov_list) valid_df[i] = as.numeric(scale(valid_df[i]))
 
 	################################ training #################################
 	
-	sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
-	idx = which(sumscore==0)
-	idx2 = which(names(idx)=="sex")
-	if (length(idx2)>0) idx = idx[-idx2]
-	if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
-	
-	pgs_list_all = colnames(train_df)
-	pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-	pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, isbinary)
-	
-	fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
+	if (!read_pred_training) {
+		sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
+		idx = which(sumscore==0)
+		idx2 = which(names(idx)=="sex")
+		if (length(idx2)>0) idx = idx[-idx2]
+		if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
+		
+		pgs_list_all = colnames(train_df)
+		pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
+		pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, isbinary)
+		
+		fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
+	} else {
+		pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
+	}
 
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
@@ -129,26 +135,30 @@ combine_PGS = function(
 
 	################################ testing #################################
 
-	pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list, isbinary)
+	if (!read_pred_testing) {
+		pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list, isbinary)
 
-	pred_acc_test_trait_summary = pred_acc_test_trait
-	pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
-	head(pred_acc_test_trait_summary)
+		pred_acc_test_trait_summary = pred_acc_test_trait
+		pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
+		head(pred_acc_test_trait_summary)
 
 
-	fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+		fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+	} else {
+		pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
+	}
 
 	###########################################################################
 
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 		filter(pgs %in% pgs_list)
 	
-	
-	### Linear regression: trait specific
+	writeLines("PRSmix:")
 
 	if (!isbinary) {
 		
-		topprs = pred_acc_train_trait_summary %>% filter(pval_partial_R2 < 0.05 / nrow(pred_acc_train_trait_summary))
+		# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
+		topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
 		topprs = topprs$pgs
 		
 		x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
@@ -280,7 +290,9 @@ combine_PGS = function(
 
 	# pgs_list_sig = all_sigpgs
 	# print(length(pgs_list_sig))
-
+	
+	writeLines("PRSmix+:")
+	
 	if (!isbinary) {
 		
 		# all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
@@ -296,11 +308,8 @@ combine_PGS = function(
 		x_test = as.matrix(test_df %>% select(all_of(topprs), -trait))
 		y_test = as.vector(test_df$trait)
 		test_data = data.frame(x_test,trait=y_test)
-		
-		
-		
+			
 		train_tmp = train_data[,c("trait", topprs)]
-		# train_tmp = as.matrix(train_tmp)
 		
 		formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 		
@@ -332,13 +341,8 @@ combine_PGS = function(
 		# all_sig = pred_acc_train_allPGS_summary %>% filter(pval_partial_R2 <= 0.05)
 		all_sig = pred_acc_train_allPGS_summary %>% filter(power > 0.95)
 		topprs = all_sig$pgs
-	
-		
 		
 		formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-		
-		
-		
 			
 		x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
 		y_train = as.vector(train_df$trait)
@@ -351,7 +355,6 @@ combine_PGS = function(
 		
 		train_tmp = train_data[,c("trait", topprs)]
 		train_tmp$trait = as.factor(train_tmp$trait)
-		# train_tmp = as.matrix(train_tmp)
 		
 		ctrl <- trainControl(method = "repeatedcv",
 	                        number = 5,
@@ -377,7 +380,6 @@ combine_PGS = function(
 		res_lm$pgs = "PRSmix+"
 		
 		res_lm_summary = res_lm
-		# res_lm_detail = res_lm$prec_acc
 		
 		################### OR ######################
 		
