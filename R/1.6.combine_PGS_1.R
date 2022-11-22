@@ -322,7 +322,7 @@ combine_PGS = function(
 		test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 		
 		res_lm1 = eval_prs(test_df1, "newprs", isbinary)
-		res_lm1$pgs = "PRSmix"
+		res_lm1$pgs = "PRSmix+"
 		res_lm1
 		
 		
