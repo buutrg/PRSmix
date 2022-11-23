@@ -203,7 +203,7 @@ combine_PGS = function(
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 			
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), sep="\t", quote=F)
 			
 		} else {	
 			
@@ -322,7 +322,7 @@ combine_PGS = function(
 			
 			res_lm_summary = res_lm
 
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)			
+			fwrite(data.frame(ww), paste0(out, "_weight_PGSmixPlus.txt"), sep="\t", quote=F)			
 			
 		} else {
 			
