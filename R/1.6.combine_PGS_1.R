@@ -203,8 +203,6 @@ combine_PGS = function(
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 			
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), sep="\t", quote=F)
-			
 		} else {	
 			
 			x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
@@ -241,8 +239,6 @@ combine_PGS = function(
 			res_lm1 = eval_prs(test_df1, "newprs", isbinary)
 			res_lm1$pgs = "PRSmix"
 			res_lm1
-			
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), row.names=F, sep="\t", quote=F)
 
 			############## OR ###################
 			
@@ -258,6 +254,8 @@ combine_PGS = function(
 			
 		}
 
+		fwrite(data.frame(topprs, ww), paste0(out, "_weight_PGSmix.txt"), sep="\t", quote=F)
+			
 		res_lm1_summary = res_lm1
 		res_lm1_summary$pgs = "PRSmix"
 		pred_acc_test_trait_summary_out = bind_rows(res_lm1, pred_acc_test_trait_summary)
@@ -322,7 +320,6 @@ combine_PGS = function(
 			
 			res_lm_summary = res_lm
 
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmixPlus.txt"), sep="\t", quote=F)			
 			
 		} else {
 			
@@ -364,7 +361,6 @@ combine_PGS = function(
 			
 			res_lm_summary = res_lm
 			
-			fwrite(data.frame(ww), paste0(out, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 			################### OR ######################
 			
@@ -379,6 +375,8 @@ combine_PGS = function(
 			
 		}
 		
+		
+		fwrite(data.frame(topprs, ww), paste0(out, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 			
 		pgs_annot = fread(metascore)
 		pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
