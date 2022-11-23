@@ -158,7 +158,7 @@ combine_PGS = function(
 	writeLines("PRSmix:")
 
 
-	topprs = pred_acc_train_allPGS_summary %>%
+	topprs = pred_acc_train_trait_summary %>%
 		filter(pval_partial_R2 < 0.05 & power >= 0.95)
 	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
 	# topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
