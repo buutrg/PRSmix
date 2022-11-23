@@ -157,9 +157,11 @@ combine_PGS = function(
 	
 	writeLines("PRSmix:")
 
-	
+
+	topprs = pred_acc_train_allPGS_summary %>%
+		filter(pval_partial_R2 < 0.05 & power >= 0.95)
 	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
-	topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
+	# topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
 	topprs = topprs$pgs
 
 	print(length(topprs))
@@ -243,6 +245,8 @@ combine_PGS = function(
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 			
+			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), row.names=F, sep="\t", quote=F)
+
 			############## OR ###################
 			
 			model1 = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
@@ -277,9 +281,10 @@ combine_PGS = function(
 	
 	writeLines("PRSmix+:")
 	
-	
-	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
-	topprs = pred_acc_train_allPGS_summary %>% filter(power >= 0.95)
+	topprs = pred_acc_train_allPGS_summary %>%
+		filter(pval_partial_R2 < 0.05 & power >= 0.95)
+	# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
+	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= 0.95)
 	topprs = topprs$pgs
 
 	print(length(topprs))
@@ -361,6 +366,8 @@ combine_PGS = function(
 			
 			res_lm_summary = res_lm
 			
+			fwrite(data.frame(ww), paste0(out, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+
 			################### OR ######################
 			
 			model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
