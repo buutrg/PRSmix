@@ -179,36 +179,31 @@ combine_PGS = function(
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
 			
-			if (length(topprs) == 0) {
-				print("No trait-specific significance")
-			} else {
+			
+			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
+			
+			train_tmp = train_data[,c("trait", topprs)]
+			# train_tmp = as.matrix(train_tmp)
+			
+			ctrl <- trainControl(method = "repeatedcv", number = 5, verboseIter = T)
+			set.seed(123)
+			model <- train(
+			  formula, data = train_tmp, method = "glmnet", 
+			  trControl = ctrl,
+			  tuneLength = 50, verbose=T
+			)
+			model$bestTune
+			coef(model$finalModel, model$bestTune$lambda)
+			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
 				
-				formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-				
-				train_tmp = train_data[,c("trait", topprs)]
-				# train_tmp = as.matrix(train_tmp)
-				
-				ctrl <- trainControl(method = "repeatedcv", number = 5, verboseIter = T)
-				set.seed(123)
-				model <- train(
-				  formula, data = train_tmp, method = "glmnet", 
-				  trControl = ctrl,
-				  tuneLength = 50, verbose=T
-				)
-				model$bestTune
-				coef(model$finalModel, model$bestTune$lambda)
-				ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
-					
-				test_df1 = test_df
-				test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-				
-				res_lm1 = eval_prs(test_df1, "newprs", isbinary)
-				res_lm1$pgs = "PRSmix"
-				res_lm1
-				
-				fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), row.names=F, sep="\t", quote=F)
-				
-			}
+			test_df1 = test_df
+			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
+			
+			res_lm1 = eval_prs(test_df1, "newprs", isbinary)
+			res_lm1$pgs = "PRSmix"
+			res_lm1
+			
+			fwrite(data.frame(ww), paste0(out, "_weight_PGSmix.txt"), row.names=F, sep="\t", quote=F)
 			
 		} else {	
 			
