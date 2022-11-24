@@ -26,6 +26,7 @@ combine_PGS = function(
 	metascore,
 	phenofile,
 	score_pref,
+	power_thres,
 	out,
 	read_pred_training = F,
 	read_pred_testing = F
@@ -159,16 +160,16 @@ combine_PGS = function(
 
 
 	topprs = pred_acc_train_trait_summary %>%
-		filter(pval_partial_R2 < 0.05 & power >= 0.95)
+		filter(pval_partial_R2 < 0.05 & power >= power_thres)
 	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
-	# topprs = pred_acc_train_trait_summary %>% filter(power >= 0.95)
+	# topprs = pred_acc_train_trait_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
 
 	print(length(topprs))
 	if (length(topprs) == 0) {
 		print("No high power trait-specific PRS for PRSmix")
 	} else {
-			
+		
 		if (!isbinary) {
 			
 			x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
@@ -185,7 +186,11 @@ combine_PGS = function(
 			train_tmp = train_data[,c("trait", topprs)]
 			# train_tmp = as.matrix(train_tmp)
 			
-			ctrl <- trainControl(method = "repeatedcv", number = 5, verboseIter = T)
+			ctrl <- trainControl(
+				method = "repeatedcv", 
+				allowParallel = TRUE,
+				number = 5, 
+				verboseIter = T)
 			set.seed(123)
 			model <- train(
 			  formula, data = train_tmp, method = "glmnet", 
@@ -218,10 +223,11 @@ combine_PGS = function(
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
-			ctrl <- trainControl(method = "repeatedcv",
-		                        number = 5,
-		                        verboseIter = T,
-		                        returnResamp = "all")
+			ctrl <- trainControl(
+				method = "repeatedcv", 
+				allowParallel = TRUE,
+				number = 5, 
+				verboseIter = T)
 			
 			set.seed(123)
 			model <- train(
@@ -277,9 +283,9 @@ combine_PGS = function(
 	writeLines("PRSmix+:")
 	
 	topprs = pred_acc_train_allPGS_summary %>%
-		filter(pval_partial_R2 < 0.05 & power >= 0.95)
+		filter(pval_partial_R2 < 0.05 & power >= power_thres)
 	# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
-	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= 0.95)
+	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
 
 	print(length(topprs))
@@ -301,7 +307,13 @@ combine_PGS = function(
 			
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 			
-			ctrl <- trainControl(method = "repeatedcv", number = 5, verboseIter = T)
+			
+			ctrl <- trainControl(
+				method = "repeatedcv", 
+				allowParallel = TRUE,
+				number = 5, 
+				verboseIter = T)
+			
 			set.seed(123)
 			model <- train(
 			  formula, data = train_tmp, method = "glmnet", 
@@ -333,15 +345,15 @@ combine_PGS = function(
 			x_test = as.matrix(test_df %>% select(all_of(topprs), -trait))
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
-			
-			
+						
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
-			ctrl <- trainControl(method = "repeatedcv",
-		                        number = 5,
-		                        verboseIter = T,
-		                        returnResamp = "all")
+			ctrl <- trainControl(
+				method = "repeatedcv", 
+				allowParallel = TRUE,
+				number = 5, 
+				verboseIter = T)
 			
 			set.seed(123)
 			model <- train(
@@ -416,7 +428,6 @@ combine_PGS = function(
 		prsmixplus = test_df1 %>% select(IID, newprs)
 		
 		fwrite(prsmixplus, paste0(out, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
-		
 		
 	}
 	
