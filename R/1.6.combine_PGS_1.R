@@ -5,11 +5,15 @@
 #' @param trait The name of the trait
 #' @param anc Intended ancestry
 #' @param pgslist PGS list of the trait
-#' @param score_pref Prefix of score files
-#' @param phenofile Directory to the phenotype file
-#' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
+#' @param score_files_list A list contain PGS directory
+#' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
+#' @param metascore Meta-information contain PGS id and trait names
+#' @param score_pref Prefix of score files
+#' @param pval_thres P-value threshold to select scores
+#' @param power_thres Power threshold to select scores
+#' @param phenofile Directory to the phenotype file
 #' @param read_pred_training True if the training set PRS assessment already run and can be read from file (Default: FALSE)
 #' @param read_pred_testing True if the training set PRS assessment already run and can be read from file (Default: FALSE)
 #' @param out Output prefix
@@ -26,6 +30,7 @@ combine_PGS = function(
 	metascore,
 	phenofile,
 	score_pref,
+	pval_thres,
 	power_thres,
 	out,
 	read_pred_training = F,
@@ -160,8 +165,8 @@ combine_PGS = function(
 
 
 	topprs = pred_acc_train_trait_summary %>%
-		filter(pval_partial_R2 < 0.05 & power >= power_thres)
-	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < 0.05)
+		filter(pval_partial_R2 < pval_thres & power >= power_thres)
+	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < pval_thres)
 	# topprs = pred_acc_train_trait_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
 
@@ -283,7 +288,7 @@ combine_PGS = function(
 	writeLines("PRSmix+:")
 	
 	topprs = pred_acc_train_allPGS_summary %>%
-		filter(pval_partial_R2 < 0.05 & power >= power_thres)
+		filter(pval_partial_R2 < pval_thres & power >= power_thres)
 	# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
 	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
