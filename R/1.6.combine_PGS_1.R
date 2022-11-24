@@ -30,9 +30,9 @@ combine_PGS = function(
 	metascore,
 	phenofile,
 	score_pref,
-	pval_thres,
 	power_thres,
 	out,
+	pval_thres = 0.05,
 	read_pred_training = F,
 	read_pred_testing = F
 	) {
