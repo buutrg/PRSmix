@@ -397,11 +397,6 @@ combine_PGS = function(
 			# coef(model$finalModel, model$bestTune$lambda)
 			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
 			
-			# ww = fread("test_cad_mixedPRS_eur_weight_PGSmixPlus.txt")
-			ww1 = ww[,2]
-			names(ww1) = ww[,1]
-			ww = ww1
-			
 			nonzero_w = names(ww[which(ww!=0)])
 			
 			test_df1 = test_df
