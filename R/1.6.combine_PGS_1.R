@@ -165,8 +165,8 @@ combine_PGS = function(
 
 
 	topprs = pred_acc_train_trait_summary %>%
-		filter(pval_partial_R2 < pval_thres & power >= power_thres)
-	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 < pval_thres)
+		filter(pval_partial_R2 <= pval_thres & power >= power_thres)
+	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 <= pval_thres)
 	# topprs = pred_acc_train_trait_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
 
@@ -191,17 +191,24 @@ combine_PGS = function(
 			train_tmp = train_data[,c("trait", topprs)]
 			# train_tmp = as.matrix(train_tmp)
 			
-			ctrl <- trainControl(
+			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
 				number = 5, 
 				verboseIter = T)
+			
+			cl = makePSOCKcluster(ncores)
+			registerDoParallel(cl)
+			
 			set.seed(123)
-			model <- train(
+			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl,
+			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
 			)
+			
+			stopCluster(cl)
+			
 			model$bestTune
 			coef(model$finalModel, model$bestTune$lambda)
 			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
@@ -228,18 +235,24 @@ combine_PGS = function(
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
-			ctrl <- trainControl(
+			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
 				number = 5, 
 				verboseIter = T)
 			
+			cl = makePSOCKcluster(ncores)
+			registerDoParallel(cl)
+			
 			set.seed(123)
-			model <- train(
+			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
 			)
+			
+			stopCluster(cl)
+			
 			model$bestTune
 			coef(model$finalModel, model$bestTune$lambda)
 			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
@@ -284,16 +297,16 @@ combine_PGS = function(
 
 	############################
 
-	
 	writeLines("PRSmix+:")
 	
 	topprs = pred_acc_train_allPGS_summary %>%
-		filter(pval_partial_R2 < pval_thres & power >= power_thres)
+		filter(pval_partial_R2 <= pval_thres & power >= power_thres)
 	# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
-	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres5)
+	# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres)
 	topprs = topprs$pgs
-
 	print(length(topprs))
+	
+	
 	if (length(topprs) == 0) {
 		print("No high power trait-specific PRS for PRSmix")
 	} else {
@@ -313,18 +326,24 @@ combine_PGS = function(
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 			
 			
-			ctrl <- trainControl(
+			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
 				number = 5, 
 				verboseIter = T)
 			
+			cl = makePSOCKcluster(ncores)
+			registerDoParallel(cl)
+			
 			set.seed(123)
-			model <- train(
+			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl,
+			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
 			)
+			
+			stopCluster(cl)
+			
 			model$bestTune
 			coef(model$finalModel, model$bestTune$lambda)
 			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
@@ -335,7 +354,6 @@ combine_PGS = function(
 			res_lm = eval_prs(test_df1, "newprs", isbinary)
 			res_lm$pgs = "PRSmix+"
 			
-			res_lm_summary = res_lm
 
 			
 		} else {
@@ -354,27 +372,41 @@ combine_PGS = function(
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
-			ctrl <- trainControl(
+			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
 				number = 5, 
 				verboseIter = T)
 			
+			cl = makePSOCKcluster(ncores)
+			registerDoParallel(cl)
+			
 			set.seed(123)
-			model <- train(
+			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
 			)
+			
+			stopCluster(cl)
+			
+			
 			model$bestTune
-			coef(model$finalModel, model$bestTune$lambda)
+			# coef(model$finalModel, model$bestTune$lambda)
 			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+			
+			ww = fread("test_cad_mixedPRS_eur_weight_PGSmixPlus.txt")
+			ww1 = ww[,2]
+			names(ww1) = ww[,1]
+			ww = ww1
+			
 			nonzero_w = names(ww[which(ww!=0)])
 			
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			res_lm = eval_prs(test_df1, "newprs", isbinary)
 			res_lm$pgs = "PRSmix+"
+			res_lm
 			
 			res_lm_summary = res_lm
 			
@@ -391,6 +423,16 @@ combine_PGS = function(
 			
 			
 		}
+		
+		
+		pred_acc_test_trait_summary_out = bind_rows(res_lm, pred_acc_test_trait_summary_out)
+		head(pred_acc_test_trait_summary_out)
+
+		fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+		
+		prsmixplus = test_df1 %>% select(IID, newprs)
+		
+		fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 		
 		
 		fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
@@ -425,14 +467,6 @@ combine_PGS = function(
 		
 		##############################################
 		
-		pred_acc_test_trait_summary_out = bind_rows(res_lm_summary, pred_acc_test_trait_summary_out)
-		head(pred_acc_test_trait_summary_out)
-
-		fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-		
-		prsmixplus = test_df1 %>% select(IID, newprs)
-		
-		fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 		
 	}
 	
