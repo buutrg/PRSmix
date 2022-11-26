@@ -205,7 +205,7 @@ combine_PGS = function(
 			set.seed(123)
 			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl, family = "binomial",
+			  trControl = ctrl,
 			  tuneLength = 50, verbose=T
 			)
 			
@@ -340,7 +340,7 @@ combine_PGS = function(
 			set.seed(123)
 			model = train(
 			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl, family = "binomial",
+			  trControl = ctrl,
 			  tuneLength = 50, verbose=T
 			)
 			
