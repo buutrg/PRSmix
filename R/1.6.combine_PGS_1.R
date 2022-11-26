@@ -10,6 +10,7 @@
 #' @param score_files_list A list contain PGS directory
 #' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
 #' @param metascore Meta-information contain PGS id and trait names
+#' @param ncores Number of cores to run
 #' @param score_pref Prefix of score files
 #' @param pval_thres P-value threshold to select scores
 #' @param power_thres Power threshold to select scores
