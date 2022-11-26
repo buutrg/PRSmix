@@ -32,6 +32,7 @@ combine_PGS = function(
 	score_pref,
 	power_thres,
 	out,
+	ncores = 5,
 	pval_thres = 0.05,
 	read_pred_training = F,
 	read_pred_testing = F
