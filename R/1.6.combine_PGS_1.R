@@ -131,6 +131,8 @@ combine_PGS = function(
 		pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
 	}
 
+	pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
+
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_train_trait_summary)
@@ -156,8 +158,6 @@ combine_PGS = function(
 
 	###########################################################################
 
-	pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
-
 	pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 		filter(pgs %in% pgs_list)
 	
@@ -171,6 +171,7 @@ combine_PGS = function(
 	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 <= pval_thres)
 	# topprs = pred_acc_train_trait_summary %>% filter(power >= power_thres5)
 	topprs = topprs$pgs
+	print(length(topprs))
 
 	print(length(topprs))
 	if (length(topprs) == 0) {
@@ -187,7 +188,6 @@ combine_PGS = function(
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
 			
-			
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 			
 			train_tmp = train_data[,c("trait", topprs)]
@@ -196,14 +196,14 @@ combine_PGS = function(
 			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
-				number = 5, 
+				number = 3, 
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
 			
 			set.seed(123)
-			model = train(
+			model_prsmix = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl,
 			  tuneLength = 50, verbose=T
@@ -211,10 +211,9 @@ combine_PGS = function(
 			
 			stopCluster(cl)
 			
-			model$bestTune
-			coef(model$finalModel, model$bestTune$lambda)
-			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
-				
+			model_prsmix$bestTune
+			ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+			
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			
@@ -240,14 +239,14 @@ combine_PGS = function(
 			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
-				number = 5, 
+				number = 3, 
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
 			
 			set.seed(123)
-			model = train(
+			model_prsmix = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
@@ -255,11 +254,11 @@ combine_PGS = function(
 			
 			stopCluster(cl)
 			
-			model$bestTune
-			coef(model$finalModel, model$bestTune$lambda)
-			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+			model_prsmix$bestTune
+			ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 			
 			test_df1 = test_df
+			# test_df1 = train_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			
 			res_lm1 = eval_prs(test_df1, "newprs", isbinary)
@@ -331,14 +330,14 @@ combine_PGS = function(
 			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
-				number = 5, 
+				number = 3, 
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
 			
 			set.seed(123)
-			model = train(
+			model_prsmixP = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl,
 			  tuneLength = 50, verbose=T
@@ -346,9 +345,8 @@ combine_PGS = function(
 			
 			stopCluster(cl)
 			
-			model$bestTune
-			coef(model$finalModel, model$bestTune$lambda)
-			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
+			model_prsmixP$bestTune
+			ww = coef(model_prsmixP$finalModel, model_prsmixP$bestTune$lambda)[,1][-1]
 			nonzero_w = names(ww[which(ww!=0)])
 			
 			test_df1 = test_df
@@ -360,9 +358,6 @@ combine_PGS = function(
 			
 		} else {
 			
-			
-			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-				
 			x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
 			y_train = as.vector(train_df$trait)
 			train_data = data.frame(x_train,trait=y_train)
@@ -370,21 +365,23 @@ combine_PGS = function(
 			x_test = as.matrix(test_df %>% select(all_of(topprs), -trait))
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
-						
+			
+			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
+			
 			train_tmp = train_data[,c("trait", topprs)]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
 			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
-				number = 5, 
+				number = 3, 
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
 			
 			set.seed(123)
-			model = train(
+			model_prsmixP = train(
 			  formula, data = train_tmp, method = "glmnet", 
 			  trControl = ctrl, family = "binomial",
 			  tuneLength = 50, verbose=T
@@ -392,21 +389,15 @@ combine_PGS = function(
 			
 			stopCluster(cl)
 			
-			
-			model$bestTune
-			# coef(model$finalModel, model$bestTune$lambda)
-			ww = coef(model$finalModel, model$bestTune$lambda)[,1][-1]
-			
-			nonzero_w = names(ww[which(ww!=0)])
+			model_prsmixP$bestTune
+			ww = coef(model_prsmixP$finalModel, model_prsmixP$bestTune$lambda)[,1][-1]
 			
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
+			
 			res_lm = eval_prs(test_df1, "newprs", isbinary)
 			res_lm$pgs = "PRSmix+"
 			res_lm
-			
-			res_lm_summary = res_lm
-			
 
 			################### OR ######################
 			
