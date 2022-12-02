@@ -183,10 +183,14 @@ combine_PGS = function(
 			x_train = as.matrix(train_df %>% select(all_of(topprs), -trait))
 			y_train = as.vector(train_df$trait)
 			train_data = data.frame(x_train,trait=y_train)
+			fwrite(train_data, "train_data_prsmix.txt", row.names=F, sep="\t")
 
 			x_test = as.matrix(test_df %>% select(all_of(topprs), -trait))
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
+			fwrite(test_data, "test_data_prsmix.txt", row.names=F, sep="\t")
+			
+			fwrite(data.frame(topprs), "topprs_prsmix.txt", row.names=F, col.names=F, sep="\t")
 			
 			formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 			
@@ -205,7 +209,7 @@ combine_PGS = function(
 			set.seed(123)
 			model_prsmix = train(
 			  formula, data = train_tmp, method = "glmnet", 
-			  trControl = ctrl,
+			  trControl = ctrl,			  
 			  tuneLength = 50, verbose=T
 			)
 			
@@ -240,6 +244,7 @@ combine_PGS = function(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
 				number = 3, 
+				sampling=smotest,
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
@@ -391,6 +396,7 @@ combine_PGS = function(
 			
 			model_prsmixP$bestTune
 			ww = coef(model_prsmixP$finalModel, model_prsmixP$bestTune$lambda)[,1][-1]
+			nonzero_w = names(ww[which(ww!=0)])
 			
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
@@ -424,7 +430,7 @@ combine_PGS = function(
 		
 		
 		fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-			
+		
 		pgs_annot = fread(metascore)
 		pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
 		pgs_annot_sig_df = pgs_annot_sig %>%
