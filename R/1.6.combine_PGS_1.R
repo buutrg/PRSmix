@@ -464,6 +464,7 @@ combine_PGS = function(
 	}
 	
 	
+	writeLines("Finished")
 	return(0)
 
 }
