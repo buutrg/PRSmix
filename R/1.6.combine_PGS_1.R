@@ -243,8 +243,7 @@ combine_PGS = function(
 			ctrl = trainControl(
 				method = "repeatedcv", 
 				allowParallel = TRUE,
-				number = 3, 
-				sampling=smotest,
+				number = 3,
 				verboseIter = T)
 			
 			cl = makePSOCKcluster(ncores)
