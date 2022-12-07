@@ -170,6 +170,7 @@ combine_PGS = function(
 		filter(pval_partial_R2 <= pval_thres & power >= power_thres)
 	# topprs = pred_acc_test_trait_summary %>% filter(pval_partial_R2 <= pval_thres)
 	# topprs = pred_acc_train_trait_summary %>% filter(power >= power_thres5)
+	head(topprs)
 	topprs = topprs$pgs
 	print(length(topprs))
 
