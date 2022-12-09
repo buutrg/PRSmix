@@ -10,14 +10,16 @@
 #' @param score_files_list A list contain PGS directory
 #' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
 #' @param metascore Meta-information contain PGS id and trait names
-#' @param ncores Number of cores to run
-#' @param score_pref Prefix of score files
-#' @param pval_thres P-value threshold to select scores
-#' @param power_thres Power threshold to select scores
 #' @param phenofile Directory to the phenotype file
+#' @param score_pref Prefix of score files
+#' @param IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
+#' @param out Output prefix
+#' @param covar_list Array of covariates
+#' @param ncores Number of cores to run
+#' @param power_thres Power threshold to select scores
+#' @param pval_thres P-value threshold to select scores
 #' @param read_pred_training True if the training set PRS assessment already run and can be read from file (Default: FALSE)
 #' @param read_pred_testing True if the training set PRS assessment already run and can be read from file (Default: FALSE)
-#' @param out Output prefix
 #' @return Prediction accuracy of PRSmix
 #' @export
 combine_PGS = function(
@@ -31,9 +33,11 @@ combine_PGS = function(
 	metascore,
 	phenofile,
 	score_pref,
-	power_thres,
 	out,
+	IID_pheno = "person_id",
+	covar_list = c("age", paste0("PC", 1:10)),
 	ncores = 5,
+	power_thres = 0.95,
 	pval_thres = 0.05,
 	read_pred_training = F,
 	read_pred_testing = F
@@ -71,7 +75,7 @@ combine_PGS = function(
 	pgs_list = intersect(pgs_list, colnames(all_scores))
 
 	pheno = fread(phenofile)
-	idx = which(colnames(pheno) %in% c("person_id", pheno_name))
+	idx = which(colnames(pheno) %in% c(IID_pheno, pheno_name))
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
 
@@ -79,7 +83,7 @@ combine_PGS = function(
 
 
 	pheno_prs = merge(pheno, all_scores, by="IID")
-	pheno_prs_cov = merge(pheno_prs, basic_data, by.x="IID", by.y="person_id")
+	pheno_prs_cov = merge(pheno_prs, basic_data, by.x="IID", by.y=IID_pheno)
 	pheno_prs_cov = pheno_prs_cov[which(!is.na(pheno_prs_cov$trait)),]
 
 	############################
@@ -106,10 +110,11 @@ combine_PGS = function(
 		train_df$trait = irnt(train_df$trait)
 		test_df$trait = irnt(test_df$trait)
 	}
-
-	cov_list = c("age", paste0("PC", 1:10))
-	for (i in cov_list) train_df[i] = as.numeric(scale(train_df[i]))
-	for (i in cov_list) test_df[i] = as.numeric(scale(test_df[i]))
+	
+	cc = apply(train_df[,covar_list], 2, function(x) length(unique(x)))
+	covar_list1 = covar_list[-which(cc<=5)]
+	for (i in covar_list1) train_df[i] = as.numeric(scale(train_df[i]))
+	for (i in covar_list1) test_df[i] = as.numeric(scale(test_df[i]))
 
 	################################ training #################################
 	
@@ -124,7 +129,7 @@ combine_PGS = function(
 		
 		pgs_list_all = colnames(train_df)
 		pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-		pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, isbinary)
+		pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, isbinary)
 		
 		fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 	} else {
@@ -144,7 +149,7 @@ combine_PGS = function(
 	writeLines("Evaluate PRS in testing set")
 
 	if (!read_pred_testing) {
-		pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list, isbinary)
+		pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, isbinary)
 
 		pred_acc_test_trait_summary = pred_acc_test_trait
 		pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
@@ -222,7 +227,7 @@ combine_PGS = function(
 			test_df1 = test_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			
-			res_lm1 = eval_prs(test_df1, "newprs", isbinary)
+			res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 			
@@ -266,13 +271,13 @@ combine_PGS = function(
 			# test_df1 = train_df
 			test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 			
-			res_lm1 = eval_prs(test_df1, "newprs", isbinary)
+			res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
 			res_lm1$pgs = "PRSmix"
 			res_lm1
 
 			############## OR ###################
-			
-			model1 = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
+			ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
+			model1 = glm(ff, data=test_df1, family="binomial")
 			model1s = summary(model1)
 			mm = exp(model1s$coefficients[2,1])
 			ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
@@ -406,8 +411,8 @@ combine_PGS = function(
 			res_lm
 
 			################### OR ######################
-			
-			model = glm(trait ~ scale(newprs) + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10, data=test_df1, family="binomial")
+			ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
+			model = glm(ff, data=test_df1, family="binomial")
 			models = summary(model)
 			mm = exp(models$coefficients[2,1])
 			ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])

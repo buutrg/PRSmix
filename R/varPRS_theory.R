@@ -12,19 +12,20 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @param data_df Data to assess prediction accuracy
 #' @param prs_name PGS list of the trait
 #' @param isbinary TRUE if binary and FALSE otherwise
+#' @param covar_list Array of covariates
 #' @param debug TRUE to verbose debugging
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
+eval_prs = function(data_df, prs_name, covar_list, isbinary=F, debug=F) {
 	
 	prec_acc = NULL
 	
 	if (isbinary) {
-		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = glm(formula, data=data_df, family="binomial")
 		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
 		
-		formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
 		model_null = glm(formula, data=data_df, family="binomial")
 		r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
 		
@@ -35,11 +36,11 @@ eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
 		nk = cs/(1 - exp(2/N * n))
 		R2 = nk	
 	} else {
-		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
 		r_full = summary(model_full)$r.squared
 		
-		formula = as.formula(paste0("trait ~ age + sex + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC6 + PC7 + PC8 + PC9 + PC10"))
+		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
 		model_null = lm(formula, data=data_df)
 		r_null = summary(model_null)$r.squared
 		
@@ -70,10 +71,11 @@ eval_prs = function(data_df, prs_name, isbinary=F, debug=F) {
 #'
 #' @param data_df Data to assess prediction accuracy
 #' @param pgs_list PGS list of the trait
+#' @param covar_list Array of covariates
 #' @param isbinary TRUE if binary and FALSE otherwise
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-get_acc_prslist_optimized = function(data_df, pgs_list, isbinary=F) {
+get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, isbinary=F) {
 	
 	# data_df = test_df
 	
@@ -82,9 +84,9 @@ get_acc_prslist_optimized = function(data_df, pgs_list, isbinary=F) {
 		
 		if (prs_i %% 100 == 0) print(prs_i)
 		
-		prs_name = pgs_list[prs_i]		
-		pred_acc_test_tmp = eval_prs(data_df, prs_name, isbinary=isbinary)
-		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)	
+		prs_name = pgs_list[prs_i]
+		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, isbinary=isbinary)
+		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	
 	pred_acc_test = pred_acc_test[order(pred_acc_test$R2, decreasing=T),]
