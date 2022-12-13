@@ -142,7 +142,10 @@ combine_PGS = function(
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_train_trait_summary)
 	
-	
+	pred_acc_train_allPGS_summary1 = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$R2), decreasing=T),]
+	bestPRS = pred_acc_train_allPGS_summary1[1,1]
+	bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, isbinary)
+	fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
 
 	################################ testing #################################
 
@@ -171,6 +174,9 @@ combine_PGS = function(
 	for (power_thres in power_thres_list)
 		for (pval_thres in pval_thres_list) {
 
+			# pval_thres = pval_thres_list[1]
+			# power_thres = power_thres_list[1]
+			
 			writeLines("PRSmix:")
 
 			topprs = pred_acc_train_trait_summary %>%
@@ -284,26 +290,26 @@ combine_PGS = function(
 					ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 					uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 					print(paste0(mm, " (", ll, "-", uu, ")"))
-					fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
+					fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 					
 					####################################
 					
 				}
 
-				fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
+				fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
 					
 				res_lm1_summary = res_lm1
 				res_lm1_summary$pgs = "PRSmix"
 				pred_acc_test_trait_summary_out = bind_rows(res_lm1, pred_acc_test_trait_summary)
 				head(pred_acc_test_trait_summary_out)
 
-				fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 
 				prs_out = test_df1 %>% 
 					select(IID, pred_acc_test_trait_summary_out[2,1], newprs)
 				colnames(prs_out) = c("IID", "pgscat", "prsmix")
 				
-				fwrite(prs_out, paste0(out, "_power.", power_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
 			
 			}
 
@@ -362,7 +368,7 @@ combine_PGS = function(
 					
 					test_df1 = test_df
 					test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-					res_lm = eval_prs(test_df1, "newprs", isbinary)
+					res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
 					res_lm$pgs = "PRSmix+"
 					res_lm
 
@@ -407,7 +413,7 @@ combine_PGS = function(
 					test_df1 = test_df
 					test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 					
-					res_lm = eval_prs(test_df1, "newprs", isbinary)
+					res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
 					res_lm$pgs = "PRSmix+"
 					res_lm
 
@@ -419,7 +425,7 @@ combine_PGS = function(
 					ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
 					uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
 					print(paste0(mm, " (", ll, "-", uu, ")"))
-					fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+					fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
 					
 				}
@@ -428,14 +434,14 @@ combine_PGS = function(
 				pred_acc_test_trait_summary_out = bind_rows(res_lm, pred_acc_test_trait_summary_out)
 				head(pred_acc_test_trait_summary_out)
 
-				fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 				
 				prsmixplus = test_df1 %>% select(IID, newprs)
 				
-				fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 				
 				
-				fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 				
 				pgs_annot = fread(metascore)
 				pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
@@ -460,7 +466,7 @@ combine_PGS = function(
 				
 				reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 
-				fwrite(reported_trait, paste0(out, "_power.", power_thres, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
+				fwrite(reported_trait, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
 				reported_trait
 				dim(reported_trait)
 				
