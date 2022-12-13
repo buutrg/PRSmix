@@ -142,7 +142,9 @@ combine_PGS = function(
 	pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 	head(pred_acc_train_trait_summary)
 	
-	pred_acc_train_allPGS_summary1 = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$R2), decreasing=T),]
+	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary %>%
+		filter(pgs %in% pgs_list)	
+	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 	bestPRS = pred_acc_train_allPGS_summary1[1,1]
 	bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, isbinary)
 	fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
