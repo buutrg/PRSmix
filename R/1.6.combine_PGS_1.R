@@ -143,7 +143,7 @@ combine_PGS = function(
 	head(pred_acc_train_trait_summary)
 	
 	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary %>%
-		filter(pgs %in% pgs_list)	
+		filter(pgs %in% pgs_list)
 	pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 	bestPRS = pred_acc_train_allPGS_summary1[1,1]
 	bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, isbinary)
