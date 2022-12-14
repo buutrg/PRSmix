@@ -35,7 +35,7 @@ combine_PGS = function(
 	score_pref,
 	out,
 	IID_pheno = "person_id",
-	covar_list = c("age", paste0("PC", 1:10)),
+	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
@@ -115,6 +115,9 @@ combine_PGS = function(
 	covar_list1 = covar_list[-which(cc<=5)]
 	for (i in covar_list1) train_df[i] = as.numeric(scale(train_df[i]))
 	for (i in covar_list1) test_df[i] = as.numeric(scale(test_df[i]))
+
+	fwrite(train_df[,c(1,2)], paste0(out, "_train_df.txt"), row.names=F, quote=F, sep="\t")
+	fwrite(test_df[,c(1,2)], paste0(out, "_test_df.txt"), row.names=F, quote=F, sep="\t")
 
 	################################ training #################################
 	
