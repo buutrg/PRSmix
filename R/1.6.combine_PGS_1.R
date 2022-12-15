@@ -37,11 +37,11 @@ combine_PGS = function(
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
-	train_size_list = NA,
+	train_size_list = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
-	read_pred_training = NA,
-	read_pred_testing = NA
+	read_pred_training = NULL,
+	read_pred_testing = NULL
 	) {
 
 	options(datatable.fread.datatable=FALSE)
@@ -98,7 +98,7 @@ combine_PGS = function(
 
 	#######################
 	
-	if (is.na(train_size_list)) train_size_list = floor(0.8*nrow(pheno_prs_cov))
+	if (is.null(train_size_list)) train_size_list = floor(0.8*nrow(pheno_prs_cov))
 	
 	out_save = out
 	
@@ -138,8 +138,8 @@ combine_PGS = function(
 		
 		writeLines("Evaluate PRS in training set")
 		
-		if (is.na(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training_1 = T } else { read_pred_training_1 = F }
-		if (is.na(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing_1 = T } else { read_pred_testing_1 = F }
+		if (is.null(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training_1 = T } else { read_pred_training_1 = F }
+		if (is.null(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing_1 = T } else { read_pred_testing_1 = F }
 
 		
 		if (!read_pred_training_1) {
