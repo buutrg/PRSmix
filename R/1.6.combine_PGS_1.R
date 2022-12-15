@@ -135,11 +135,11 @@ combine_PGS = function(
 		
 		writeLines("Evaluate PRS in training set")
 		
-		if (is.na(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training = T } else { read_pred_training = F }
-		if (is.na(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing = T } else { read_pred_testing = F }
+		if (is.na(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training_1 = T } else { read_pred_training_1 = F }
+		if (is.na(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing_1 = T } else { read_pred_testing_1 = F }
 
 		
-		if (!read_pred_training) {
+		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
 			idx = which(sumscore==0)
 			idx2 = which(names(idx)=="sex")
@@ -172,7 +172,7 @@ combine_PGS = function(
 
 		writeLines("Evaluate PRS in testing set")
 
-		if (!read_pred_testing) {
+		if (!read_pred_testing_1) {
 			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
