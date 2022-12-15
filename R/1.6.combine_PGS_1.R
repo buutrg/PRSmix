@@ -109,7 +109,7 @@ combine_PGS = function(
 	
 	#### custom sensitivity train percentage
 	train_idx_sub = sample(1:nrow(train_df), floor(train_percentage*nrow(train_df)))
-	train_df = train_df[train_idx,]
+	train_df = train_df[train_idx_sub,]
 	#############
 	
 	if (!isbinary) {
