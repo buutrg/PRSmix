@@ -37,7 +37,7 @@ combine_PGS = function(
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
-	train_percentage_list = c(1),
+	train_size_list = NA,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
 	read_pred_training = NA,
@@ -98,11 +98,13 @@ combine_PGS = function(
 
 	#######################
 	
+	if (is.na(train_size_list)) train_size_list = floor(0.8*nrow(pheno_prs_cov))
+	
 	out_save = out
 	
-	for (train_percentage in train_percentage_list) {
+	for (train_size in train_size_list) {
 		
-		out = paste0(out_save, "_train.", train_percentage)
+		out = paste0(out_save, "_train.", train_size)
 		
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), floor(0.8*nrow(pheno_prs_cov)))
@@ -114,7 +116,8 @@ combine_PGS = function(
 		test_df = pheno_prs_cov[-train_idx,]
 		
 		#### custom sensitivity train percentage
-		train_idx_sub = sample(1:nrow(train_df), floor(train_percentage*nrow(train_df)))
+		set.seed(1)
+		train_idx_sub = sample(1:nrow(train_df), train_size)
 		train_df = train_df[train_idx_sub,]
 		#############
 		
