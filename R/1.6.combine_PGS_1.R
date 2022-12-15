@@ -105,13 +105,12 @@ combine_PGS = function(
 	if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
 	
 	train_df = pheno_prs_cov[train_idx,]
+	test_df = pheno_prs_cov[-train_idx,]
 	
 	#### custom sensitivity train percentage
 	train_idx_sub = sample(1:nrow(train_df), floor(train_percentage*nrow(train_df)))
 	train_df = train_df[train_idx,]
-	####
-	
-	test_df = pheno_prs_cov[-train_idx,]
+	#############
 	
 	if (!isbinary) {
 		train_df$trait = irnt(train_df$trait)
