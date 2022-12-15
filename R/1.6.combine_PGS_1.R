@@ -130,8 +130,8 @@ combine_PGS = function(
 		
 		writeLines("Evaluate PRS in training set")
 		
-		if (is.na(read_pred_training) & file.exists(paste0(out1, "_train_allPRS.txt"))) { read_pred_training = T } else { read_pred_training = F }
-		if (is.na(read_pred_testing) & file.exists(paste0(out1, "_test_summary_traitPRS.txt"))) {read_pred_testing = T } else { read_pred_testing = F }
+		if (is.na(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training = T } else { read_pred_training = F }
+		if (is.na(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing = T } else { read_pred_testing = F }
 
 		
 		if (!read_pred_training) {
