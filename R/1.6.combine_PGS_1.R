@@ -98,7 +98,12 @@ combine_PGS = function(
 
 	#######################
 	
+	out_save = out
+	
 	for (train_percentage in train_percentage_list) {
+		
+		out = paste0(out_save, "_train.", train_percentage)
+		
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), floor(0.8*nrow(pheno_prs_cov)))
 		remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
