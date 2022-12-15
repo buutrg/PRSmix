@@ -37,6 +37,7 @@ combine_PGS = function(
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
+	train_percentage = 0.8,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
 	read_pred_training = F,
@@ -98,7 +99,7 @@ combine_PGS = function(
 	#######################
 
 	set.seed(1)
-	train_idx = sample(1:nrow(pheno_prs_cov), floor(.8*nrow(pheno_prs_cov)))
+	train_idx = sample(1:nrow(pheno_prs_cov), floor(train_percentage*nrow(pheno_prs_cov)))
 	remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
 	
 	if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
