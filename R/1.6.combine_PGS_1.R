@@ -40,8 +40,8 @@ combine_PGS = function(
 	train_percentage_list = c(1),
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
-	read_pred_training = F,
-	read_pred_testing = F
+	read_pred_training = NA,
+	read_pred_testing = NA
 	) {
 
 	options(datatable.fread.datatable=FALSE)
@@ -129,6 +129,10 @@ combine_PGS = function(
 		################################ training #################################
 		
 		writeLines("Evaluate PRS in training set")
+		
+		if (is.na(read_pred_training) & file.exists(paste0(out1, "_train_allPRS.txt"))) read_pred_training = T
+		if (is.na(read_pred_testing) & file.exists(paste0(out1, "_test_summary_traitPRS.txt"))) read_pred_testing = T
+
 		
 		if (!read_pred_training) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
