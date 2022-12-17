@@ -103,7 +103,7 @@ combine_PGS = function(
 	
 	for (train_size in train_size_list) {
 		
-		train_size = train_size_list[1]
+		# train_size = train_size_list[1]
 		
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
 		
@@ -141,7 +141,6 @@ combine_PGS = function(
 		
 		if (is.null(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training_1 = T } else { read_pred_training_1 = F }
 		if (is.null(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing_1 = T } else { read_pred_testing_1 = F }
-
 		
 		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
@@ -199,8 +198,8 @@ combine_PGS = function(
 		for (power_thres in power_thres_list)
 			for (pval_thres in pval_thres_list) {
 
-				pval_thres = pval_thres_list[1]
-				power_thres = power_thres_list[1]
+				# pval_thres = pval_thres_list[1]
+				# power_thres = power_thres_list[1]
 				
 				writeLines("PRSmix:")
 
@@ -233,7 +232,8 @@ combine_PGS = function(
 						# train_tmp$trait = as.factor(train_tmp$trait)
 						
 						if (length(topprs) == 1) {
-							ww = 1;
+							ww = c(1)
+							names(ww) = topprs
 						} else {
 							
 							ctrl = trainControl(
@@ -256,10 +256,10 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							
+							ww = ww[which(!names(ww) %in% covar_list)]
 						}
 						test_df1 = test_df
-						test_df1$newprs = as.matrix(test_df1[,c(topprs, covar_list)]) %*% as.vector(ww)
+						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
 						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
 						res_lm1$pgs = "PRSmix"
@@ -282,7 +282,8 @@ combine_PGS = function(
 						train_tmp$trait = as.factor(train_tmp$trait)
 						
 						if (length(topprs) == 1) {
-							ww = 1;
+							ww = c(1)
+							names(ww) = topprs
 						} else {
 								
 							ctrl = trainControl(
@@ -305,10 +306,11 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww = ww[which(!names(ww) %in% covar_list)]
 						}
 						test_df1 = test_df
 						# test_df1 = train_df
-						test_df1$newprs = as.matrix(test_df1[,c(topprs, covar_list)]) %*% as.vector(ww)
+						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
 						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
 						res_lm1$pgs = "PRSmix"
@@ -328,7 +330,7 @@ combine_PGS = function(
 						
 					}
 
-					fwrite(data.frame(c(topprs, covar_list), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
+					fwrite(data.frame(c(topprs), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
 					
 					res_lm1_summary = res_lm1
 					res_lm1_summary$pgs = "PRSmix"
@@ -362,8 +364,7 @@ combine_PGS = function(
 				} else {
 					
 					if (!isbinary) {
-						
-						
+									
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -379,7 +380,8 @@ combine_PGS = function(
 						# train_tmp$trait = as.factor(train_tmp$trait)
 						
 						if (length(topprs) == 1) {
-							ww = 1;
+							ww = c(1)
+							names(ww) = topprs
 						} else {
 							
 							ctrl = trainControl(
@@ -402,11 +404,11 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							
+							ww = ww[which(!names(ww) %in% covar_list)]
 						}
 						
 						test_df1 = test_df
-						test_df1$newprs = as.matrix(test_df1[,c(topprs, covar_list)]) %*% as.vector(ww)
+						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
@@ -430,7 +432,8 @@ combine_PGS = function(
 						train_tmp$trait = as.factor(train_tmp$trait)
 						
 						if (length(topprs) == 1) {
-							ww = 1;
+							ww = c(1)
+							names(ww) = topprs
 						} else {
 							
 							ctrl = trainControl(
@@ -453,7 +456,7 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							
+							ww = ww[which(!names(ww) %in% covar_list)]
 						}
 						
 						test_df1 = test_df
@@ -488,13 +491,13 @@ combine_PGS = function(
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
 					
-					fwrite(data.frame(c(topprs,covar_list), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
 					pgs_annot = fread(metascore)
 					pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
 					pgs_annot_sig_df = pgs_annot_sig %>%
 						select(`Polygenic Score (PGS) ID`, `Reported Trait`)
-
+					
 					pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
 
 					reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
