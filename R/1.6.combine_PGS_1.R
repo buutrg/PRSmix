@@ -56,16 +56,16 @@ combine_PGS = function(
 	all_scores = NULL
 
 	for (score_file_i in 1:length(score_files_list)) {
-		
+
 		print(score_file_i)
 		score_file = score_files_list[score_file_i]
 		dd = fread(score_file)
 		idx = which(endsWith(colnames(dd), "_SUM"))[-1]
-		
+
 		dd_sub = dd[,c(2,idx)]
 		print(dim(dd_sub))
 		if (is.null(all_scores)) {
-			all_scores = dd_sub	
+			all_scores = dd_sub
 		} else
 			all_scores = merge(all_scores, dd_sub, by="IID")
 	}
@@ -90,43 +90,43 @@ combine_PGS = function(
 	#######################
 
 	irnt = function(x) return(qnorm((rank(x,na.last="keep")-0.5)/sum(!is.na(x))))
-	
+
 	#######################
-	
+
 	null_train_size_list = F
 	if (is.null(train_size_list)) {
 		train_size_list = floor(0.8*nrow(pheno_prs_cov))
 		null_train_size_list = T
 	}
-	
+
 	out_save = out
-	
+
 	for (train_size in train_size_list) {
-		
+
 		# train_size = train_size_list[1]
-		
+
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
-		
+
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), floor(0.8*nrow(pheno_prs_cov)))
 		remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
-		
+
 		if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
-		
+
 		train_df = pheno_prs_cov[train_idx,]
 		test_df = pheno_prs_cov[-train_idx,]
-		
+
 		#### custom sensitivity train percentage
 		set.seed(1)
 		train_idx_sub = sample(1:nrow(train_df), train_size)
 		train_df = train_df[train_idx_sub,]
 		#############
-		
+
 		if (!isbinary) {
 			train_df$trait = irnt(train_df$trait)
 			test_df$trait = irnt(test_df$trait)
 		}
-		
+
 		cc = apply(train_df[,covar_list], 2, function(x) length(unique(x)))
 		covar_list1 = covar_list[-which(cc<=5)]
 		for (i in covar_list1) train_df[i] = as.numeric(scale(train_df[i]))
@@ -136,11 +136,28 @@ combine_PGS = function(
 		fwrite(test_df[,c(1,2)], paste0(out, "_test_df.txt"), row.names=F, quote=F, sep="\t")
 
 		################################ training #################################
-		
+
 		writeLines("Evaluate PRS in training set")
 		
-		if (is.null(read_pred_training) & file.exists(paste0(out, "_train_allPRS.txt"))) { read_pred_training_1 = T } else { read_pred_training_1 = F }
-		if (is.null(read_pred_testing) & file.exists(paste0(out, "_test_summary_traitPRS.txt"))) {read_pred_testing_1 = T } else { read_pred_testing_1 = F }
+		if (!is.null(read_pred_training)) {
+      		read_pred_training_1 = read_pred_training
+		} else {
+			if (file.exists(paste0(out, "_train_allPRS.txt"))) {
+				read_pred_training_1 = T
+			} else {
+				read_pred_training_1 = F
+			}
+		}		
+		
+		if (!is.null(read_pred_testing)) {
+      		read_pred_testing_1 = read_pred_testing
+		} else {
+			if (file.exists(paste0(out, "_test_allPRS.txt"))) {
+				read_pred_testing_1 = T
+			} else {
+				read_pred_testing_1 = F
+			}
+		}
 		
 		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
@@ -148,11 +165,11 @@ combine_PGS = function(
 			idx2 = which(names(idx)=="sex")
 			if (length(idx2)>0) idx = idx[-idx2]
 			if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
-			
+
 			pgs_list_all = colnames(train_df)
 			pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
 			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, isbinary)
-			
+
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
 			pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
@@ -163,7 +180,7 @@ combine_PGS = function(
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
 		pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
 		head(pred_acc_train_trait_summary)
-		
+
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary %>%
 			filter(pgs %in% pgs_list)
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
@@ -192,15 +209,15 @@ combine_PGS = function(
 
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 			filter(pgs %in% pgs_list)
-		
+
 		pred_acc_test_trait_summary_out = pred_acc_test_trait_summary
-		
+
 		for (power_thres in power_thres_list)
 			for (pval_thres in pval_thres_list) {
 
 				# pval_thres = pval_thres_list[1]
 				# power_thres = power_thres_list[1]
-				
+
 				writeLines("PRSmix:")
 
 				topprs = pred_acc_train_trait_summary %>%
@@ -214,9 +231,9 @@ combine_PGS = function(
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
 				} else {
-					
+
 					if (!isbinary) {
-						
+
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -224,94 +241,106 @@ combine_PGS = function(
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
-						
+
 						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
-						
+
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						# train_tmp$trait = as.factor(train_tmp$trait)
-						
-						if (length(topprs) == 1) {
-							ww = c(1)
-							names(ww) = topprs
-						} else {
-							
-							ctrl = trainControl(
-								method = "repeatedcv", 
-								allowParallel = TRUE,
-								number = 3, 
-								verboseIter = T)
-							
-							cl = makePSOCKcluster(ncores)
-							registerDoParallel(cl)
-							
-							set.seed(123)
-							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet", 
-							  trControl = ctrl,			  
-							  tuneLength = 50, verbose=T
-							)
-							
-							stopCluster(cl)
-							
-							model_prsmix$bestTune
-							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							ww = ww[which(!names(ww) %in% covar_list)]
-						}
-						test_df1 = test_df
-						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
-						res_lm1$pgs = "PRSmix"
-						res_lm1
-						
-					} else {	
-						
-						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						y_train = as.vector(train_df$trait)
-						train_data = data.frame(x_train,trait=y_train)
 
-						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						y_test = as.vector(test_df$trait)
-						test_data = data.frame(x_test,trait=y_test)
-						
-						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
-						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
-						
-						train_tmp = train_data[,c("trait", topprs, covar_list)]
-						train_tmp$trait = as.factor(train_tmp$trait)
-						
 						if (length(topprs) == 1) {
 							ww = c(1)
 							names(ww) = topprs
 						} else {
-								
+
 							ctrl = trainControl(
-								method = "repeatedcv", 
+								method = "repeatedcv",
 								allowParallel = TRUE,
 								number = 3,
 								verboseIter = T)
-							
+
 							cl = makePSOCKcluster(ncores)
 							registerDoParallel(cl)
-							
+
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet", 
-							  trControl = ctrl, family = "binomial",
+							  formula, data = train_tmp, method = "glmnet",
+							  trControl = ctrl,
 							  tuneLength = 50, verbose=T
 							)
-							
+
 							stopCluster(cl)
-							
+
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							if (all(ww == 0)) {
+								writeLines("No weight for PRS")
+								ww = c(1)
+								names(ww) = bestPRS_acc$pgs
+								topprs = bestPRS_acc$pgs
+							}
+						}
+						test_df1 = test_df
+						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
+
+						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
+						res_lm1$pgs = "PRSmix"
+						res_lm1
+
+					} else {
+
+						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						y_train = as.vector(train_df$trait)
+						train_data = data.frame(x_train,trait=y_train)
+
+						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						y_test = as.vector(test_df$trait)
+						test_data = data.frame(x_test,trait=y_test)
+
+						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
+						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
+
+						train_tmp = train_data[,c("trait", topprs, covar_list)]
+						train_tmp$trait = as.factor(train_tmp$trait)
+
+						if (length(topprs) == 1) {
+							ww = c(1)
+							names(ww) = topprs
+						} else {
+
+							ctrl = trainControl(
+								method = "repeatedcv",
+								allowParallel = TRUE,
+								number = 3,
+								verboseIter = T)
+
+							cl = makePSOCKcluster(ncores)
+							registerDoParallel(cl)
+
+							set.seed(123)
+							model_prsmix = train(
+							  formula, data = train_tmp, method = "glmnet",
+							  trControl = ctrl, family = "binomial",
+							  tuneLength = 50, verbose=T
+							)
+
+							stopCluster(cl)
+
+							model_prsmix$bestTune
+							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww = ww[which(!names(ww) %in% covar_list)]
+							if (all(ww == 0)) {
+								writeLines("No weight for PRS")
+								ww = c(1)
+								names(ww) = bestPRS_acc$pgs
+								topprs = bestPRS_acc$pgs
+							}
 						}
 						test_df1 = test_df
 						# test_df1 = train_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						
+
 						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
@@ -325,13 +354,13 @@ combine_PGS = function(
 						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 						print(paste0(mm, " (", ll, "-", uu, ")"))
 						fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
-						
+
 						####################################
-						
+
 					}
 
 					fwrite(data.frame(c(topprs), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
-					
+
 					res_lm1_summary = res_lm1
 					res_lm1_summary$pgs = "PRSmix"
 					pred_acc_test_trait_summary_out = bind_rows(res_lm1, pred_acc_test_trait_summary)
@@ -339,32 +368,32 @@ combine_PGS = function(
 
 					fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 
-					prs_out = test_df1 %>% 
+					prs_out = test_df1 %>%
 						select(IID, pred_acc_test_trait_summary_out[2,1], newprs)
 					colnames(prs_out) = c("IID", "pgscat", "prsmix")
-					
+
 					fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
-				
+
 				}
 
 				############################
 
 				writeLines("PRSmix+:")
-				
+
 				topprs = pred_acc_train_allPGS_summary %>%
 					filter(pval_partial_R2 <= pval_thres & power >= power_thres)
 				# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
 				# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres)
 				topprs = topprs$pgs
 				print(length(topprs))
-				
-				
+
+
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
 				} else {
-					
+
 					if (!isbinary) {
-									
+
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -372,41 +401,47 @@ combine_PGS = function(
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
-						
+
 						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
-						
+
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						# train_tmp$trait = as.factor(train_tmp$trait)
-						
+
 						if (length(topprs) == 1) {
 							ww = c(1)
 							names(ww) = topprs
 						} else {
-							
+
 							ctrl = trainControl(
-								method = "repeatedcv", 
+								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3, 
+								number = 3,
 								verboseIter = T)
-							
+
 							cl = makePSOCKcluster(ncores)
 							registerDoParallel(cl)
-							
+
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet", 
-							  trControl = ctrl,			  
+							  formula, data = train_tmp, method = "glmnet",
+							  trControl = ctrl,
 							  tuneLength = 50, verbose=T
 							)
-							
+
 							stopCluster(cl)
-							
+
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							if (all(ww == 0)) {
+								writeLines("No weight for PRS")
+								ww = c(1)
+								names(ww) = bestPRS_acc$pgs
+								topprs = bestPRS_acc$pgs
+							}
 						}
-						
+
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
@@ -414,9 +449,9 @@ combine_PGS = function(
 						res_lm
 
 						nonzero_w = names(ww[which(ww!=0)])
-						
+
 					} else {
-						
+
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -424,48 +459,54 @@ combine_PGS = function(
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
-						
+
 						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
-						
+
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						train_tmp$trait = as.factor(train_tmp$trait)
-						
+
 						if (length(topprs) == 1) {
 							ww = c(1)
 							names(ww) = topprs
 						} else {
-							
+
 							ctrl = trainControl(
-								method = "repeatedcv", 
+								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3, 
+								number = 3,
 								verboseIter = T)
-							
+
 							cl = makePSOCKcluster(ncores)
 							registerDoParallel(cl)
-							
+
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet", 
-							  trControl = ctrl,			  
+							  formula, data = train_tmp, method = "glmnet",
+							  trControl = ctrl,
 							  tuneLength = 50, verbose=T
 							)
-							
+
 							stopCluster(cl)
-							
+
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							if (all(ww==0)) {
+								writeLines("No weight for PRS")
+								ww = c(1)
+								names(ww) = bestPRS_acc$pgs
+        						topprs = bestPRS_acc$pgs
+							}
 						}
-						
+
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
-						nonzero_w = names(ww[which(ww!=0)])						
+						nonzero_w = names(ww[which(ww!=0)])
 
 						################### OR ######################
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
@@ -476,28 +517,28 @@ combine_PGS = function(
 						uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
 						print(paste0(mm, " (", ll, "-", uu, ")"))
 						fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-						
-						
+
+
 					}
-					
-					
+
+
 					pred_acc_test_trait_summary_out = bind_rows(res_lm, pred_acc_test_trait_summary_out)
 					head(pred_acc_test_trait_summary_out)
 
 					fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-					
+
 					prsmixplus = test_df1 %>% select(IID, newprs)
-					
+
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
-					
-					
+
+
 					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-					
+
 					pgs_annot = fread(metascore)
 					pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
 					pgs_annot_sig_df = pgs_annot_sig %>%
 						select(`Polygenic Score (PGS) ID`, `Reported Trait`)
-					
+
 					pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
 
 					reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
@@ -512,18 +553,18 @@ combine_PGS = function(
 						mutate(Var1 = gsub("Bmi","BMI",Var1)) %>%
 						group_by(Var1) %>%
 						summarise(Freq = sum(Freq))
-						
-					
+
+
 					reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 
 					fwrite(reported_trait, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
 					reported_trait
 					dim(reported_trait)
-					
-					
+
+
 					##############################################
-					
-					
+
+
 				}
 			}
 	}
