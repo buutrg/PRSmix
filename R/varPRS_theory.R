@@ -4,14 +4,15 @@
 rr = function(x,digit=10) return(round(x,digit))
 
 ######################## Liability R2: Employed from Lee et al. 2012, Genet Epi
-LiabR2 = function(ncase, ncont, K, R20){
+LiabR2 = function(ncase, ncont, K=NULL, R2obs){
 	
 	ncase = ncase
 	ncont = ncont
 	nt = ncase+ncont
 	P = ncase/nt
 	K = K
-	R20 = R20
+	if (is.na(K)) K = P
+	R2obs = R2obs
 
 	#assume follow Normal distribution
 	#the threshold on the normal distribution which truncates the proportion of disease prevalence
@@ -24,7 +25,7 @@ LiabR2 = function(ncase, ncont, K, R20){
 	cv = K*(1-K)/zv^2*K*(1-K)/(P*(1-P))
 
 	#transfer
-	R2 = R2O*cv/(1+R2O*theta*cv)
+	R2 = R2obs*cv/(1+R2obs*theta*cv)
 	return(R2)
 }
 
