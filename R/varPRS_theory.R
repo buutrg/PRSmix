@@ -66,7 +66,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 			ncase = sum(data_df$trait == 0)
 			nctrl = sum(data_df$trait == 1)
 			K = ncase / (ncase+nctrl)
-			R2 = LiabR2(ncase, ncont, K, R2)
+			R2 = LiabR2(ncase=ncase, ncont=ncont, K=K, R2obs=R2)
 		}
 		
 	} else {
