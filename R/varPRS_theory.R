@@ -13,17 +13,17 @@ LiabR2 = function(ncase, ncont, K=NULL, R2obs){
 	K = K
 	if (is.na(K)) K = P
 	R2obs = R2obs
-
+	
 	#assume follow Normal distribution
 	#the threshold on the normal distribution which truncates the proportion of disease prevalence
 	thd = qnorm(1-K)
 	zv = dnorm(thd)
 	mv = zv/K
 	mv2 = -mv*K/(1-K)
-
+	
 	theta = mv*(P-K)/(1-K)*(mv*(P-K)/(1-K)-thd)
 	cv = K*(1-K)/zv^2*K*(1-K)/(P*(1-P))
-
+	
 	#transfer
 	R2 = R2obs*cv/(1+R2obs*theta*cv)
 	return(R2)
@@ -87,7 +87,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
 	
 	vv = (4*R2*(1-R2)^2 *(N-2)^2) / ((N^2-1)*(N+3))
-
+	
 	se = sqrt(vv)
 	lower_r2 = R2 - 1.97*se
 	upper_r2 = R2 + 1.97*se
@@ -109,7 +109,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 #' @param isbinary TRUE if binary and FALSE otherwise
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, isbinary=F) {
+get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=F, isbinary=F) {
 	
 	# data_df = test_df
 	
@@ -119,7 +119,7 @@ get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, isbinary=F) 
 		if (prs_i %% 100 == 0) print(prs_i)
 		
 		prs_name = pgs_list[prs_i]
-		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, isbinary=isbinary)
+		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, isbinary=isbinary)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	

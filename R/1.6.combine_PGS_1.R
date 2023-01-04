@@ -34,6 +34,7 @@ combine_PGS = function(
 	phenofile,
 	score_pref,
 	out,
+	liabilityR2 = F,
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
@@ -168,7 +169,7 @@ combine_PGS = function(
 
 			pgs_list_all = colnames(train_df)
 			pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, isbinary)
+			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, liabilityR2, isbinary)
 
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
@@ -185,7 +186,7 @@ combine_PGS = function(
 			filter(pgs %in% pgs_list)
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 		bestPRS = pred_acc_train_allPGS_summary1[1,1]
-		bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, isbinary)
+		bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, liabilityR2, isbinary)
 		fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
 
 		################################ testing #################################
@@ -193,7 +194,7 @@ combine_PGS = function(
 		writeLines("Evaluate PRS in testing set")
 
 		if (!read_pred_testing_1) {
-			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, isbinary)
+			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, liabilityR2, isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
@@ -284,7 +285,7 @@ combine_PGS = function(
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
+						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2, isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
@@ -341,7 +342,7 @@ combine_PGS = function(
 						# test_df1 = train_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, isbinary)
+						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2, isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
@@ -444,7 +445,7 @@ combine_PGS = function(
 
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
+						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
@@ -502,7 +503,7 @@ combine_PGS = function(
 
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, isbinary)
+						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
