@@ -103,7 +103,7 @@ combine_PGS = function(
 
 	for (train_size in train_size_list) {
 
-		# train_size = train_size_list[1]
+		# train_size = train_size_list[2]
 
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
 

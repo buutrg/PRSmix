@@ -3,6 +3,31 @@
 
 rr = function(x,digit=10) return(round(x,digit))
 
+######################## Liability R2: Employed from Lee et al. 2012, Genet Epi
+LiabR2 = function(ncase, ncont, K, R20){
+	
+	ncase = ncase
+	ncont = ncont
+	nt = ncase+ncont
+	P = ncase/nt
+	K = K
+	R20 = R20
+
+	#assume follow Normal distribution
+	#the threshold on the normal distribution which truncates the proportion of disease prevalence
+	thd = qnorm(1-K)
+	zv = dnorm(thd)
+	mv = zv/K
+	mv2 = -mv*K/(1-K)
+
+	theta = mv*(P-K)/(1-K)*(mv*(P-K)/(1-K)-thd)
+	cv = K*(1-K)/zv^2*K*(1-K)/(P*(1-P))
+
+	#transfer
+	R2 = R2O*cv/(1+R2O*theta*cv)
+	return(R2)
+}
+
 
 
 #' Evaluate PRS prediction accuracy
@@ -16,7 +41,7 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @param debug TRUE to verbose debugging
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-eval_prs = function(data_df, prs_name, covar_list, isbinary=F, debug=F) {
+eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, debug=F) {
 	
 	prec_acc = NULL
 	
@@ -34,7 +59,15 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, debug=F) {
 		N = nobs(model_full)
 		cs = 1 - exp(-2/N * (m - n))
 		nk = cs/(1 - exp(2/N * n))
-		R2 = nk	
+		R2 = nk
+		
+		if (liabilityR2) {
+			ncase = sum(data_df$trait == 0)
+			nctrl = sum(data_df$trait == 1)
+			K = ncase / (ncase+nctrl)
+			R2 = LiabR2(ncase, ncont, K, R2)
+		}
+		
 	} else {
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
