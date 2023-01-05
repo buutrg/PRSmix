@@ -285,7 +285,7 @@ combine_PGS = function(
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabalpha=pval_thres, ilityR2, isbinary)
+						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, ilityR2, isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
@@ -342,7 +342,7 @@ combine_PGS = function(
 						# test_df1 = train_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabalpha=pval_thres, ilityR2, isbinary)
+						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, ilityR2, isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
@@ -445,7 +445,7 @@ combine_PGS = function(
 
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, liabalpha=pval_thres, ilityR2, isbinary)
+						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, ilityR2, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
@@ -503,7 +503,7 @@ combine_PGS = function(
 
 						test_df1 = test_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, liabalpha=pval_thres, ilityR2, isbinary)
+						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, ilityR2, isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
