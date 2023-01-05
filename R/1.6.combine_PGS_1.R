@@ -186,7 +186,7 @@ combine_PGS = function(
 			filter(pgs %in% pgs_list)
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 		bestPRS = pred_acc_train_allPGS_summary1[1,1]
-		bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, liabilityR2, alpha=pval_thres, isbinary=isbinary)
+		bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 		fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
 
 		################################ testing #################################
