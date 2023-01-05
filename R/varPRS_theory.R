@@ -70,6 +70,11 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 	} else {
 		data_df$trait = as.numeric(data_df$trait)
 		
+		# formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+		# y_resid = lm(formula, data=data_df)$residuals
+		# # y_resid = summary(model_resid)$r.squared
+		# r2o = cor(y_resid, data_df[,prs_name])^2
+		
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
 		r_full = summary(model_full)$r.squared
@@ -85,6 +90,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 			N = nrow(data_df)
 			K = mean(data_df$trait)
 			R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
+			# R2 = r2o * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
 		}
 		
 	}
