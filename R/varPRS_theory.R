@@ -51,7 +51,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 		N = nrow(data_df)
 		K = mean(data_df$trait)
 		R2 = cor(data_df$trait, data_df[,prs_name], use="complete.obs")^2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
-		
+	} else {
 		if (isbinary) {
 			formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 			model_full = glm(formula, data=data_df, family="binomial")
