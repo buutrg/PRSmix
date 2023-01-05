@@ -48,7 +48,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 	
 	if (liabilityR2) {
 		
-		N = nobs(model_full)
+		N = nrow(data_df)
 		K = mean(data_df$trait)
 		R2 = cor(data_df$trait, data_df[,prs_name], use="complete.obs")^2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
 		
