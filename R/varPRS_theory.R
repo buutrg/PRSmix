@@ -89,7 +89,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 		
 	}
 	
-	alpha = 0.05
+	# alpha = 0.05
 	NCP = N * R2 / (1-R2)
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
 	
