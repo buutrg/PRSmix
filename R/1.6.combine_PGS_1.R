@@ -169,7 +169,7 @@ combine_PGS = function(
 
 			pgs_list_all = colnames(train_df)
 			pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, liabilityR2, alpha=pval_thres, isbinary=isbinary)
+			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
@@ -194,12 +194,11 @@ combine_PGS = function(
 		writeLines("Evaluate PRS in testing set")
 
 		if (!read_pred_testing_1) {
-			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, liabilityR2, alpha=pval_thres, isbinary=isbinary)
+			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
 			head(pred_acc_test_trait_summary)
-
 
 			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
