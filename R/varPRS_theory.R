@@ -45,47 +45,49 @@ LiabR2 = function(ncase, ncont, K=NULL, R2obs){
 eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, debug=F) {
 	
 	prec_acc = NULL
-	
-	if (liabilityR2) {
+	if (isbinary & !liabilityR2) {
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ")"))
+		model_full = glm(formula, data=data_df, family="binomial")
+		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
 		
-		N = nrow(data_df)
-		K = mean(data_df$trait)
-		R2 = cor(data_df$trait, data_df[,prs_name], use="complete.obs")^2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
-	} else {
-		if (isbinary) {
-			formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
-			model_full = glm(formula, data=data_df, family="binomial")
-			r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
+		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+		model_null = glm(formula, data=data_df, family="binomial")
+		r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
+		
+		m = r_full
+		n = r_null
+		N = nobs(model_full)
+		cs = 1 - exp(-2/N * (m - n))
+		nk = cs/(1 - exp(2/N * n))
+		R2 = nk
+		
+		if (liabilityR2) {
+			ncase = sum(data_df$trait == 1)
+			ncont = sum(data_df$trait == 0)
 			
-			formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
-			model_null = glm(formula, data=data_df, family="binomial")
-			r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
-			
-			m = r_full
-			n = r_null
-			N = nobs(model_full)
-			cs = 1 - exp(-2/N * (m - n))
-			nk = cs/(1 - exp(2/N * n))
-			R2 = nk
-			
-			if (liabilityR2) {
-				ncase = sum(data_df$trait == 0)
-				ncont = sum(data_df$trait == 1)
-				
-			}
-			
-		} else {
-			formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
-			model_full = lm(formula, data=data_df)
-			r_full = summary(model_full)$r.squared
-			
-			formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
-			model_null = lm(formula, data=data_df)
-			r_null = summary(model_null)$r.squared
-			
-			N = nobs(model_full)
-			R2 = r_full - r_null
 		}
+		
+	} else {
+		data_df$trait = as.numeric(data_df$trait)
+		
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
+		model_full = lm(formula, data=data_df)
+		r_full = summary(model_full)$r.squared
+		
+		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+		model_null = lm(formula, data=data_df)
+		r_null = summary(model_null)$r.squared
+		
+		N = nobs(model_full)
+		R2 = r_full - r_null		
+		
+		if (liabilityR2) {
+			N = nrow(data_df)
+			K = mean(data_df$trait)
+			R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
+		}
+		
 	}
 	
 	alpha = 0.05
