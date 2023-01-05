@@ -42,9 +42,8 @@ LiabR2 = function(ncase, ncont, K=NULL, R2obs){
 #' @param debug TRUE to verbose debugging
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, debug=F) {
+eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05, debug=F) {
 	
-	prec_acc = NULL
 	if (isbinary & !liabilityR2) {
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ")"))
@@ -117,7 +116,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, de
 #' @param isbinary TRUE if binary and FALSE otherwise
 #' @return A dataframe for prediction accuracy of PRS and their power
 #' @export
-get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=F, isbinary=F) {
+get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	
 	# data_df = test_df
 	
@@ -127,7 +126,7 @@ get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=
 		if (prs_i %% 100 == 0) print(prs_i)
 		
 		prs_name = pgs_list[prs_i]
-		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, isbinary=isbinary)
+		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, alpha=alpha, isbinary=isbinary)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	
