@@ -46,7 +46,6 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 	
 	if (isbinary & !liabilityR2) {
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
-		formula = as.formula(paste0("trait ~ scale(", prs_name, ")"))
 		model_full = glm(formula, data=data_df, family="binomial")
 		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
 		
