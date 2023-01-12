@@ -374,8 +374,8 @@ combine_PGS = function(
 					fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 					
 					prs_out = test_df1 %>%
-						select(IID, pred_acc_test_trait_summary_out[2,1], newprs)
-					colnames(prs_out) = c("IID", "pgscat", "prsmix")
+						select(IID, newprs)
+					colnames(prs_out) = c("IID", "prsmix")
 					
 					fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
 					
