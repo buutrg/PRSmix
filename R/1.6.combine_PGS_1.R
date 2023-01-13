@@ -454,7 +454,10 @@ combine_PGS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							
 							ww_raw = ww
+							fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+							
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
@@ -517,7 +520,10 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							
 							ww_raw = ww
+							fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+							
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
@@ -557,8 +563,7 @@ combine_PGS = function(
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-
+					
 					pgs_annot = fread(metascore)
 					pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
 					pgs_annot_sig_df = pgs_annot_sig %>%
