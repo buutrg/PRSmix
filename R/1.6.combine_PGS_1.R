@@ -234,12 +234,13 @@ combine_PGS = function(
 					if (!isbinary) {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_train[,topprs] = scale(x_train[,topprs])
+						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						x_train[,topprs] = scale(x_train[,topprs])					
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_test[,topprs] = scale(x_test[,topprs])
+						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -275,6 +276,8 @@ combine_PGS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							ww = ww / var_train[match(names(ww), names(var_train))]
+							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
@@ -293,12 +296,13 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_train[,topprs] = scale(x_train[,topprs])
+						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						x_train[,topprs] = scale(x_train[,topprs])						
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_test[,topprs] = scale(x_test[,topprs])
+						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -334,6 +338,8 @@ combine_PGS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							ww = ww / var_train[match(names(ww), names(var_train))]
+							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
@@ -343,13 +349,12 @@ combine_PGS = function(
 						}
 						
 						test_df1 = cbind(test_data, IID=test_df$IID)
-						# test_df1 = train_df
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
 						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
-
+						
 						############## OR ###################
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model1 = glm(ff, data=test_df1, family="binomial")
@@ -400,12 +405,13 @@ combine_PGS = function(
 					if (!isbinary) {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_test[,topprs] = scale(x_test[,topprs])
+						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -441,6 +447,8 @@ combine_PGS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							ww = ww / var_train[match(names(ww), names(var_train))]
+							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
@@ -460,12 +468,13 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						x_test[,topprs] = scale(x_test[,topprs])
+						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 						
@@ -500,6 +509,8 @@ combine_PGS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww = ww[which(!names(ww) %in% covar_list)]
+							ww = ww / var_train[match(names(ww), names(var_train))]
+							
 							if (all(ww==0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
