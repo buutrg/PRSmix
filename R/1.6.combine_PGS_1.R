@@ -89,6 +89,10 @@ combine_PGS = function(
 	pheno_prs_cov = pheno_prs_cov[which(!is.na(pheno_prs_cov$trait)),]
 
 	#######################
+	
+	# pheno_prs_cov[,which(startsWith(colnames(pheno_prs_cov), "PGS"))] = scale(pheno_prs_cov[,which(startsWith(colnames(pheno_prs_cov), "PGS"))])
+
+	#######################
 
 	irnt = function(x) return(qnorm((rank(x,na.last="keep")-0.5)/sum(!is.na(x))))
 
@@ -113,6 +117,8 @@ combine_PGS = function(
 		remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
 
 		if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
+
+		
 
 		train_df = pheno_prs_cov[train_idx,]
 		test_df = pheno_prs_cov[-train_idx,]
@@ -232,9 +238,9 @@ combine_PGS = function(
 				} else {
 
 					if (!isbinary) {
-
+						
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])					
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -275,8 +281,9 @@ combine_PGS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww_raw = ww
 							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / var_train[match(names(ww), names(var_train))]
+							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
@@ -296,7 +303,7 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])						
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -337,8 +344,9 @@ combine_PGS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww_raw = ww
 							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / var_train[match(names(ww), names(var_train))]
+							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
@@ -405,7 +413,7 @@ combine_PGS = function(
 					if (!isbinary) {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -446,8 +454,9 @@ combine_PGS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww_raw = ww
 							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / var_train[match(names(ww), names(var_train))]
+							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
@@ -468,7 +477,7 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						var_train = apply(x_train[,topprs], 2, var, na.rm=T)
+						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -508,8 +517,9 @@ combine_PGS = function(
 							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww_raw = ww
 							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / var_train[match(names(ww), names(var_train))]
+							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
 							if (all(ww==0)) {
 								writeLines("No weight for PRS")
@@ -547,6 +557,7 @@ combine_PGS = function(
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
 					pgs_annot = fread(metascore)
 					pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
