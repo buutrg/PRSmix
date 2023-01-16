@@ -212,6 +212,60 @@ combine_PGS = function(
 		}
 
 		###########################################################################
+		
+		if (isbinary) {
+			x_train = as.matrix(train_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
+			y_train = as.vector(train_df$trait)
+			train_data = data.frame(x_train,trait=y_train)
+
+			x_test = as.matrix(test_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
+			y_test = as.vector(test_df$trait)
+			test_data = data.frame(x_test,trait=y_test)
+
+			train_tmp = train_data[,c("trait", covar_list)]
+			train_tmp$trait = as.factor(train_tmp$trait)
+			
+			formula_null = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+			formula_bestPRS = as.formula(paste0("trait ~ ", bestPRS, "+", paste0(covar_list, collapse="+")))
+
+			ctrl = trainControl(
+				method = "repeatedcv",
+				allowParallel = TRUE,
+				number = 3,
+				verboseIter = T)
+
+			cl = makePSOCKcluster(ncores)
+			registerDoParallel(cl)
+
+			set.seed(123)
+			model_prsmix_null = train(
+				formula_null, data = train_tmp, method = "glmnet",
+				trControl = ctrl,
+				tuneLength = 50, verbose=T
+			)
+			
+			set.seed(123)
+			model_prsmix_bestPRS = train(
+				formula_bestPRS, data = train_tmp, method = "glmnet",
+				trControl = ctrl,
+				tuneLength = 50, verbose=T
+			)
+
+			stopCluster(cl)
+
+			test_data1 = test_data
+			
+			test_pred = predict(model_prsmix_null, test_data1, type = "prob")[,2]
+			auc_ci = ci.auc(test_data1$trait, test_pred)
+			auc_out = data.frame(method="null_model", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
+			fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_aucNULL.txt"), row.names=F, sep="\t", quote=F)
+			
+			test_pred = predict(model_prsmix_bestPRS, test_data1, type = "prob")[,2]
+			auc_ci = ci.auc(test_data1$trait, test_pred)
+			auc_out = data.frame(method="null_model", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
+			fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_aucBestPRS.txt"), row.names=F, sep="\t", quote=F)			
+			
+		}
 
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 			filter(pgs %in% pgs_list)
@@ -240,7 +294,7 @@ combine_PGS = function(
 					if (!isbinary) {
 						
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
+						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])					
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -257,8 +311,8 @@ combine_PGS = function(
 						# train_tmp$trait = as.factor(train_tmp$trait)
 
 						if (length(topprs) == 1) {
-							ww = c(1)
-							names(ww) = topprs
+							ww = ww_raw = c(1)
+							names(ww) = names(ww_raw) = topprs
 						} else {
 
 							ctrl = trainControl(
@@ -304,6 +358,7 @@ combine_PGS = function(
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
+						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])						
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -315,24 +370,24 @@ combine_PGS = function(
 
 						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
-
+						
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						train_tmp$trait = as.factor(train_tmp$trait)
 
 						if (length(topprs) == 1) {
-							ww = c(1)
-							names(ww) = topprs
+							ww = ww_raw = c(1)
+							names(ww) = names(ww_raw) = topprs
 						} else {
-
+							
 							ctrl = trainControl(
 								method = "repeatedcv",
 								allowParallel = TRUE,
 								number = 3,
 								verboseIter = T)
-
+							
 							cl = makePSOCKcluster(ncores)
 							registerDoParallel(cl)
-
+							
 							set.seed(123)
 							model_prsmix = train(
 							  formula, data = train_tmp, method = "glmnet",
@@ -353,7 +408,16 @@ combine_PGS = function(
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
-							}
+							}							
+							
+							test_data1 = test_data
+							test_data1[,topprs] = scale(test_data[,topprs])
+							
+							test_pred = predict(model_prsmix, test_data1, type = "prob")[,2]
+							auc_ci = ci.auc(test_data1$trait, test_pred)
+							auc_out = data.frame(method="prsmix", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
+							fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_auc_PRSmix.txt"), row.names=F, sep="\t", quote=F)
+							
 						}
 						
 						test_df1 = cbind(test_data, IID=test_df$IID)
@@ -414,6 +478,7 @@ combine_PGS = function(
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
+						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -479,6 +544,7 @@ combine_PGS = function(
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
+						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
@@ -529,6 +595,14 @@ combine_PGS = function(
 								names(ww) = bestPRS_acc$pgs
         						topprs = bestPRS_acc$pgs
 							}
+							
+							test_data1 = test_data
+							test_data1[,topprs] = scale(test_data[,topprs])
+							
+							test_pred = predict(model_prsmix, test_data1, type = "prob")[,2]
+							auc_ci = ci.auc(test_data1$trait, test_pred)
+							auc_out = data.frame(method="prsmixP", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
+							fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_auc_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 						}
 
 						test_df1 = cbind(test_data, IID=test_df$IID)
