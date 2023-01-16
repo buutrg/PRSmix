@@ -107,19 +107,17 @@ combine_PGS = function(
 	out_save = out
 
 	for (train_size in train_size_list) {
-
+		
 		# train_size = train_size_list[1]
-
+		
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
-
+		
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), floor(0.8*nrow(pheno_prs_cov)))
 		remaining_idx = c(1:nrow(pheno_prs_cov))[-train_idx]
-
-		if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
-
 		
-
+		if (isbinary) fwrite(as.data.frame(table(pheno_prs_cov$trait)), paste0(out, "_case_counts.txt"), row.names=F, sep="\t", quote=F)
+		
 		train_df = pheno_prs_cov[train_idx,]
 		test_df = pheno_prs_cov[-train_idx,]
 
@@ -222,7 +220,7 @@ combine_PGS = function(
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
 
-			train_tmp = train_data[,c("trait", covar_list)]
+			train_tmp = train_data[,c("trait", c(bestPRS, covar_list))]
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
 			formula_null = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
@@ -258,12 +256,12 @@ combine_PGS = function(
 			test_pred = predict(model_prsmix_null, test_data1, type = "prob")[,2]
 			auc_ci = ci.auc(test_data1$trait, test_pred)
 			auc_out = data.frame(method="null_model", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
-			fwrite(auc_out, paste0(out, "_aucNULL.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(auc_out, paste0(out, "_auc_NULL.txt"), row.names=F, sep="\t", quote=F)
 			
 			test_pred = predict(model_prsmix_bestPRS, test_data1, type = "prob")[,2]
 			auc_ci = ci.auc(test_data1$trait, test_pred)
 			auc_out = data.frame(method="bestPGS", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
-			fwrite(auc_out, paste0(out, "_aucBestPGS.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(auc_out, paste0(out, "_auc_BestPGS.txt"), row.names=F, sep="\t", quote=F)
 			
 		}
 
@@ -277,7 +275,9 @@ combine_PGS = function(
 
 				# pval_thres = pval_thres_list[1]
 				# power_thres = power_thres_list[1]
-
+				
+				writeLines(paste0("P = ", pval_thres))
+				writeLines(paste0("Power = ", power_thres))
 				writeLines("PRSmix:")
 
 				topprs = pred_acc_train_trait_summary %>%
@@ -357,18 +357,15 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])						
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
-						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
 						
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
@@ -464,8 +461,6 @@ combine_PGS = function(
 
 				topprs = pred_acc_train_allPGS_summary %>%
 					filter(pval_partial_R2 <= pval_thres & power >= power_thres)
-				# topprs = pred_acc_train_allPGS_summary %>% filter(pgs=="PGS001590")
-				# topprs = pred_acc_train_allPGS_summary %>% filter(power >= power_thres)
 				topprs = topprs$pgs
 				print(length(topprs))
 
@@ -477,22 +472,18 @@ combine_PGS = function(
 					if (!isbinary) {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
-						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
 
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
-						# train_tmp$trait = as.factor(train_tmp$trait)
 
 						if (length(topprs) == 1) {
 							ww = c(1)
@@ -543,14 +534,12 @@ combine_PGS = function(
 					} else {
 
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						sd_train = apply(x_train[,topprs], 2, sd, na.rm=T)
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 						
