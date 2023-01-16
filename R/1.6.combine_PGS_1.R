@@ -262,7 +262,7 @@ combine_PGS = function(
 			
 			test_pred = predict(model_prsmix_bestPRS, test_data1, type = "prob")[,2]
 			auc_ci = ci.auc(test_data1$trait, test_pred)
-			auc_out = data.frame(method="null_model", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
+			auc_out = data.frame(method="bestPGS", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
 			fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_aucBestPRS.txt"), row.names=F, sep="\t", quote=F)			
 			
 		}
