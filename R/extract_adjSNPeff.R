@@ -15,7 +15,7 @@ extract_adjSNPeff = function(
 
 	options(datatable.fread.datatable=FALSE)
     
-    mixing_weight = fread(opt$mixing_weight_file)
+    mixing_weight = fread(mixing_weight_file)
 
     # snp_eff_files_list = paste0("~/data/snp_weight_all_alltraits_eur_", 0:8, ".txt")
 
