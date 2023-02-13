@@ -17,8 +17,6 @@ extract_adjSNPeff = function(
     
     mixing_weight = fread(mixing_weight_file)
 
-    # snp_eff_files_list = paste0("~/data/snp_weight_all_alltraits_eur_", 0:8, ".txt")
-
     snp_eff = NULL
     for (snp_eff_files in 1:length(snp_eff_files_list)) {
 
