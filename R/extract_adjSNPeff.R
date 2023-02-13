@@ -1,6 +1,6 @@
-#' Combine PGS
+#' Extract combined SNP effects
 #'
-#' This function combines multiple PGS into one score
+#' This function extract the combined SNP effects
 #'
 #' @param mixing_weight_file The mixing weight files, 2 columns: 1) Score ID 2) Mixing weights
 #' @param snp_eff_files_list A vector of names of file of original SNP weights
