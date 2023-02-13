@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract_adjSNPeff.R
 \name{extract_adjSNPeff}
 \alias{extract_adjSNPeff}
-\title{Combine PGS}
+\title{Extract combined SNP effects}
 \usage{
 extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, out)
 }
@@ -17,5 +17,5 @@ extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, out)
 Adjusted SNP effects
 }
 \description{
-This function combines multiple PGS into one score
+This function extract the combined SNP effects
 }

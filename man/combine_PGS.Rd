@@ -20,6 +20,8 @@ combine_PGS(
   IID_pheno = "person_id",
   covar_list = c("age", "sex", paste0("PC", 1:10)),
   ncores = 5,
+  is_extract_adjSNPeff = F,
+  snp_eff_files_list = NULL,
   train_size_list = NULL,
   power_thres_list = c(0.95),
   pval_thres_list = c(0.05),
