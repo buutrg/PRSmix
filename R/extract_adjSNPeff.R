@@ -27,7 +27,8 @@ extract_adjSNPeff = function(
         idx = which(colnames(dd) %in% mixing_weight[,1])
         if (length(idx)==0) next()
         
-        cmd = paste0("awk '{print $1,$2,$3,", paste(idx, collapse=",$"), "}' ", score_file)
+        idx = paste0("$", idx)
+        cmd = paste0("awk '{print $1,$2,$3,", paste(idx, collapse=","), "}' ", score_file)
         dd = fread(cmd = cmd)
         
         idx = which(colnames(dd) %in% mixing_weight[,1])
