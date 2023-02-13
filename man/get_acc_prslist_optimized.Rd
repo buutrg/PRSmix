@@ -4,12 +4,21 @@
 \alias{get_acc_prslist_optimized}
 \title{Get risk allele by consensus across multiple PRS snp effect panels}
 \usage{
-get_acc_prslist_optimized(data_df, pgs_list, isbinary = F)
+get_acc_prslist_optimized(
+  data_df,
+  pgs_list,
+  covar_list,
+  liabilityR2 = F,
+  alpha = 0.05,
+  isbinary = F
+)
 }
 \arguments{
 \item{data_df}{Data to assess prediction accuracy}
 
 \item{pgs_list}{PGS list of the trait}
+
+\item{covar_list}{Array of covariates}
 
 \item{isbinary}{TRUE if binary and FALSE otherwise}
 }

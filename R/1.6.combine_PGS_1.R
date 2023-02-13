@@ -38,6 +38,8 @@ combine_PGS = function(
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 5,
+	is_extract_adjSNPeff = F,
+	snp_eff_files_list = NULL,
 	train_size_list = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
@@ -95,6 +97,7 @@ combine_PGS = function(
 	#######################
 
 	irnt = function(x) return(qnorm((rank(x,na.last="keep")-0.5)/sum(!is.na(x))))
+	rr = function(x,d=3) round(x,d)
 
 	#######################
 
@@ -224,8 +227,8 @@ combine_PGS = function(
 			train_tmp$trait = as.factor(train_tmp$trait)
 			
 			formula_null = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
-			formula_bestPRS = as.formula(paste0("trait ~ ", bestPRS, "+", paste0(covar_list, collapse="+")))
-
+			formula_bestPRS = as.formula(paste0("trait ~ scale(", bestPRS, ")+", paste0(covar_list, collapse="+")))
+			
 			ctrl = trainControl(
 				method = "repeatedcv",
 				allowParallel = TRUE,
@@ -355,7 +358,7 @@ combine_PGS = function(
 						res_lm1
 
 					} else {
-
+						
 						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])						
@@ -425,20 +428,38 @@ combine_PGS = function(
 						res_lm1
 						
 						############## OR ###################
+						formula_bestPRS = as.formula(paste0("trait ~ scale(", bestPRS, ")+", paste0(covar_list, collapse="+")))
+						model1 = glm(formula_bestPRS, data=test_df1, family="binomial")
+						model1s = summary(model1)
+						mm = exp(model1s$coefficients[2,1])
+						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
+						uu = exp(model1s$coefficients[2,1] + 1.97*model1ss$coefficients[2,2])
+						pval = format.pval(model1s$coefficients[2,4])
+						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
+						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_bestPGS.txt"), row.names=F, sep="\t", quote=F)
+						
+						
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model1 = glm(ff, data=test_df1, family="binomial")
 						model1s = summary(model1)
 						mm = exp(model1s$coefficients[2,1])
 						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
-						print(paste0(mm, " (", ll, "-", uu, ")"))
-						fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
+						pval = format.pval(model1s$coefficients[2,4])
+						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
+						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 
 						####################################
 
 					}
 
 					fwrite(data.frame(c(topprs), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt"), sep="\t", quote=F)
+					
+					if (is_extract_adjSNPeff) {
+						mixing_weight_file = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmix.txt")
+						outfile = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_adjSNPeff_PGSmix.txt")
+						extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, outfile)
+					}
 					
 					res_lm1_summary = res_lm1
 					res_lm1_summary$pgs = "PRSmix"
@@ -609,8 +630,10 @@ combine_PGS = function(
 						mm = exp(models$coefficients[2,1])
 						ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
 						uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
-						print(paste0(mm, " (", ll, "-", uu, ")"))
-						fwrite(data.frame(mm, ll, uu), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+						pval = format.pval(model1s$coefficients[2,4])
+						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
+						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+						
 					}
 					pred_acc_test_trait_summary_out = bind_rows(res_lm, pred_acc_test_trait_summary_out)
 					head(pred_acc_test_trait_summary_out)
@@ -621,7 +644,14 @@ combine_PGS = function(
 
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
-					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+					fwrite(data.frame(topprs, ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)					
+					
+					if (is_extract_adjSNPeff) {
+						mixing_weight_file = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PGSmixPlus.txt")
+						outfile = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_adjSNPeff_PGSmixPlus.txt")
+						extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, outfile)
+					}
+					
 					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PGSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
 					pgs_annot = fread(metascore)

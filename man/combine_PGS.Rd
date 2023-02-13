@@ -5,19 +5,26 @@
 \title{Combine PGS}
 \usage{
 combine_PGS(
-  trait = "cad",
-  anc = "eur",
-  pgslist = "cad_list.txt",
-  pheno_name = "CAD_case",
-  isbinary = T,
-  score_files_list = "",
-  basic_data_file = "/home/jupyter/data/phenotypes/aou_basic_data.csv",
-  metascore = "~/data/pgs_all_metadata_scores.csv",
-  phenofile = "/home/jupyter/data/phenotypes/CAD_revised.csv",
-  score_pref = "AoU_98K_WGS_QCed_callrate.0.9_hwe.1e-15_maf0.0001_",
-  out = "test_cad_mixedPRS_eur",
-  read_pred_training = F,
-  read_pred_testing = F
+  trait,
+  anc,
+  pgslist,
+  pheno_name,
+  isbinary,
+  score_files_list,
+  basic_data_file,
+  metascore,
+  phenofile,
+  score_pref,
+  out,
+  liabilityR2 = F,
+  IID_pheno = "person_id",
+  covar_list = c("age", "sex", paste0("PC", 1:10)),
+  ncores = 5,
+  train_size_list = NULL,
+  power_thres_list = c(0.95),
+  pval_thres_list = c(0.05),
+  read_pred_training = NULL,
+  read_pred_testing = NULL
 )
 }
 \arguments{
@@ -31,7 +38,11 @@ combine_PGS(
 
 \item{isbinary}{True if this is binary}
 
-\item{basic_data_file}{Directory to covariate information}
+\item{score_files_list}{A list contain PGS directory}
+
+\item{basic_data_file}{Directory to file with covariate information (age,sex,PC1...,PC10)}
+
+\item{metascore}{Meta-information contain PGS id and trait names}
 
 \item{phenofile}{Directory to the phenotype file}
 
@@ -39,7 +50,19 @@ combine_PGS(
 
 \item{out}{Output prefix}
 
-\item{read_pred_training}{True if the training set PRS assessment already run and can be read from file}
+\item{IID_pheno}{Column name of IID of phenotype file (e.g IID, person_id)}
+
+\item{covar_list}{Array of covariates}
+
+\item{ncores}{Number of cores to run}
+
+\item{power_thres_list}{Power threshold to select scores}
+
+\item{read_pred_training}{True if the training set PRS assessment already run and can be read from file (Default: FALSE)}
+
+\item{read_pred_testing}{True if the training set PRS assessment already run and can be read from file (Default: FALSE)}
+
+\item{pval_thres}{P-value threshold to select scores}
 }
 \value{
 Prediction accuracy of PRSmix

@@ -7,7 +7,7 @@
 extract_PGSid(data, trait, efo)
 }
 \arguments{
-\item{data}{Intended ancestry}
+\item{data}{directory to metadata score from PGS catalog (pgs_all_metadata_scores.csv)}
 
 \item{trait}{The name of the trait}
 

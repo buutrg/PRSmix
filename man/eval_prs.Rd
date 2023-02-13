@@ -4,12 +4,22 @@
 \alias{eval_prs}
 \title{Evaluate PRS prediction accuracy}
 \usage{
-eval_prs(data_df, prs_name, isbinary = F, debug = F)
+eval_prs(
+  data_df,
+  prs_name,
+  covar_list,
+  isbinary = F,
+  liabilityR2 = F,
+  alpha = 0.05,
+  debug = F
+)
 }
 \arguments{
 \item{data_df}{Data to assess prediction accuracy}
 
 \item{prs_name}{PGS list of the trait}
+
+\item{covar_list}{Array of covariates}
 
 \item{isbinary}{TRUE if binary and FALSE otherwise}
 
