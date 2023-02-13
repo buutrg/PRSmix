@@ -668,9 +668,6 @@ combine_PGS = function(
 						mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
 						mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
 						mutate(Var1 = str_to_title(Var1)) %>%
-						mutate(Var1 = gsub("Hdl","HDL",Var1)) %>%
-						mutate(Var1 = gsub("Ldl","LDL",Var1)) %>%
-						mutate(Var1 = gsub("Bmi","BMI",Var1)) %>%
 						group_by(Var1) %>%
 						summarise(Freq = sum(Freq))
 						
