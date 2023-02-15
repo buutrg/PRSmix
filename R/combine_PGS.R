@@ -1,13 +1,12 @@
-#' Combine PGS
+#' Perform linear combination of the polygenic risk scores
 #'
-#' This function combines multiple PGS into one score
+#' This function perform a linear combination of the scores
 #'
 #' @param trait The name of the trait
-#' @param anc Intended ancestry
 #' @param pgslist A vector of PGS to combine
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
-#' @param score_files_list A list contain PGS directory
+#' @param score_files_list A vector contain directories of the PGS to be read
 #' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param phenofile Directory to the phenotype file
 #' @param score_pref Prefix of score files
@@ -16,7 +15,7 @@
 #' @param liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
 #' @param IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
 #' @param covar_list A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))
-#' @param ncores Number of CPU cores to process (DEFAULT = 1)
+#' @param ncores Number of CPU cores for parallel processing (DEFAULT = 1)
 #' @param is_extract_adjSNPeff TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
 #' @param snp_eff_files_list The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
 #' @param train_size_list A vector of training sample sizes. If NULL, all 80% of the samples will be used (DEFAULT = NULL)
@@ -37,7 +36,6 @@
 #' @export
 combine_PGS = function(
 	trait,
-	anc,
 	pgslist,
 	pheno_name,
 	isbinary,
@@ -62,13 +60,10 @@ combine_PGS = function(
 
 	options(datatable.fread.datatable=FALSE)
 
-
-	writeLines("Read basic data")
-
+	writeLines("--- Reading covariate data ---")
 	basic_data = fread(basic_data_file)
 
-	writeLines("Read all pgs")
-
+	writeLines("--- Reading all polygenic risk scores ---")
 	all_scores = NULL
 
 	for (score_file_i in 1:length(score_files_list)) {
@@ -96,7 +91,7 @@ combine_PGS = function(
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
 
-	writeLines("Merging Phenotype and PRS files")
+	writeLines("--- Merging Phenotype and PRS files ---")
 
 	pheno_prs = merge(pheno, all_scores, by="IID")
 	pheno_prs_cov = merge(pheno_prs, basic_data, by.x="IID", by.y=IID_pheno)
@@ -111,6 +106,7 @@ combine_PGS = function(
 
 	null_train_size_list = F
 	if (is.null(train_size_list)) {
+		writeLines("--- Selecting 80% as training data ---")
 		train_size_list = floor(0.8*nrow(pheno_prs_cov))
 		null_train_size_list = T
 	}
@@ -120,6 +116,8 @@ combine_PGS = function(
 	for (train_size in train_size_list) {
 		
 		# train_size = train_size_list[1]
+		
+		writeLines(paste("--- Using ", train_size, " for training sample ---"))
 		
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
 		
@@ -153,7 +151,7 @@ combine_PGS = function(
 
 		################################ training #################################
 
-		writeLines("Evaluate PRS in training set")
+		writeLines("--- Evaluating PRS in training set ---")
 				
 		training_file = paste0(out, "_train_allPRS.txt")
 		read_pred_training_1 = (read_pred_training | file.exists(training_file))
@@ -174,7 +172,7 @@ combine_PGS = function(
 
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
-			writeLines("Read training file: ", training_file, ". If user don't want to read this file, please remove it or set read_pred_training = FALSE")
+			writeLines("Reading training file: ", training_file)
 			pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
 		}
 
@@ -193,7 +191,7 @@ combine_PGS = function(
 
 		################################ testing #################################
 
-		writeLines("Evaluate PRS in testing set")
+		writeLines("--- Evaluating PRS in testing set ---")
 
 		if (!read_pred_testing_1) {
 			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
@@ -204,7 +202,7 @@ combine_PGS = function(
 
 			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
-			writeLines("Read testing file: ", testing_file, ". If user don't want to read this file, please remove it or set read_pred_testing = FALSE")
+			writeLines("Reading testing file: ", testing_file)
 			pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
 		}
 
@@ -269,6 +267,7 @@ combine_PGS = function(
 
 		pred_acc_test_trait_summary_out = pred_acc_test_trait_summary
 
+		writeLines("--- Iterating power and p-value parameters --- ")
 		for (power_thres in power_thres_list)
 			for (pval_thres in pval_thres_list) {
 
@@ -325,9 +324,9 @@ combine_PGS = function(
 
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet",
-							  trControl = ctrl,
-							  tuneLength = 50, verbose=T
+								formula, data = train_tmp, method = "glmnet",
+								trControl = ctrl,
+								tuneLength = 50, verbose=T
 							)
 
 							stopCluster(cl)
@@ -386,9 +385,9 @@ combine_PGS = function(
 							
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet",
-							  trControl = ctrl, family = "binomial",
-							  tuneLength = 50, verbose=T
+								formula, data = train_tmp, method = "glmnet",
+								trControl = ctrl, family = "binomial",
+								tuneLength = 50, verbose=T
 							)
 
 							stopCluster(cl)
@@ -418,7 +417,7 @@ combine_PGS = function(
 						
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-
+						
 						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
@@ -518,9 +517,9 @@ combine_PGS = function(
 
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet",
-							  trControl = ctrl,
-							  tuneLength = 50, verbose=T
+								formula, data = train_tmp, method = "glmnet",
+								trControl = ctrl,
+								tuneLength = 50, verbose=T
 							)
 
 							stopCluster(cl)
@@ -581,9 +580,9 @@ combine_PGS = function(
 							
 							set.seed(123)
 							model_prsmix = train(
-							  formula, data = train_tmp, method = "glmnet",
-							  trControl = ctrl,
-							  tuneLength = 50, verbose=T
+								formula, data = train_tmp, method = "glmnet",
+								trControl = ctrl,
+								tuneLength = 50, verbose=T
 							)
 							
 							stopCluster(cl)
@@ -599,7 +598,7 @@ combine_PGS = function(
 								writeLines("No weight for PRS")
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
-        						topprs = bestPRS_acc$pgs
+								topprs = bestPRS_acc$pgs
 							}
 							
 							test_data1 = test_data
