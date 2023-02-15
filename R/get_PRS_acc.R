@@ -15,7 +15,7 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @param alpha Significance level to estimate power (default = 0.05)
 #' @return A dataframe for prediction accuracy of a single PRS and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
-eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
+eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
 	
 	if (isbinary & !liabilityR2) {
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
@@ -77,7 +77,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 }
 
 
-#' Evaluate PRS from the list given
+#' Evaluate multiple PRSs from the given vector of PRS
 #'
 #' This function get prediction accuracy of the list of PRS
 #'
@@ -89,7 +89,7 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 #' @param isbinary TRUE if binary and FALSE otherwise (default = FALSE)
 #' @return A dataframe for prediction accuracy of multiple PRSss and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
-get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
+eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	
 	# data_df = test_df
 	
@@ -99,7 +99,7 @@ get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=
 		if (prs_i %% 100 == 0) print(prs_i)
 		
 		prs_name = pgs_list[prs_i]
-		pred_acc_test_tmp = eval_prs(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, alpha=alpha, isbinary=isbinary)
+		pred_acc_test_tmp = eval_single_PRS(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, alpha=alpha, isbinary=isbinary)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	

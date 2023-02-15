@@ -9,7 +9,7 @@
 #' @param start_col Index of starting column to estimate PRS in the reference file (default = 4).
 #' @return Execute plink. Return 0 if successful.
 #' @export
-estimate_PRS = function(
+compute_PRS = function(
 	plink_exe,
 	geno,
 	ref_file,

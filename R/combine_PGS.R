@@ -24,14 +24,15 @@
 #' @param read_pred_training TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
 #' @param read_pred_testing TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
 #' @return This function will return several files including 
-#' 1) The case counts (for binary trait), 
-#' 2) The dataframe of training and testing sample split from the main dataframe, 
-#' 3) The prediction accuracy for each PRS in the training and testing set, 
-#' 4) The prediction accuracy assessed in the testing set of the best PRS selected from the training set, 
-#' 5) the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
-#' 6) Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
-#' 7) The mixing weights of the scores used in combination, 
-#' 8) The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
+#' - The case counts (for binary trait), 
+#' - The dataframe of training and testing sample split from the main dataframe, 
+#' - The prediction accuracy for each PRS in the training and testing set, 
+#' - The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
+#' - the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+#' - Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+#' - The mixing weights of the scores used in combination, 
+#' - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
+#' - Return 0 if no error
 #' 
 #' @export
 combine_PGS = function(
@@ -168,7 +169,7 @@ combine_PGS = function(
 
 			pgs_list_all = colnames(train_df)
 			pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
-			pred_acc_train_allPGS_summary = get_acc_prslist_optimized(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+			pred_acc_train_allPGS_summary = eval_multiple_PRS(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
@@ -186,7 +187,7 @@ combine_PGS = function(
 			filter(pgs %in% pgs_list)
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 		bestPRS = pred_acc_train_allPGS_summary1[1,1]
-		bestPRS_acc = eval_prs(test_df, bestPRS, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+		bestPRS_acc = eval_single_PRS(test_df, bestPRS, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 		fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
 
 		################################ testing #################################
@@ -194,7 +195,7 @@ combine_PGS = function(
 		writeLines("--- Evaluating PRS in testing set ---")
 
 		if (!read_pred_testing_1) {
-			pred_acc_test_trait = get_acc_prslist_optimized(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
@@ -348,7 +349,7 @@ combine_PGS = function(
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
+						res_lm1 = eval_single_PRS(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
@@ -418,7 +419,7 @@ combine_PGS = function(
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
-						res_lm1 = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
+						res_lm1 = eval_single_PRS(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 						
@@ -541,7 +542,7 @@ combine_PGS = function(
 
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
+						res_lm = eval_single_PRS(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 
@@ -612,7 +613,7 @@ combine_PGS = function(
 
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
-						res_lm = eval_prs(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
+						res_lm = eval_single_PRS(test_df1, "newprs", covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						res_lm$pgs = "PRSmix+"
 						res_lm
 						
