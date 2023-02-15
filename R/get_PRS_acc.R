@@ -88,6 +88,7 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 #' @param alpha Significance level to estimate power (default = 0.05)
 #' @param isbinary TRUE if binary and FALSE otherwise (default = FALSE)
 #' @return A dataframe for prediction accuracy of multiple PRSss and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
+#'
 #' @export
 eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	

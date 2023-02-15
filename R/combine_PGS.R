@@ -33,7 +33,16 @@
 #' - The mixing weights of the scores used in combination, 
 #' - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
 #' - Return 0 if no error
-#' 
+#'
+#' @importFrom stats cor dnorm lm glm logLik pchisq qchisq qnorm as.formula coef filter nobs pnorm power predict sd
+#' @importFrom data.table fread fwrite
+#' @importFrom dplyr bind_rows select all_of mutate group_by summarise rowwise
+#' @importFrom stringr str_to_title
+#' @importFrom magrittr %>%
+#' @importFrom parallel makePSOCKcluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom caret train trainControl
+#' @importFrom utils head read.table
 #' @export
 combine_PGS = function(
 	# trait,
@@ -280,7 +289,7 @@ combine_PGS = function(
 				writeLines("PRSmix:")
 
 				topprs = pred_acc_train_trait_summary %>%
-					filter(pval_partial_R2 <= pval_thres & power >= power_thres)
+					filter(.data$pval_partial_R2 <= pval_thres & .data$power >= power_thres)
 
 				head(topprs)
 				topprs = topprs$pgs
@@ -429,7 +438,7 @@ combine_PGS = function(
 						model1s = summary(model1)
 						mm = exp(model1s$coefficients[2,1])
 						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
-						uu = exp(model1s$coefficients[2,1] + 1.97*model1ss$coefficients[2,2])
+						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 						pval = format.pval(model1s$coefficients[2,4])
 						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
 						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_bestPGS.txt"), row.names=F, sep="\t", quote=F)
@@ -465,7 +474,7 @@ combine_PGS = function(
 					fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmix.txt"), row.names=F, sep="\t", quote=F)
 					
 					prs_out = test_df1 %>%
-						select(IID, newprs)
+						select(.data$IID, .data$newprs)
 					colnames(prs_out) = c("IID", "prsmix")
 					
 					fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
@@ -636,7 +645,7 @@ combine_PGS = function(
 
 					fwrite(pred_acc_test_trait_summary_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_test_summary_traitPRS_withPRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
-					prsmixplus = test_df1 %>% select(IID, newprs)
+					prsmixplus = test_df1 %>% select(.data$IID, .data$newprs)
 
 					fwrite(prsmixplus, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmixPlus.txt"), row.names=F, sep="\t", quote=F)
 
@@ -652,20 +661,20 @@ combine_PGS = function(
 					
 					if (!is.null(metascore) & file.exists(metascore)) {
 						pgs_annot = fread(metascore)
-						pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
+						pgs_annot_sig = pgs_annot %>% filter(.data$`Polygenic Score (PGS) ID` %in% nonzero_w)
 						pgs_annot_sig_df = pgs_annot_sig %>%
-							select(`Polygenic Score (PGS) ID`, `Reported Trait`)
+							select(.data$`Polygenic Score (PGS) ID`, .data$`Reported Trait`)
 
 						pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
 
 						reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
 						reported_trait = reported_trait %>%
 							rowwise() %>%
-							mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
-							mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
-							mutate(Var1 = str_to_title(Var1)) %>%
-							group_by(Var1) %>%
-							summarise(Freq = sum(Freq))
+							mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",.data$Var1)) %>%
+							mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",.data$Var1)) %>%
+							mutate(Var1 = str_to_title(.data$Var1)) %>%
+							group_by(.data$Var1) %>%
+							summarise(Freq = sum(.data$Freq))
 						
 						reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 

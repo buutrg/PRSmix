@@ -5,13 +5,12 @@
 \title{Perform linear combination of the polygenic risk scores}
 \usage{
 combine_PGS(
-  trait,
+  phenofile,
+  basic_data_file,
+  score_files_list,
   pgslist,
   pheno_name,
   isbinary,
-  score_files_list,
-  basic_data_file,
-  phenofile,
   score_pref,
   out,
   metascore = NULL,
@@ -29,19 +28,17 @@ combine_PGS(
 )
 }
 \arguments{
-\item{trait}{The name of the trait}
-
-\item{pgslist}{A vector of PGS to combine}
-
-\item{pheno_name}{Name of the phenotype column}
-
-\item{isbinary}{True if this is binary}
-
-\item{score_files_list}{A vector contain directories of the PGS to be read}
+\item{phenofile}{Directory to the phenotype file}
 
 \item{basic_data_file}{Directory to file with covariate information (age,sex,PC1..10)}
 
-\item{phenofile}{Directory to the phenotype file}
+\item{score_files_list}{A vector contain directories of the PGS to be read}
+
+\item{pgslist}{A vector of PGS to combine}
+
+\item{pheno_name}{Column name of the phenotype in phenofile}
+
+\item{isbinary}{True if this is binary}
 
 \item{score_pref}{Prefix of score files}
 

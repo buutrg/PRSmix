@@ -4,18 +4,18 @@
 \alias{compute_PRS}
 \title{Estimate PRS}
 \usage{
-compute_PRS(plink_exe, geno, ref_file, out, start_col = 4)
+compute_PRS(plink_exe, geno, weight_file, out, start_col = 4)
 }
 \arguments{
+\item{plink_exe}{The weight file.}
+
 \item{geno}{Genotype file in plink format (bed/bim/fam).}
 
-\item{ref_file}{The reference risk-increasing allele file.}
+\item{weight_file}{The per-allele SNP effect}
 
 \item{out}{Name of output file.}
 
-\item{start_col}{Index of starting column to estimate PRS in the reference file (default = 4).}
-
-\item{wfile}{The weight file.}
+\item{start_col}{Index of starting column to estimate PRS in the reference file (DEFAULT = 4).}
 }
 \value{
 Execute plink. Return 0 if successful.

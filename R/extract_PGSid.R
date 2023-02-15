@@ -21,7 +21,7 @@ extract_PGSid = function(
 
   pgsdata = pgsdata %>% 
     rowwise() %>%
-    filter(sum(unlist(lapply(efo_list, function(x) grep(x, `Mapped Trait(s) (EFO ID)`))))>0)
+    filter(sum(unlist(lapply(efo_list, function(x) grep(x, .data$`Mapped Trait(s) (EFO ID)`))))>0)
 
   sum(unlist(lapply(efo_list, function(x) grep(x, pgsdata$`Mapped Trait(s) (EFO ID)`[1413]))))
 
