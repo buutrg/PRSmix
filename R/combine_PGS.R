@@ -2,13 +2,13 @@
 #'
 #' This function perform a linear combination of the scores
 #'
-#' @param trait The name of the trait
-#' @param pgslist A vector of PGS to combine
-#' @param pheno_name Name of the phenotype column
-#' @param isbinary True if this is binary
-#' @param score_files_list A vector contain directories of the PGS to be read
-#' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
+# ' @param trait The name of the trait
 #' @param phenofile Directory to the phenotype file
+#' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
+#' @param score_files_list A vector contain directories of the PGS to be read
+#' @param pgslist A vector of PGS to combine
+#' @param pheno_name Column name of the phenotype in phenofile
+#' @param isbinary True if this is binary
 #' @param score_pref Prefix of score files
 #' @param out Prefix of output
 #' @param metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
@@ -36,13 +36,13 @@
 #' 
 #' @export
 combine_PGS = function(
-	trait,
+	# trait,
+	phenofile,
+	basic_data_file,
+	score_files_list,
 	pgslist,
 	pheno_name,
 	isbinary,
-	score_files_list,
-	basic_data_file,
-	phenofile,
 	score_pref,
 	out,
 	metascore = NULL,
