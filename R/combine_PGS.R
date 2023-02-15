@@ -31,7 +31,7 @@
 #' 5) the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
 #' 6) Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
 #' 7) The mixing weights of the scores used in combination, 
-#' 8) The adjusted SNP effects to estimate PRSmix and PRSmix+
+#' 8) The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
 #' 
 #' @export
 combine_PGS = function(
