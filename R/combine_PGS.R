@@ -649,7 +649,7 @@ combine_PGS = function(
 					
 					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
-					if (file.exists(metascore)) {
+					if (!is.null(metascore) & file.exists(metascore)) {
 						pgs_annot = fread(metascore)
 						pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
 						pgs_annot_sig_df = pgs_annot_sig %>%
