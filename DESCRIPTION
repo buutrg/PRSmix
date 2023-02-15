@@ -17,6 +17,7 @@ Depends:
 	dplyr,
 	tidyr,
 	glmnet,
+	R.utils,
 	foreach,
 	doParallel,
 	caret,

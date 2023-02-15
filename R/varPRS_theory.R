@@ -3,46 +3,19 @@
 
 rr = function(x,digit=10) return(round(x,digit))
 
-######################## Liability R2: Employed from Lee et al. 2012, Genet Epi
-LiabR2 = function(ncase, ncont, K=NULL, R2obs){
-	
-	ncase = ncase
-	ncont = ncont
-	nt = ncase+ncont
-	P = ncase/nt
-	K = K
-	if (is.na(K)) K = P
-	R2obs = R2obs
-	
-	#assume follow Normal distribution
-	#the threshold on the normal distribution which truncates the proportion of disease prevalence
-	thd = qnorm(1-K)
-	zv = dnorm(thd)
-	mv = zv/K
-	mv2 = -mv*K/(1-K)
-	
-	theta = mv*(P-K)/(1-K)*(mv*(P-K)/(1-K)-thd)
-	cv = K*(1-K)/zv^2*K*(1-K)/(P*(1-P))
-	
-	#transfer
-	R2 = R2obs*cv/(1+R2obs*theta*cv)
-	return(R2)
-}
-
-
-
-#' Evaluate PRS prediction accuracy
+#' Evaluate prediction accuracy of a single PRS 
 #'
-#' This function get R2 for PRS accuracy
+#' This function get prediction accuracy for a single PRS
 #'
 #' @param data_df Data to assess prediction accuracy
 #' @param prs_name PGS list of the trait
-#' @param isbinary TRUE if binary and FALSE otherwise
 #' @param covar_list Array of covariates
-#' @param debug TRUE to verbose debugging
-#' @return A dataframe for prediction accuracy of PRS and their power
+#' @param isbinary TRUE if binary and FALSE otherwise (default = FALSE)
+#' @param liabilityR2 TRUE if liability R2 should be reported (default = FALSE)
+#' @param alpha Significance level to estimate power (default = 0.05)
+#' @return A dataframe for prediction accuracy of a single PRS and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
-eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05, debug=F) {
+eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
 	
 	if (isbinary & !liabilityR2) {
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
@@ -69,11 +42,6 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 	} else {
 		data_df$trait = as.numeric(data_df$trait)
 		
-		# formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
-		# y_resid = lm(formula, data=data_df)$residuals
-		# # y_resid = summary(model_resid)$r.squared
-		# r2o = cor(y_resid, data_df[,prs_name])^2
-		
 		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
 		r_full = summary(model_full)$r.squared
@@ -89,12 +57,10 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 			N = nrow(data_df)
 			K = mean(data_df$trait)
 			R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
-			# R2 = r2o * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
 		}
 		
 	}
 	
-	# alpha = 0.05
 	NCP = N * R2 / (1-R2)
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
 	
@@ -111,15 +77,17 @@ eval_prs = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, al
 }
 
 
-#' Get risk allele by consensus across multiple PRS snp effect panels
+#' Evaluate PRS from the list given
 #'
-#' This function get the risk-increasing allele based on consensus across PRS panels
+#' This function get prediction accuracy of the list of PRS
 #'
-#' @param data_df Data to assess prediction accuracy
-#' @param pgs_list PGS list of the trait
-#' @param covar_list Array of covariates
-#' @param isbinary TRUE if binary and FALSE otherwise
-#' @return A dataframe for prediction accuracy of PRS and their power
+#' @param data_df A dataframe where rows for samples, columns for PRS
+#' @param pgs_list PGS list to evaluate, must be exist as columns in the dataframe
+#' @param covar_list Array of covariates, must be exist as columns in the dataframe
+#' @param liabilityR2 TRUE if liability R2 should be reported (default = FALSE)
+#' @param alpha Significance level to estimate power (default = 0.05)
+#' @param isbinary TRUE if binary and FALSE otherwise (default = FALSE)
+#' @return A dataframe for prediction accuracy of multiple PRSss and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
 get_acc_prslist_optimized = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	

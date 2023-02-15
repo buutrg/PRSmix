@@ -4,23 +4,36 @@
 #'
 #' @param trait The name of the trait
 #' @param anc Intended ancestry
-#' @param pgslist PGS list of the trait
+#' @param pgslist A vector of PGS to combine
 #' @param pheno_name Name of the phenotype column
 #' @param isbinary True if this is binary
 #' @param score_files_list A list contain PGS directory
-#' @param basic_data_file Directory to file with covariate information (age,sex,PC1...,PC10)
-#' @param metascore Meta-information contain PGS id and trait names
+#' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param phenofile Directory to the phenotype file
 #' @param score_pref Prefix of score files
+#' @param out Prefix of output
+#' @param metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
+#' @param liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
 #' @param IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
-#' @param out Output prefix
-#' @param covar_list Array of covariates
-#' @param ncores Number of cores to run
-#' @param power_thres_list Power threshold to select scores
-#' @param pval_thres P-value threshold to select scores
-#' @param read_pred_training True if the training set PRS assessment already run and can be read from file (Default: FALSE)
-#' @param read_pred_testing True if the training set PRS assessment already run and can be read from file (Default: FALSE)
-#' @return Prediction accuracy of PRSmix
+#' @param covar_list A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))
+#' @param ncores Number of CPU cores to process (DEFAULT = 1)
+#' @param is_extract_adjSNPeff TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
+#' @param snp_eff_files_list The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
+#' @param train_size_list A vector of training sample sizes. If NULL, all 80% of the samples will be used (DEFAULT = NULL)
+#' @param power_thres_list A vector of power thresholds to select scores (DEFAULT = 0.95)
+#' @param pval_thres_list A vector of P-value thresholds to select scores (DEFAULT = 0.05)
+#' @param read_pred_training TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
+#' @param read_pred_testing TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
+#' @return This function will return several files including 
+#' 1) The case counts (for binary trait), 
+#' 2) The dataframe of training and testing sample split from the main dataframe, 
+#' 3) The prediction accuracy for each PRS in the training and testing set, 
+#' 4) The prediction accuracy assessed in the testing set of the best PRS selected from the training set, 
+#' 5) the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+#' 6) Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+#' 7) The mixing weights of the scores used in combination, 
+#' 8) The adjusted SNP effects to estimate PRSmix and PRSmix+
+#' 
 #' @export
 combine_PGS = function(
 	trait,
@@ -30,21 +43,21 @@ combine_PGS = function(
 	isbinary,
 	score_files_list,
 	basic_data_file,
-	metascore,
 	phenofile,
 	score_pref,
 	out,
+	metascore = NULL,
 	liabilityR2 = F,
 	IID_pheno = "person_id",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
-	ncores = 5,
+	ncores = 1,
 	is_extract_adjSNPeff = F,
 	snp_eff_files_list = NULL,
 	train_size_list = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
-	read_pred_training = NULL,
-	read_pred_testing = NULL
+	read_pred_training = FALSE,
+	read_pred_testing = FALSE
 	) {
 
 	options(datatable.fread.datatable=FALSE)
@@ -83,8 +96,7 @@ combine_PGS = function(
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
 
-	writeLines("Merging files")
-
+	writeLines("Merging Phenotype and PRS files")
 
 	pheno_prs = merge(pheno, all_scores, by="IID")
 	pheno_prs_cov = merge(pheno_prs, basic_data, by.x="IID", by.y=IID_pheno)
@@ -92,10 +104,6 @@ combine_PGS = function(
 
 	#######################
 	
-	# pheno_prs_cov[,which(startsWith(colnames(pheno_prs_cov), "PGS"))] = scale(pheno_prs_cov[,which(startsWith(colnames(pheno_prs_cov), "PGS"))])
-
-	#######################
-
 	irnt = function(x) return(qnorm((rank(x,na.last="keep")-0.5)/sum(!is.na(x))))
 	rr = function(x,d=3) round(x,d)
 
@@ -146,26 +154,12 @@ combine_PGS = function(
 		################################ training #################################
 
 		writeLines("Evaluate PRS in training set")
+				
+		training_file = paste0(out, "_train_allPRS.txt")
+		read_pred_training_1 = (read_pred_training | file.exists(training_file))
 		
-		if (!is.null(read_pred_training)) {
-      		read_pred_training_1 = read_pred_training
-		} else {
-			if (file.exists(paste0(out, "_train_allPRS.txt"))) {
-				read_pred_training_1 = T
-			} else {
-				read_pred_training_1 = F
-			}
-		}		
-		
-		if (!is.null(read_pred_testing)) {
-      		read_pred_testing_1 = read_pred_testing
-		} else {
-			if (file.exists(paste0(out, "_test_allPRS.txt"))) {
-				read_pred_testing_1 = T
-			} else {
-				read_pred_testing_1 = F
-			}
-		}
+		testing_file = paste0(out, "_test_allPRS.txt")
+		read_pred_testing_1 = (read_pred_testing | file.exists(testing_file))
 		
 		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
@@ -180,6 +174,7 @@ combine_PGS = function(
 
 			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
+			writeLines("Read training file: ", training_file, ". If user don't want to read this file, please remove it or set read_pred_training = FALSE")
 			pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
 		}
 
@@ -209,6 +204,7 @@ combine_PGS = function(
 
 			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
+			writeLines("Read testing file: ", testing_file, ". If user don't want to read this file, please remove it or set read_pred_testing = FALSE")
 			pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
 		}
 
@@ -654,27 +650,29 @@ combine_PGS = function(
 					
 					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 					
-					pgs_annot = fread(metascore)
-					pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
-					pgs_annot_sig_df = pgs_annot_sig %>%
-						select(`Polygenic Score (PGS) ID`, `Reported Trait`)
+					if (file.exists(metascore)) {
+						pgs_annot = fread(metascore)
+						pgs_annot_sig = pgs_annot %>% filter(`Polygenic Score (PGS) ID` %in% nonzero_w)
+						pgs_annot_sig_df = pgs_annot_sig %>%
+							select(`Polygenic Score (PGS) ID`, `Reported Trait`)
 
-					pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
+						pgs_annot_sig_df = pgs_annot_sig_df[order(pgs_annot_sig_df$`Reported Trait`),]
 
-					reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
-					reported_trait = reported_trait %>%
-						rowwise() %>%
-						mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
-						mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
-						mutate(Var1 = str_to_title(Var1)) %>%
-						group_by(Var1) %>%
-						summarise(Freq = sum(Freq))
-					
-					reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
+						reported_trait = data.frame(table(pgs_annot_sig_df$`Reported Trait`))
+						reported_trait = reported_trait %>%
+							rowwise() %>%
+							mutate(Var1 = gsub("\\s*\\([^\\)]+\\)","",Var1)) %>%
+							mutate(Var1 = gsub("\\s*\\[[^\\)]+\\]","",Var1)) %>%
+							mutate(Var1 = str_to_title(Var1)) %>%
+							group_by(Var1) %>%
+							summarise(Freq = sum(Freq))
+						
+						reported_trait = reported_trait[order(reported_trait$Freq, decreasing=T),]
 
-					fwrite(reported_trait, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
-					reported_trait
-					dim(reported_trait)
+						fwrite(reported_trait, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_reportedTraits.txt"), row.names=F, sep="\t", quote=F)
+						reported_trait
+						dim(reported_trait)
+					}
 					##############################################
 				}
 			}
