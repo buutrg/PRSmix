@@ -34,9 +34,9 @@
 #' - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
 #' - Return 0 if no error
 #'
-#' @importFrom stats cor dnorm lm glm logLik pchisq qchisq qnorm as.formula coef filter nobs pnorm power predict sd
+#' @importFrom stats cor dnorm lm glm logLik pchisq qchisq qnorm as.formula coef nobs pnorm power predict sd
 #' @importFrom data.table fread fwrite
-#' @importFrom dplyr bind_rows select all_of mutate group_by summarise rowwise
+#' @importFrom dplyr bind_rows select all_of mutate group_by summarise rowwise filter
 #' @importFrom stringr str_to_title
 #' @importFrom magrittr %>%
 #' @importFrom parallel makePSOCKcluster stopCluster
