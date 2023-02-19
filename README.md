@@ -4,11 +4,6 @@ The *PRSmix* package can be used to benchmark PRS developed on an independent co
 # INSTALLATION
 To use PRSmix:
 ```
-install.packages("PRSmix") 
-library(PRSmix)
-```
- or
-```
 install.packages("devtools")
 library(devtools)
 devtools::install_github("buutrg/PRSmix")
