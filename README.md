@@ -122,6 +122,16 @@ combine_PGS(
 
 ```
 
+The output of the combination framework contains several files:
+- The case counts (for binary trait), 
+- The dataframe of training and testing sample split from the main dataframe, 
+- The prediction accuracy for each PRS in the training and testing set, 
+- The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
+- the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+- Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+- The mixing weights of the scores used in combination, 
+- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
+
 
 # References
 Truong, B., Hull, L.H., Ruan, Y., Huang, Q.Q., Hornsby, W., Martin, H., Heel, David v., Wang, Y., Martin, A.R.,, Lee, S.H., Natarajan, P. (2023) Integrative polygenic risk scores improve the prediction accuracy of complex traits and diseases
