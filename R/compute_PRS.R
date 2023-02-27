@@ -5,7 +5,7 @@
 #' @param geno Genotype file in plink format (bed/bim/fam).
 #' @param weight_file The per-allele SNP effect
 #' @param out Name of output file.
-#' @param start_col Index of starting column to estimate PRS in the reference file (DEFAULT = 4).
+#' @param start_col Index of starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
 #' @return Execute plink. Return 0 if successful.
 #' @export
 compute_PRS = function(

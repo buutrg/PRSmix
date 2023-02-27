@@ -54,7 +54,7 @@ harmonize_snpeffect_toALT(
 ```
 - geno: Prefix of genotype file in plink format (bed/bim/fam).
 - weight_file: The per-allele SNP effect output from *harmonize_snpeffect_toALT*
-- start_col: Index of starting column to estimate PRS in the reference file (DEFAULT = 4).
+- start_col: Index of starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
 - out: Name of output file, suffix *sscore* from PLINK2 will be added.
 ```
 
