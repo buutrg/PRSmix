@@ -21,7 +21,7 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 
 The *harmonize_snpeffect_toALT* function:
 ```
-- ref_file: Reference file contain SNP ID (SNP), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
+- ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
 - pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
 - pgs_list: File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder
 - out: Filename of the output for the weight file
