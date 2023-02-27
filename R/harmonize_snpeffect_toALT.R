@@ -21,7 +21,7 @@ harmonize_snpeffect_toALT = function(
 
 	writeLines("Reading freq file")
 	freq = fread(ref_file)
-	freq = freq %>% select(.data$ID, .data$ALT, .data$REF)
+	freq = freq %>% select(ID, ALT, REF)
 
 	snp_weight_all = freq
 	snp_weight_all$BETA = 0
@@ -84,7 +84,7 @@ harmonize_snpeffect_toALT = function(
 	}
 	
 	print(cc)
-	snp_weight_all = snp_weight_all %>% select(-.data$BETA)
+	snp_weight_all = snp_weight_all %>% select(-BETA)
 	snp_weight_all = snp_weight_all[match(all_snps, snp_weight_all$SNP),]
 	print(dim(snp_weight_all))
 
