@@ -37,8 +37,6 @@ PGS000001
 PGS000002
 ```
 
-
-
 ```
 harmonize_snpeffect_toALT(
 	ref_file = "~/example/geno.afreq", 
@@ -48,13 +46,24 @@ harmonize_snpeffect_toALT(
 )
 
 ```
+
+The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes harmonized to the A1 (alternative) allele. For example:
+
+```
+| SNP | A1 | A2 | PGS000001 | PGS000002 | ... |
+| --- | --- | --- | --- | --- | --- |
+| rs1 | A | G | 0.01 | 0 | ... |
+| rs2 | T | G | 0.02 | 0.02 | ... |
+```
+
+
 **Compute PRS with all PGS Catalog Scores**
 
 *compute_PRS* function: 
 ```
 - geno: Prefix of genotype file in plink format (bed/bim/fam).
 - weight_file: The per-allele SNP effect output from *harmonize_snpeffect_toALT*
-- start_col: Index of starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
+- start_col: Index of the starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
 - out: Name of output file, suffix *sscore* from PLINK2 will be added.
 ```
 
@@ -73,7 +82,7 @@ compute_PRS(
 ```
 - pheno_file: Directory to the phenotype file
 - covariate_file: Directory to file with covariate information (age,sex,PC1..10)
-- score_files_list: A vector contain directories of the PGS to be read
+- score_files_list: A vector contains directories of the PGSs to be read
 - trait_specific_score_file: A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: TRUE if this is binary
@@ -83,12 +92,66 @@ compute_PRS(
 - covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
 - is_extract_adjSNPeff: TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
-- snp_eff_files_list: The vector of SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = FALSE)
+- original_beta_files_list: The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = FALSE)
 - train_size_list: A vector of training sample sizes. If NULL, a random 80% of the samples will be used (DEFAULT = NULL)
 - power_thres_list: A vector of power thresholds to select scores (DEFAULT = 0.95)
 - pval_thres_list: A vector of P-value thresholds to select scores (DEFAULT = 0.05)
 - read_pred_training: TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
 - read_pred_testing: TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
+```
+
+For example, the *pheno_file* would be formatted as:
+```
+| FID | IID | CAD |
+| --- | --- | --- |
+| 1 | 1 | 1 |
+| 2 | 2 | 0 |
+```
+
+Therefore,
+``` 
+pheno_name = "CAD"
+isbinary = TRUE
+liabilityR2 = TRUE
+IID_pheno = "IID"
+```
+
+*covariate_file* as:
+```
+| FID | IID | sex | age | PC1 | ... | PC10 |
+| --- | --- | --- | --- | --- | --- | --- | 
+| 1 | 1 | 1 | 40 | 0.02 | 0.01 | --- | 0.03
+| 2 | 2 | 0 | 50 | 0.02 | 0.01 | --- | 0.03
+```
+Therefore, 
+```
+covar_list = c("sex", "age", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+```
+
+*trait_specific_score_file* as (e.g. for EFO_0001645 of coronary artery disease):
+```
+PGS000962
+PGS000116
+PGS000011
+PGS000012
+PGS000013
+PGS000018
+PGS000019
+PGS000058
+PGS000296
+PGS000337
+```
+
+Other parameters could be:
+```
+ncores = 4
+is_extract_adjSNPeff = TRUE
+original_beta_files_list = "~/example/weights.txt"
+train_size_list = NULL
+power_thres_list = 0.95
+pval_thres_list = 0.05/2600 # P-value after Bonferroni correction
+read_pred_training = FALSE
+read_pred_testing = FALSE
 ```
 
 ```
@@ -105,7 +168,7 @@ combine_PGS(
 	covar_list = c("age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"),
 	ncores = 4,
 	is_extract_adjSNPeff = TRUE,
-	snp_eff_files_list = "~/example/weights.txt",
+	original_beta_files_list = "~/example/weights.txt",
 	train_size_list = NULL,
 	power_thres_list = 0.95,
 	pval_thres_list = 0.05/2600,

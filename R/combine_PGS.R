@@ -16,7 +16,7 @@
 #' @param covar_list A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 #' @param ncores Number of CPU cores for parallel processing (DEFAULT = 1)
 #' @param is_extract_adjSNPeff TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
-#' @param snp_eff_files_list The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
+#' @param original_beta_files_list The vector of directories to SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
 #' @param train_size_list A vector of training sample sizes. If NULL, all 80% of the samples will be used (DEFAULT = NULL)
 #' @param power_thres_list A vector of power thresholds to select scores (DEFAULT = 0.95)
 #' @param pval_thres_list A vector of P-value thresholds to select scores (DEFAULT = 0.05)
@@ -57,7 +57,7 @@ combine_PGS = function(
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 1,
 	is_extract_adjSNPeff = F,
-	snp_eff_files_list = NULL,
+	original_beta_files_list = NULL,
 	train_size_list = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
@@ -457,7 +457,7 @@ combine_PGS = function(
 					if (is_extract_adjSNPeff) {
 						mixing_weight_file = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PRSmix.txt")
 						outfile = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_adjSNPeff_PRSmix.txt")
-						extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, outfile)
+						extract_adjSNPeff(mixing_weight_file, original_beta_files_list, outfile)
 					}
 					
 					res_lm1_summary = res_lm1
@@ -648,7 +648,7 @@ combine_PGS = function(
 					if (is_extract_adjSNPeff) {
 						mixing_weight_file = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PRSmixPlus.txt")
 						outfile = paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_adjSNPeff_PRSmixPlus.txt")
-						extract_adjSNPeff(mixing_weight_file, snp_eff_files_list, outfile)
+						extract_adjSNPeff(mixing_weight_file, original_beta_files_list, outfile)
 					}
 					
 					fwrite(data.frame(topprs, ww_raw), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_raw_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
