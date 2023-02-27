@@ -31,17 +31,18 @@ For example, in the *pgs_folder* directory (i.e. *~/example/allPGScatalog/*), th
 
 I.e. The SNP effect size file *PGS000001.txt* contains:
 
-| SNP | A1 | A2 | PGS000001 |
-| --- | --- | --- | --- |
-| rs1 | A | G | 0.01 |
-| rs2 | T | G | 0.02 |
+| SNP | A1 | BETA |
+| --- | --- | --- |
+| rs1 | A | 0.01 |
+| rs2 | T | 0.02 |
+| rs3 | G | 0.03 |
 
 The SNP effect size file *PGS000002.txt* contains:
 
-| SNP | A1 | A2 | PGS000001 |
-| --- | --- | --- | --- |
-| rs1 | A | G | 0 |
-| rs2 | T | G | 0.03 |
+| SNP | A1 | BETA |
+| --- | --- | --- |
+| rs1 | A | 0 |
+| rs2 | T | 0.03 |
 
 The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain:
 
@@ -67,6 +68,7 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 | --- | --- | --- | --- | --- | --- |
 | rs1 | A | G | 0.01 | 0 | ... |
 | rs2 | T | G | 0.02 | 0.03 | ... |
+| rs3 | G | A | 0.03 | 0 | ... |
 
 
 ## Compute PRS with all PGS Catalog Scores
