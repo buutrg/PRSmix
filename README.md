@@ -77,7 +77,6 @@ compute_PRS(
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: TRUE if this is binary
 - out: Prefix of output
-- metascore: Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 - liabilityR2: TRUE if liability R2 should be reported (DEFAULT = FALSE)
 - IID_pheno: Column name of IID of phenotype file (e.g IID, person_id)
 - covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
@@ -100,7 +99,6 @@ combine_PGS(
 	pheno_name = "CAD",
 	isbinary = TRUE,
 	out = "CAD_test_",
-	metascore,
 	liabilityR2 = TRUE,
 	IID_pheno = "IID",
 	covar_list = c("age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"),
