@@ -45,7 +45,6 @@
 #' @importFrom utils head read.table
 #' @export
 combine_PGS = function(
-	# trait,
 	phenofile,
 	basic_data_file,
 	score_files_list,
@@ -308,15 +307,12 @@ combine_PGS = function(
 						train_data = data.frame(x_train,trait=y_train)
 
 						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
-						# x_test[,topprs] = scale(x_test[,topprs])
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
-						# formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+")))
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
 
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
-						# train_tmp$trait = as.factor(train_tmp$trait)
 
 						if (length(topprs) == 1) {
 							ww = ww_raw = c(1)
