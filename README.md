@@ -17,8 +17,9 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 - Evaluate PRSs
 - Linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
-# PREPROCESS PGS CATALOG
-**Extract PGS IDs from PGS catalog**
+# COMPUTE PRSs FROM PGS Catalog
+**Extract trait-specific PGS IDs from PGS catalog**
+
 *extract_PGSid* function:
 ```
 - ref_file Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
@@ -33,6 +34,7 @@ fwrite(data.frame(pgs_list_df), paste0("cad_list.txt"), row.names=F, col.names=F
 ```
 
 **Harmonize to Alternative allele in the target cohort**
+
 *harmonize_snpeffect_toALT* function:
 ```
 - ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
@@ -132,7 +134,8 @@ The output of the combination framework contains several files:
 
 
 # References
-Truong, B., Hull, L.H., Ruan, Y., Huang, Q.Q., Hornsby, W., Martin, H., Heel, David v., Wang, Y., Martin, A.R.,, Lee, S.H., Natarajan, P. (2023) Integrative polygenic risk scores improve the prediction accuracy of complex traits and diseases
+Truong, B., Hull, L.H., Ruan, Y., Huang, Q.Q., Hornsby, W., Martin, H., Heel, David v., Wang, Y., Martin, A.R.,, Lee, S.H., Natarajan, P. (2023) Integrative polygenic risk scores improve the prediction accuracy of complex traits and diseases. *doi: https://doi.org/10.1101/2023.02.21.23286110*
+
 
 # Contact information
 Please contact Buu Truong (btruong@broadinstitute.org) or Pradeep Natarajan (pradeep@broadinstitute.org) if you have any queries.
