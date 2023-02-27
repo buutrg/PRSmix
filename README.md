@@ -32,8 +32,8 @@ For example, in the directory *~/allPGScatalog/*, there are files of per-allele 
 The pgs_list *~/example/allscoresID.txt* file will contain:
 
 ```
-PGS000001.txt
-PGS000002.txt
+PGS000001
+PGS000002
 ```
 
 
