@@ -99,6 +99,18 @@ The *combine_PGS* function:
 - read_pred_testing: TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
 ```
 
+The output of the combination framework contains several files:
+- The case counts (for binary trait), 
+- The dataframe of training and testing sample split from the main dataframe, 
+- The prediction accuracy for each PRS in the training and testing set, 
+- The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
+- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates), 
+- The mixing weights of the scores used in combination, 
+- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
+
+
+
 For example, 
 
 The *pheno_file* would be formatted as:
@@ -155,6 +167,7 @@ read_pred_training = FALSE
 read_pred_testing = FALSE
 ```
 ---
+To run the linear combination (PRSmix and PRSmix+):
 ```
 combine_PGS(
 	pheno_file = "~/example/phenotype.txt",
@@ -176,20 +189,7 @@ combine_PGS(
 	read_pred_training = FALSE,
 	read_pred_testing = FALSE
 )
-
 ```
-
-The output of the combination framework contains several files:
-- The case counts (for binary trait), 
-- The dataframe of training and testing sample split from the main dataframe, 
-- The prediction accuracy for each PRS in the training and testing set, 
-- The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
-- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
-- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates), 
-- The mixing weights of the scores used in combination, 
-- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
-
-
 # References
 Truong, B., Hull, L.H., Ruan, Y., Huang, Q.Q., Hornsby, W., Martin, H., Heel, David v., Wang, Y., Martin, A.R.,, Lee, S.H., Natarajan, P. (2023) Integrative polygenic risk scores improve the prediction accuracy of complex traits and diseases. *doi: https://doi.org/10.1101/2023.02.21.23286110*
 
