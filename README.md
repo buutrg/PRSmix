@@ -24,61 +24,57 @@ library(PRSmix)
 library(foreach)
 library(doParallel)
 
-basic_data_file = "~/example/basic_data.csv"
-metascore = "~/example/pgs_all_metadata_scores.csv"
-score_pref = "~/data/plink_wgs"
-phenofile = "~/data/phenotypes/CAD.csv"
-pheno_name = "CAD_case" # Name of Phenotype in plain text
-isbinary = T
-pgslist = "cad_list.txt"
-covar_list = c("age", "sex", paste0("PC", 1:10))
-ncores = 5 # the number of CPUs process
-IID_pheno = "person_id"
-liabilityR2 = T
-read_pred_training = F
-read_pred_testing = F
 ```
 
-** Extract PGS IDs from PGS catalog **
+** Extract PGS IDs from PGS catalog and **
+*extract_PGSid* function:
+```
+- ref_file Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
+- pgs_folder Directory to folder contain PGS
+- pgs_list File contain file names of single PGS on each line. The files must exist in the pgs_folder folder
+- out Filename of the output
+
+
+pgs_list_df = extract_PGSid(data = "~/data/pgs_all_metadata_scores.csv", trait="cad", efo="EFO_0001645")
+fwrite(data.frame(pgs_list_df), paste0("cad_list.txt"), row.names=F, col.names=F, quote=F, sep="\t")
 
 ```
-pgs_list_df = extract_PGSid(data = "~/data/pgs_all_metadata_scores.csv", trait=trait, efo=efo)
-nrow(pgs_list_df)
 
-fwrite(data.frame(pgs_list_df), paste0(trait, "_list.txt"), row.names=F, col.names=F, quote=F, sep="\t")
+** Harmonize to Alternative allele in the target cohort **
+*harmonize_snpeffect_toALT* function:
+```
+- ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
+- pgs_folder: Directory to folder contain PGS
+- pgs_list: File contain file names of single PGS on each line. The files must exist in the pgs_folder folder
+- out: Filename of the output
+```
 
-** Harmonize effect allele to ALT allele **
-for (part in 0:5) {
-	
-	pgs_list = paste0("~/data/allPGSid.txt0", part)
-	out = paste0("~/data/plink_wgs", part, ".txt")
-	
-	harmonize_snpeffect_toALT(
-		freq_file = freq_file,
-		pgs_folder = pgs_folder,
-		pgs_list = pgs_list,
-		out = out
-	)
-}
+```
+harmonize_snpeffect_toALT(
+	ref_file = "temp.freq", 
+	pgs_folder,
+	pgs_list = "cad_list.txt",
+	out
+)
 
+```
 ** Compute PRS ** 
 
-cl <- parallel::makeCluster(ncores)
-doParallel::registerDoParallel(cl)
-clusterEvalQ(cl , c(library(data.table),library(foreach)))
-panel_harmonized_list = foreach(part=0:5, .export='fread') %dopar% {
-	file = paste0(score_pref, anc, "_part", part, ".sscore")
-	if (file.exists(file)) return(0)
-	
-	compute_PRS(
-		plink_exe = "~/tools/plink2",
-		geno = paste0("~/data/", score_pref, anc),
-		ref_file = paste0("snp_weight_allpgs_", trait, "Ref_", anc, "_part", part, ".txt"),
-		out = paste0(score_pref, anc, "_part", part)
-		)
-}
-stopCluster(cl)
+*compute_PRS* function: 
+```
+- geno: Genotype file in plink format (bed/bim/fam).
+- weight_file: The per-allele SNP effect
+- start_col: Index of starting column to estimate PRS in the reference file (DEFAULT = 4).
+- out: Name of output file.
+```
 
+```
+compute_PRS(
+	geno,
+	weight_file,
+	starts_col,
+	out
+)
 ```
 
 # Perform PRSmix and PRSmix+
