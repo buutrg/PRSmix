@@ -21,13 +21,27 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 
 The *harmonize_snpeffect_toALT* function:
 ```
-- ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
+- ref_file: Reference file contain SNP ID (SNP), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
 - pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
 - pgs_list: File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder
 - out: Filename of the output for the weight file
 ```
 
 For example, in the *pgs_folder* directory (i.e. *~/example/allPGScatalog/*), there are files of per-allele SNP effect sizes: *PGS000001.txt*, *PGS000002.txt*. Each of the PGS will contains 3 columns: **SNP**, **A1**, **BETA** represent **SNP ID**, **Effect allele** and **effect size**, respectively.
+
+I.e. The SNP effect size file *PGS000001.txt* contains:
+
+| SNP | A1 | A2 | PGS000001 |
+| --- | --- | --- | --- |
+| rs1 | A | G | 0.01 |
+| rs2 | T | G | 0.02 |
+
+The SNP effect size file *PGS000002.txt* contains:
+
+| SNP | A1 | A2 | PGS000001 |
+| --- | --- | --- | --- |
+| rs1 | A | G | 0 |
+| rs2 | T | G | 0.03 |
 
 The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain:
 
@@ -52,7 +66,7 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 | SNP | A1 | A2 | PGS000001 | PGS000002 | ... |
 | --- | --- | --- | --- | --- | --- |
 | rs1 | A | G | 0.01 | 0 | ... |
-| rs2 | T | G | 0.02 | 0.02 | ... |
+| rs2 | T | G | 0.02 | 0.03 | ... |
 
 
 ## Compute PRS with all PGS Catalog Scores
