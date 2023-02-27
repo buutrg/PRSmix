@@ -71,7 +71,7 @@ compute_PRS(
 - score_files_list: A vector contain directories of the PGS to be read
 - trait_specific_score_file: A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
 - pheno_name: Column name of the phenotype in phenofile
-- isbinary: True if this is binary
+- isbinary: TRUE if this is binary
 - out: Prefix of output
 - metascore: Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 - liabilityR2: TRUE if liability R2 should be reported (DEFAULT = FALSE)
