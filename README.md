@@ -122,7 +122,7 @@ The output of the combination framework contains several files:
 - The prediction accuracy for each PRS in the testing set. Filename ends with `_test_allPRS.txt`
 - The prediction accuracy assessed in the testing set of the best PRS selected from the training set. Filename ends with `_best_acc.txt`
 - The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates). Filename ends with `_auc_NULL.txt`, `_auc_BestPGS.txt`, `_auc_PRSmix.txt` and `_auc_PRSmixPlus.txt`
-- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates). Filename ends with  
+- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates). Filename ends with  `_OR_bestPGS.txt`, `_OR_PRSmix.txt` and `_OR_PRSmixPlus.txt`
 - The mixing weights of the scores used in combination. Filename ends with `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt`
 - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE). Filename ends with `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt`
 
