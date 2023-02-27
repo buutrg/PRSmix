@@ -168,7 +168,7 @@ Therefore,
 covar_list = c("sex", "age", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 ```
 ---
-*trait_specific_score_file* as (i.e. for EFO_0001645 of coronary artery disease):
+*trait_specific_score_file* as (i.e. PGS IDs for *EFO_0001645* of coronary artery disease from PGS Catalog):
 ```
 PGS000962
 PGS000116
