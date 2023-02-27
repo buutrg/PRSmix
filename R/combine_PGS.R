@@ -6,7 +6,7 @@
 #' @param phenofile Directory to the phenotype file
 #' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param score_files_list A vector contain directories of the PGS to be read
-#' @param pgslist A vector of PGS to combine
+#' @param trait_specific_list A vector of trait-specific PGS to combine
 #' @param pheno_name Column name of the phenotype in phenofile
 #' @param isbinary True if this is binary
 #' @param out Prefix of output
@@ -47,7 +47,7 @@ combine_PGS = function(
 	phenofile,
 	basic_data_file,
 	score_files_list,
-	pgslist,
+	trait_specific_list,
 	pheno_name,
 	isbinary,
 	out,
@@ -90,7 +90,7 @@ combine_PGS = function(
 
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
 
-	pgs_list = fread(pgslist, header=F)[,1]
+	pgs_list = fread(trait_specific_list, header=F)[,1]
 	pgs_list = intersect(pgs_list, colnames(all_scores))
 
 	pheno = fread(phenofile)
