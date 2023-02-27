@@ -102,7 +102,7 @@ The *combine_PGS* function:
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: TRUE if this is binary
 - out: Prefix of output
-- liabilityR2: TRUE if liability R2 should be reported (DEFAULT = FALSE)
+- liabilityR2: TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported (DEFAULT = FALSE)
 - IID_pheno: Column name of IID of phenotype file (e.g IID, person_id)
 - covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
