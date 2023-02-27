@@ -19,7 +19,7 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
-*harmonize_snpeffect_toALT* function:
+The *harmonize_snpeffect_toALT* function:
 ```
 - ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
 - pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
@@ -57,7 +57,7 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 
 ## Compute PRS with all PGS Catalog Scores
 
-*compute_PRS* function: 
+The *compute_PRS* function: 
 ```
 - geno: Prefix of genotype file in plink format (bed/bim/fam).
 - weight_file: The per-allele SNP effect output from harmonize_snpeffect_toALT function above.
@@ -77,7 +77,7 @@ compute_PRS(
 
 ## Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
-*combine_PGS* function:
+The *combine_PGS* function:
 ```
 - pheno_file: Directory to the phenotype file
 - covariate_file: Directory to file with covariate information (age,sex,PC1..10)
