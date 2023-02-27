@@ -51,7 +51,7 @@ PGS000001
 PGS000002
 ```
 
-The *ref_file* contains 3 columns: **ID**, **REF** and, **ALT** (This could be called via PLINK2 to calculate the allele frequencies with `--freq`):
+The *ref_file* contains 3 columns: **ID**, **REF** and **ALT** (This could be called via PLINK2 to calculate the allele frequencies with `--freq`):
 
 | ID | ALT | REF |
 | --- | --- | --- |
