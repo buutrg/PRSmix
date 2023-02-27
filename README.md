@@ -76,7 +76,7 @@ compute_PRS(
 - metascore: Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 - liabilityR2: TRUE if liability R2 should be reported (DEFAULT = FALSE)
 - IID_pheno: Column name of IID of phenotype file (e.g IID, person_id)
-- covar_list: A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))
+- covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
 - is_extract_adjSNPeff: TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
 - snp_eff_files_list: The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
