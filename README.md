@@ -48,12 +48,11 @@ harmonize_snpeffect_toALT(
 
 The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes harmonized to the A1 (alternative) allele. For example:
 
-```
+
 | SNP | A1 | A2 | PGS000001 | PGS000002 | ... |
 | --- | --- | --- | --- | --- | --- |
 | rs1 | A | G | 0.01 | 0 | ... |
 | rs2 | T | G | 0.02 | 0.02 | ... |
-```
 
 
 ## Compute PRS with all PGS Catalog Scores
@@ -103,12 +102,12 @@ compute_PRS(
 For example, 
 
 The *pheno_file* would be formatted as:
-```
+
 | FID | IID | CAD |
 | --- | --- | --- |
 | 1 | 1 | 1 |
 | 2 | 2 | 0 |
-```
+
 
 Therefore,
 ``` 
@@ -119,12 +118,12 @@ IID_pheno = "IID"
 ```
 ---
 *covariate_file* as:
-```
+
 | FID | IID | sex | age | PC1 | ... | PC10 |
 | --- | --- | --- | --- | --- | --- | --- | 
-| 1 | 1 | 1 | 40 | 0.02 | 0.01 | --- | 0.03
-| 2 | 2 | 0 | 50 | 0.02 | 0.01 | --- | 0.03
-```
+| 1 | 1 | 1 | 40 | 0.02 | ... | 0.03 |
+| 2 | 2 | 0 | 50 | 0.01 | ... | 0.04 |
+
 Therefore, 
 ```
 covar_list = c("sex", "age", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
@@ -149,7 +148,7 @@ Other parameters could be:
 ncores = 4
 is_extract_adjSNPeff = TRUE
 original_beta_files_list = "~/example/weights.txt"
-train_size_list = NULL
+train_size_list = NULL # randomly split 80% of the data as the training set
 power_thres_list = 0.95
 pval_thres_list = 0.05/2600 # P-value after Bonferroni correction
 read_pred_training = FALSE
