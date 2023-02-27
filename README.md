@@ -27,7 +27,17 @@ The *harmonize_snpeffect_toALT* function:
 - out: Filename of the output for the weight file
 ```
 
-For example, in the *pgs_folder* directory (i.e. *~/example/allPGScatalog/*), there are files of per-allele SNP effect sizes: *PGS000001.txt*, *PGS000002.txt*. Each of the PGS will contains 3 columns: **SNP**, **A1**, **BETA** represent **SNP ID**, **Effect allele** and **Effect size**, respectively.
+For example:
+
+The *ref_file* contains 3 columns: **ID**, **REF** and **ALT** (This could be called via PLINK2 to calculate the allele frequencies with `--freq`):
+
+| ID | ALT | REF |
+| --- | --- | --- |
+| rs1 | A | G |
+| rs2 | T | G |
+| rs3 | G | A |
+
+In the *pgs_folder* directory (i.e. *~/example/allPGScatalog/*), there are files of per-allele SNP effect sizes: *PGS000001.txt*, *PGS000002.txt*. Each of the PGS will contains 3 columns: **SNP**, **A1**, **BETA** represent **SNP ID**, **Effect allele** and **Effect size**, respectively.
 
 I.e. The SNP effect size file *PGS000001.txt* contains:
 
@@ -50,15 +60,6 @@ The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain:
 PGS000001
 PGS000002
 ```
-
-The *ref_file* contains 3 columns: **ID**, **REF** and **ALT** (This could be called via PLINK2 to calculate the allele frequencies with `--freq`):
-
-| ID | ALT | REF |
-| --- | --- | --- |
-| rs1 | A | G |
-| rs2 | T | G |
-| rs3 | G | A |
-
 
 Then, to harmonize SNP effect sizes:
 ```
