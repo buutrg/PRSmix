@@ -13,8 +13,8 @@ library(PRSmix)
 
 # MANUAL
 We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evaluated on an independent cohort
-- Harmonize to Alternative allele in the target cohort
-- Calculate PRS with all PGS Catalog Scores
+- Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort
+- Calculate PRS with all scores
 - Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
