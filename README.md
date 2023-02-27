@@ -81,7 +81,7 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 | rs3 | G | A | 0.03 | 0 | ... |
 
 
-## Compute PRS with all PGS Catalog Scores
+## Compute PRSs for all scores
 
 The *compute_PRS* function: 
 ```
