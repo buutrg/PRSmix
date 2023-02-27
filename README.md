@@ -1,6 +1,7 @@
 # PRSmix
 
-The *PRSmix* package can be used to benchmark PRS developed on an independent cohort and compute the linear combination of these score to obtained an improved prediction accuracy
+The *PRSmix* package can be used to benchmark PRSs and compute the linear combination of these scores improve prediction accuracy
+
 # INSTALLATION
 To use PRSmix:
 ```
