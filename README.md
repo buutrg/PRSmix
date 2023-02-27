@@ -12,26 +12,9 @@ library(PRSmix)
 
 # INTRODUCTION
 We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evaluated on an independent cohort
-- Preprocess PGS Catalog scores
+- Harmonize to Alternative allele in the target cohort
 - Calculate PRS with all PGS Catalog Scores
-- Evaluate PRSs
-- Linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
-
-# COMPUTE PRSs FROM PGS Catalog
-**Extract trait-specific PGS IDs from PGS catalog**
-
-*extract_PGSid* function:
-```
-- ref_file Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
-- pgs_folder Directory to folder contain PGS
-- pgs_list File contain file names of single PGS on each line. The files must exist in the pgs_folder folder
-- out Filename of the output
-
-
-pgs_list_df = extract_PGSid(data = "~/data/pgs_all_metadata_scores.csv", trait="cad", efo="EFO_0001645")
-fwrite(data.frame(pgs_list_df), paste0("cad_list.txt"), row.names=F, col.names=F, quote=F, sep="\t")
-
-```
+- Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 **Harmonize to Alternative allele in the target cohort**
 
@@ -40,47 +23,46 @@ fwrite(data.frame(pgs_list_df), paste0("cad_list.txt"), row.names=F, col.names=F
 - ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
 - pgs_folder: Directory to folder contain PGS
 - pgs_list: File contain file names of single PGS on each line. The files must exist in the pgs_folder folder
-- out: Filename of the output
+- out: Filename of the output for the weight file
 ```
 
 ```
 harmonize_snpeffect_toALT(
-	ref_file = "temp.freq", 
-	pgs_folder,
-	pgs_list = "cad_list.txt",
-	out
+	ref_file = "~/example/geno.freq", 
+	pgs_folder = "~/allPGScatalog/",
+	pgs_list = "~/example/allscoresID.txt",
+	out = "~/example/weights.txt"
 )
 
 ```
-**Compute PRS**
+**Compute PRS with all PGS Catalog Scores**
 
 *compute_PRS* function: 
 ```
-- geno: Genotype file in plink format (bed/bim/fam).
+- geno: Prefix of genotype file in plink format (bed/bim/fam).
 - weight_file: The per-allele SNP effect
 - start_col: Index of starting column to estimate PRS in the reference file (DEFAULT = 4).
-- out: Name of output file.
+- out: Name of output file, suffix *sscore* from PLINK2 will be added.
 ```
 
 ```
 compute_PRS(
-	geno,
-	weight_file,
-	starts_col,
-	out
+	geno = "~/example/geno",
+	weight_file = "~/weights.txt",
+	starts_col = 4,
+	out = "~/example/pgs"
 )
 ```
 
-# Perform PRSmix and PRSmix+
+**Perform linear combination: PRSmix and PRSmix+**
 
 ```
 - phenofile: Directory to the phenotype file
 - basic_data_file: Directory to file with covariate information (age,sex,PC1..10)
 - score_files_list: A vector contain directories of the PGS to be read
-- pgslist: A vector of trait specific PGSs to combine
+- pgslist: A vector of trait-specific PGSs to combine
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: True if this is binary
-- score_pref: Prefix of score files
 - out: Prefix of output
 - metascore: Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 - liabilityR2: TRUE if liability R2 should be reported (DEFAULT = FALSE)
@@ -98,26 +80,25 @@ compute_PRS(
 
 ```
 combine_PGS(
-	phenofile,
-	basic_data_file,
-	score_files_list,
-	pgslist,
-	pheno_name,
-	isbinary,
-	score_pref,
-	out,
+	phenofile = "~/example/phenotype.txt",
+	basic_data_file = "~/example/covariate.txt",
+	score_files_list = ""~/example/pgs.sscore",
+	pgslist = "cad_list.txt",
+	pheno_name = "CAD",
+	isbinary = TRUE,
+	out = "CAD_test_",
 	metascore,
-	liabilityR2,
-	IID_pheno,
-	covar_list,
-	ncores,
-	is_extract_adjSNPeff,
-	snp_eff_files_list,
-	train_size_list,
-	power_thres_list,
-	pval_thres_list,
-	read_pred_training,
-	read_pred_testing
+	liabilityR2 = TRUE,
+	IID_pheno = "IID",
+	covar_list = c("age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"),
+	ncores = 4,
+	is_extract_adjSNPeff = TRUE,
+	snp_eff_files_list = "~/example/weights.txt",
+	train_size_list = NULL,
+	power_thres_list = 0.95,
+	pval_thres_list = 0.05/2600,
+	read_pred_training = FALSE,
+	read_pred_testing = FALSE
 )
 
 ```
