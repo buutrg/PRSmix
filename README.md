@@ -121,8 +121,8 @@ The output of the combination framework contains several files:
 - The dataframe of training and testing sample split from the main dataframe, 
 - The prediction accuracy for each PRS in the training and testing set, 
 - The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
-- the AUC of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
-- Odds Ratio of the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
+- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates), 
 - The mixing weights of the scores used in combination, 
 - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
 
