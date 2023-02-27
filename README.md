@@ -27,7 +27,7 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 
 ```
 
-For example, in the directory *~/allPGScatalog/*, there are files of per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
+For example, in the directory *~/example/allPGScatalog/*, there are files of per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
 
 The pgs_list *~/example/allscoresID.txt* file will contain:
 
@@ -41,7 +41,7 @@ PGS000002
 ```
 harmonize_snpeffect_toALT(
 	ref_file = "~/example/geno.afreq", 
-	pgs_folder = "~/allPGScatalog/",
+	pgs_folder = "~/example/allPGScatalog/",
 	pgs_list = "~/example/allscoresID.txt",
 	out = "~/example/weights.txt"
 )
