@@ -66,10 +66,10 @@ compute_PRS(
 
 *combine_PGS* function:
 ```
-- phenofile: Directory to the phenotype file
-- basic_data_file: Directory to file with covariate information (age,sex,PC1..10)
+- pheno_file: Directory to the phenotype file
+- covariate_file: Directory to file with covariate information (age,sex,PC1..10)
 - score_files_list: A vector contain directories of the PGS to be read
-- trait_specific_list: A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
+- trait_specific_score_file: A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: True if this is binary
 - out: Prefix of output

@@ -3,17 +3,17 @@
 #' This function perform a linear combination of the scores
 #'
 # ' @param trait The name of the trait
-#' @param phenofile Directory to the phenotype file
-#' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
+#' @param pheno_file Directory to the phenotype file
+#' @param covariate_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param score_files_list A vector contain directories of the PGS to be read
-#' @param trait_specific_list A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
-#' @param pheno_name Column name of the phenotype in phenofile
+#' @param trait_specific_score_file A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
+#' @param pheno_name Column name of the phenotype in pheno_file
 #' @param isbinary True if this is binary
 #' @param out Prefix of output
 #' @param metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 #' @param liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
 #' @param IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
-#' @param covar_list A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))
+#' @param covar_list A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 #' @param ncores Number of CPU cores for parallel processing (DEFAULT = 1)
 #' @param is_extract_adjSNPeff TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
 #' @param snp_eff_files_list The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
@@ -44,10 +44,10 @@
 #' @importFrom utils head read.table
 #' @export
 combine_PGS = function(
-	phenofile,
-	basic_data_file,
+	pheno_file,
+	covariate_file,
 	score_files_list,
-	trait_specific_list,
+	trait_specific_score_file,
 	pheno_name,
 	isbinary,
 	out,
@@ -68,7 +68,7 @@ combine_PGS = function(
 	options(datatable.fread.datatable=FALSE)
 
 	writeLines("--- Reading covariate data ---")
-	basic_data = fread(basic_data_file)
+	basic_data = fread(covariate_file)
 
 	writeLines("--- Reading all polygenic risk scores ---")
 	all_scores = NULL
@@ -90,10 +90,10 @@ combine_PGS = function(
 
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
 
-	pgs_list = fread(trait_specific_list, header=F)[,1]
+	pgs_list = fread(trait_specific_score_file, header=F)[,1]
 	pgs_list = intersect(pgs_list, colnames(all_scores))
 
-	pheno = fread(phenofile)
+	pheno = fread(pheno_file)
 	idx = which(colnames(pheno) %in% c(IID_pheno, pheno_name))
 	pheno = pheno[,idx]
 	colnames(pheno) = c("IID", "trait")
