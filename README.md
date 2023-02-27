@@ -208,8 +208,7 @@ combine_PGS(
 )
 ```
 # References
-Truong, B., Hull, L.H., Ruan, Y., Huang, Q.Q., Hornsby, W., Martin, H., Heel, David v., Wang, Y., Martin, A.R.,, Lee, S.H., Natarajan, P. (2023) Integrative polygenic risk scores improve the prediction accuracy of complex traits and diseases. *doi: https://doi.org/10.1101/2023.02.21.23286110*
-
+Truong, B., Hull, L. E., Ruan, Y., Huang, Q. Q., Hornsby, W., Martin, H. C., van Heel, D. A., Wang, Y., Martin, A. R., Lee, H. and Natarajan, P. 2023. "Integrative Polygenic Risk Score Improves The Prediction Accuracy Of Complex Traits And Diseases". *doi:10.1101/2023.02.21.23286110*.
 
 # Contact information
 Please contact Buu Truong (btruong@broadinstitute.org) or Pradeep Natarajan (pradeep@broadinstitute.org) if you have any queries.
