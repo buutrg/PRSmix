@@ -5,13 +5,12 @@
 \title{Perform linear combination of the polygenic risk scores}
 \usage{
 combine_PGS(
-  phenofile,
-  basic_data_file,
+  pheno_file,
+  covariate_file,
   score_files_list,
-  pgslist,
+  trait_specific_score_file,
   pheno_name,
   isbinary,
-  score_pref,
   out,
   metascore = NULL,
   liabilityR2 = F,
@@ -28,19 +27,17 @@ combine_PGS(
 )
 }
 \arguments{
-\item{phenofile}{Directory to the phenotype file}
+\item{pheno_file}{Directory to the phenotype file}
 
-\item{basic_data_file}{Directory to file with covariate information (age,sex,PC1..10)}
+\item{covariate_file}{Directory to file with covariate information (age,sex,PC1..10)}
 
 \item{score_files_list}{A vector contain directories of the PGS to be read}
 
-\item{pgslist}{A vector of PGS to combine}
+\item{trait_specific_score_file}{A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line}
 
-\item{pheno_name}{Column name of the phenotype in phenofile}
+\item{pheno_name}{Column name of the phenotype in pheno_file}
 
 \item{isbinary}{True if this is binary}
-
-\item{score_pref}{Prefix of score files}
 
 \item{out}{Prefix of output}
 
@@ -50,7 +47,7 @@ combine_PGS(
 
 \item{IID_pheno}{Column name of IID of phenotype file (e.g IID, person_id)}
 
-\item{covar_list}{A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))}
+\item{covar_list}{A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))}
 
 \item{ncores}{Number of CPU cores for parallel processing (DEFAULT = 1)}
 

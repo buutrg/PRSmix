@@ -4,11 +4,9 @@
 \alias{compute_PRS}
 \title{Estimate PRS}
 \usage{
-compute_PRS(plink_exe, geno, weight_file, out, start_col = 4)
+compute_PRS(geno, weight_file, out, start_col = 4)
 }
 \arguments{
-\item{plink_exe}{The weight file.}
-
 \item{geno}{Genotype file in plink format (bed/bim/fam).}
 
 \item{weight_file}{The per-allele SNP effect}
