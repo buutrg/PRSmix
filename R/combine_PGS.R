@@ -207,10 +207,10 @@ combine_PGS = function(
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
 			head(pred_acc_test_trait_summary)
 
-			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_summary_traitPRS.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_allPRS.txt"), row.names=F, sep="\t", quote=F)
 		} else {
 			writeLines("Reading testing file: ", testing_file)
-			pred_acc_test_trait_summary = fread(paste0(out, "_test_summary_traitPRS.txt"))
+			pred_acc_test_trait_summary = fread(paste0(out, "_test_allPRS.txt"))
 		}
 
 		###########################################################################
