@@ -82,22 +82,29 @@ stopCluster(cl)
 ```
 
 # Perform PRSmix and PRSmix+
+
+- phenofile Directory to the phenotype file
+- basic_data_file Directory to file with covariate information (age,sex,PC1..10)
+- score_files_list A vector contain directories of the PGS to be read
+- pgslist A vector of PGS to combine
+- pheno_name Column name of the phenotype in phenofile
+- isbinary True if this is binary
+- score_pref Prefix of score files
+- out Prefix of output
+- metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
+- liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
+- IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
+- covar_list A vector of of covariates, must exists as columns in basic_data_file (DEFAULT = age, sex, PC1..10))
+- ncores Number of CPU cores for parallel processing (DEFAULT = 1)
+- is_extract_adjSNPeff TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
+- snp_eff_files_list The vector of SNP effect sizes used to compute original PRSs (DEFAULT = FALSE)
+- train_size_list A vector of training sample sizes. If NULL, all 80% of the samples will be used (DEFAULT = NULL)
+- power_thres_list A vector of power thresholds to select scores (DEFAULT = 0.95)
+- pval_thres_list A vector of P-value thresholds to select scores (DEFAULT = 0.05)
+- read_pred_training TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
+- read_pred_testing TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
+
 ```
-score_files_list = list.files("~/data/")
-score_files_list = score_files_list[grep(anc, score_files_list)]
-score_files_list = score_files_list[which(endsWith(score_files_list, "sscore"))]
-score_files_list = score_files_list[which(startsWith(score_files_list, score_pref))]
-score_files_list = paste0("~/data/", score_files_list)
-score_files_list
-
-
-print(pgslist)
-
-power_thres_list = c(0.95)
-pval_thres_list = c(0.0000183)
-
-out1 = paste0(out, "_liab")
-
 combine_PGS(
 	trait = trait,
 	pgslist = pgslist,
