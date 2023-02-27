@@ -64,6 +64,7 @@ compute_PRS(
 
 **Perform linear combination: PRSmix and PRSmix+**
 
+*combine_PGS* function:
 ```
 - phenofile: Directory to the phenotype file
 - basic_data_file: Directory to file with covariate information (age,sex,PC1..10)
