@@ -6,7 +6,7 @@
 #' @param phenofile Directory to the phenotype file
 #' @param basic_data_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param score_files_list A vector contain directories of the PGS to be read
-#' @param trait_specific_list A vector of trait-specific PGS to combine
+#' @param trait_specific_list A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
 #' @param pheno_name Column name of the phenotype in phenofile
 #' @param isbinary True if this is binary
 #' @param out Prefix of output
