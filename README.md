@@ -107,7 +107,7 @@ The *combine_PGS* function:
 - covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
 - is_extract_adjSNPeff: TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory (DEFAULT = FALSE)
-- original_beta_files_list: The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = FALSE)
+- original_beta_files_list: The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = NULL)
 - train_size_list: A vector of training sample sizes. If NULL, a random 80% of the samples will be used (DEFAULT = NULL)
 - power_thres_list: A vector of power thresholds to select scores (DEFAULT = 0.95)
 - pval_thres_list: A vector of P-value thresholds to select scores (DEFAULT = 0.05)
@@ -116,14 +116,15 @@ The *combine_PGS* function:
 ```
 
 The output of the combination framework contains several files:
-- The case counts (for binary trait), 
-- The dataframe of training and testing sample split from the main dataframe, 
-- The prediction accuracy for each PRS in the training and testing set, 
-- The prediction accuracy assessed in the testing set of the best PRS selected from the training set,
-- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates), 
-- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates), 
-- The mixing weights of the scores used in combination, 
-- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE)
+- The number of cases and controls (for binary trait). Filename ends with `_case_counts.txt`
+- The dataframe of training and testing sample split from the main dataframe. Filename ends with `_train_df.txt` and `_test_df.txt`
+- The prediction accuracy for each PRS in the training. Filename ends with `_train_allPRS.txt`
+- The prediction accuracy for each PRS in the testing set. Filename ends with `_test_allPRS.txt`
+- The prediction accuracy assessed in the testing set of the best PRS selected from the training set. Filename ends with ``
+- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates). Filename ends with `_auc_NULL.txt`, `_auc_BestPGS.txt`, `_auc_PRSmix.txt` and `_auc_PRSmixPlus.txt`
+- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates). Filename ends with  
+- The mixing weights of the scores used in combination. Filename ends with `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt`
+- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE). Filename ends with `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt`
 
 
 
