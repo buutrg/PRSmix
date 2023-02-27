@@ -90,7 +90,7 @@ The *combine_PGS* function:
 - IID_pheno: Column name of IID of phenotype file (e.g IID, person_id)
 - covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
-- is_extract_adjSNPeff: TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
+- is_extract_adjSNPeff: TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory (DEFAULT = FALSE)
 - original_beta_files_list: The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = FALSE)
 - train_size_list: A vector of training sample sizes. If NULL, a random 80% of the samples will be used (DEFAULT = NULL)
 - power_thres_list: A vector of power thresholds to select scores (DEFAULT = 0.95)
