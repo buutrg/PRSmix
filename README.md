@@ -21,10 +21,18 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 *harmonize_snpeffect_toALT* function:
 ```
 - ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
-- pgs_folder: Directory to folder contain PGS
-- pgs_list: File contain file names of single PGS on each line. The files must exist in the pgs_folder folder
+- pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
+- pgs_list: File contain suffixes of file names (ends with .txt) of single PGS on each line. The files must exist in the pgs_folder folder
 - out: Filename of the output for the weight file
 ```
+
+For example, in the directory *~/allPGScatalog/*, there are per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. The pgs_list *~/example/allscoresID.txt* file will contain:
+```
+PGS000001.txt
+PGS000002.txt
+```
+
+Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
 
 ```
 harmonize_snpeffect_toALT(
@@ -40,7 +48,7 @@ harmonize_snpeffect_toALT(
 *compute_PRS* function: 
 ```
 - geno: Prefix of genotype file in plink format (bed/bim/fam).
-- weight_file: The per-allele SNP effect
+- weight_file: The per-allele SNP effect output from *harmonize_snpeffect_toALT*
 - start_col: Index of starting column to estimate PRS in the reference file (DEFAULT = 4).
 - out: Name of output file, suffix *sscore* from PLINK2 will be added.
 ```
@@ -48,7 +56,7 @@ harmonize_snpeffect_toALT(
 ```
 compute_PRS(
 	geno = "~/example/geno",
-	weight_file = "~/weights.txt",
+	weight_file = "~/example/weights.txt",
 	starts_col = 4,
 	out = "~/example/pgs"
 )
