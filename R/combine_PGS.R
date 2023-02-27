@@ -9,7 +9,6 @@
 #' @param pgslist A vector of PGS to combine
 #' @param pheno_name Column name of the phenotype in phenofile
 #' @param isbinary True if this is binary
-#' @param score_pref Prefix of score files
 #' @param out Prefix of output
 #' @param metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 #' @param liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
@@ -51,7 +50,6 @@ combine_PGS = function(
 	pgslist,
 	pheno_name,
 	isbinary,
-	score_pref,
 	out,
 	metascore = NULL,
 	liabilityR2 = F,
