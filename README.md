@@ -18,15 +18,7 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 - Linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 # PREPROCESS PGS CATALOG
-** Set up parameters and directory of files ** 
-```
-library(PRSmix)
-library(foreach)
-library(doParallel)
-
-```
-
-** Extract PGS IDs from PGS catalog and **
+**Extract PGS IDs from PGS catalog**
 *extract_PGSid* function:
 ```
 - ref_file Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
@@ -40,7 +32,7 @@ fwrite(data.frame(pgs_list_df), paste0("cad_list.txt"), row.names=F, col.names=F
 
 ```
 
-** Harmonize to Alternative allele in the target cohort **
+**Harmonize to Alternative allele in the target cohort**
 *harmonize_snpeffect_toALT* function:
 ```
 - ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
@@ -58,7 +50,7 @@ harmonize_snpeffect_toALT(
 )
 
 ```
-** Compute PRS ** 
+**Compute PRS**
 
 *compute_PRS* function: 
 ```
