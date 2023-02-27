@@ -80,7 +80,7 @@ compute_PRS(
 - ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
 - is_extract_adjSNPeff: TRUE if extract adjSNPeff, FALSE if only calculate the combined PRS. May consume extended memory (DEFAULT = FALSE)
 - snp_eff_files_list: The vector of SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = FALSE)
-- train_size_list: A vector of training sample sizes. If NULL, a random sample 80% of the samples will be used (DEFAULT = NULL)
+- train_size_list: A vector of training sample sizes. If NULL, a random 80% of the samples will be used (DEFAULT = NULL)
 - power_thres_list: A vector of power thresholds to select scores (DEFAULT = 0.95)
 - pval_thres_list: A vector of P-value thresholds to select scores (DEFAULT = 0.05)
 - read_pred_training: TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
