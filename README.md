@@ -54,7 +54,7 @@ The SNP effect size file *PGS000002.txt* contains:
 | rs1 | A | 0 |
 | rs2 | T | 0.03 |
 
-The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain:
+The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain (please don't include suffix .txt as this will be the name of the computed PRSs below and our package can automatically add this suffix):
 
 ```
 PGS000001
