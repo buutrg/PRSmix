@@ -1,6 +1,6 @@
 # PRSmix
 
-The *PRSmix* package can be used to benchmark PRSs and compute the linear combination of these scores improve prediction accuracy
+The *PRSmix* package can be used to benchmark PRSs and compute the linear combination of trait-specific scores (PRSmix) and cross-trait scores (PRSmix+) to improve prediction accuracy.
 
 # INSTALLATION
 To use PRSmix:
@@ -11,13 +11,13 @@ devtools::install_github("buutrg/PRSmix")
 library(PRSmix)
 ```
 
-# INTRODUCTION
+# MANUAL
 We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evaluated on an independent cohort
 - Harmonize to Alternative allele in the target cohort
 - Calculate PRS with all PGS Catalog Scores
 - Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
-**Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort**
+## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
 *harmonize_snpeffect_toALT* function:
 ```
@@ -25,18 +25,18 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 - pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
 - pgs_list: File contain suffixes of file names (ends with .txt) of single PGS on each line. The files must exist in the pgs_folder folder
 - out: Filename of the output for the weight file
-
 ```
 
-For example, in the directory *~/example/allPGScatalog/*, there are files of per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
+For example, in the *pgs_folder* directory (i.e. *~/example/allPGScatalog/*), there are files of per-allele SNP effect sizes: *PGS000001.txt*, *PGS000002.txt*. Each of the PGS will contains 3 columns: **SNP**, **A1**, **BETA** represent **SNP ID**, **Effect allele** and **effect size**, respectively.
 
-The pgs_list *~/example/allscoresID.txt* file will contain:
+The *pgs_list* (i.e. *~/example/allscoresID.txt*) file will contain:
 
 ```
 PGS000001
 PGS000002
 ```
 
+Then, to harmonize SNP effect sizes:
 ```
 harmonize_snpeffect_toALT(
 	ref_file = "~/example/geno.afreq", 
@@ -44,7 +44,6 @@ harmonize_snpeffect_toALT(
 	pgs_list = "~/example/allscoresID.txt",
 	out = "~/example/weights.txt"
 )
-
 ```
 
 The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes harmonized to the A1 (alternative) allele. For example:
@@ -57,16 +56,17 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 ```
 
 
-**Compute PRS with all PGS Catalog Scores**
+## Compute PRS with all PGS Catalog Scores
 
 *compute_PRS* function: 
 ```
 - geno: Prefix of genotype file in plink format (bed/bim/fam).
-- weight_file: The per-allele SNP effect output from *harmonize_snpeffect_toALT*
+- weight_file: The per-allele SNP effect output from harmonize_snpeffect_toALT function above.
 - start_col: Index of the starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
 - out: Name of output file, suffix *sscore* from PLINK2 will be added.
 ```
 
+Then, to compute PRSs:
 ```
 compute_PRS(
 	geno = "~/example/geno",
@@ -76,7 +76,7 @@ compute_PRS(
 )
 ```
 
-**Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)**
+## Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 *combine_PGS* function:
 ```
@@ -100,7 +100,9 @@ compute_PRS(
 - read_pred_testing: TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
 ```
 
-For example, the *pheno_file* would be formatted as:
+For example, 
+
+The *pheno_file* would be formatted as:
 ```
 | FID | IID | CAD |
 | --- | --- | --- |
@@ -115,7 +117,7 @@ isbinary = TRUE
 liabilityR2 = TRUE
 IID_pheno = "IID"
 ```
-
+---
 *covariate_file* as:
 ```
 | FID | IID | sex | age | PC1 | ... | PC10 |
@@ -127,7 +129,7 @@ Therefore,
 ```
 covar_list = c("sex", "age", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 ```
-
+---
 *trait_specific_score_file* as (e.g. for EFO_0001645 of coronary artery disease):
 ```
 PGS000962
@@ -141,7 +143,7 @@ PGS000058
 PGS000296
 PGS000337
 ```
-
+---
 Other parameters could be:
 ```
 ncores = 4
@@ -153,7 +155,7 @@ pval_thres_list = 0.05/2600 # P-value after Bonferroni correction
 read_pred_training = FALSE
 read_pred_testing = FALSE
 ```
-
+---
 ```
 combine_PGS(
 	pheno_file = "~/example/phenotype.txt",
