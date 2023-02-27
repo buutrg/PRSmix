@@ -91,7 +91,7 @@ combine_PGS(
 	phenofile = "~/example/phenotype.txt",
 	basic_data_file = "~/example/covariate.txt",
 	score_files_list = ""~/example/pgs.sscore",
-	pgslist = "cad_list.txt",
+	trait_specific_list = "cad_list.txt",
 	pheno_name = "CAD",
 	isbinary = TRUE,
 	out = "CAD_test_",
