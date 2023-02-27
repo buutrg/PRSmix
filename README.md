@@ -159,7 +159,7 @@ read_pred_testing = FALSE
 combine_PGS(
 	pheno_file = "~/example/phenotype.txt",
 	covariate_file = "~/example/covariate.txt",
-	score_files_list = ""~/example/pgs.sscore",
+	score_files_list = "~/example/pgs.sscore",
 	trait_specific_score_file = "cad_list.txt",
 	pheno_name = "CAD",
 	isbinary = TRUE,
