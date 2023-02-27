@@ -36,7 +36,7 @@ Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect 
 
 ```
 harmonize_snpeffect_toALT(
-	ref_file = "~/example/geno.freq", 
+	ref_file = "~/example/geno.afreq", 
 	pgs_folder = "~/allPGScatalog/",
 	pgs_list = "~/example/allscoresID.txt",
 	out = "~/example/weights.txt"
