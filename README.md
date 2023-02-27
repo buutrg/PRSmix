@@ -67,7 +67,7 @@ compute_PRS(
 )
 ```
 
-**Perform linear combination: PRSmix and PRSmix+**
+**Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)**
 
 *combine_PGS* function:
 ```
