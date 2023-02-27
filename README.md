@@ -68,7 +68,7 @@ compute_PRS(
 - phenofile: Directory to the phenotype file
 - basic_data_file: Directory to file with covariate information (age,sex,PC1..10)
 - score_files_list: A vector contain directories of the PGS to be read
-- pgslist: A vector of trait-specific PGSs to combine
+- trait_specific_list: A vector of trait-specific PGS to combine
 - pheno_name: Column name of the phenotype in phenofile
 - isbinary: True if this is binary
 - out: Prefix of output
