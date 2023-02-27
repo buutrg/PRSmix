@@ -108,25 +108,26 @@ stopCluster(cl)
 
 ```
 combine_PGS(
-	trait = trait,
-	pgslist = pgslist,
-	pheno_name = pheno_name,
-	isbinary = isbinary,
-	score_files_list = score_files_list,
-	basic_data_file = basic_data_file,
-	metascore = metascore,
-	phenofile = phenofile ,
-	score_pref = score_pref,
-	ncores = ncores,
-	IID_pheno = IID_pheno,
-	liabilityR2 = liabilityR2,
-	train_size_list = train_size_list,
-	covar_list = covar_list,
-	power_thres_list = power_thres_list,
-	pval_thres_list = pval_thres_list,
-	read_pred_training = read_pred_training,
-	read_pred_testing = read_pred_testing,
-	out = out1
+	phenofile,
+	basic_data_file,
+	score_files_list,
+	pgslist,
+	pheno_name,
+	isbinary,
+	score_pref,
+	out,
+	metascore,
+	liabilityR2,
+	IID_pheno,
+	covar_list,
+	ncores,
+	is_extract_adjSNPeff,
+	snp_eff_files_list,
+	train_size_list,
+	power_thres_list,
+	pval_thres_list,
+	read_pred_training,
+	read_pred_testing
 )
 
 ```
