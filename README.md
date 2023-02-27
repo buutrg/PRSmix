@@ -24,15 +24,19 @@ We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evalua
 - pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
 - pgs_list: File contain suffixes of file names (ends with .txt) of single PGS on each line. The files must exist in the pgs_folder folder
 - out: Filename of the output for the weight file
+
 ```
 
-For example, in the directory *~/allPGScatalog/*, there are per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. The pgs_list *~/example/allscoresID.txt* file will contain:
+For example, in the directory *~/allPGScatalog/*, there are files of per-allele SNP effect sizes: PGS000001.txt PGS000002.txt. Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
+
+The pgs_list *~/example/allscoresID.txt* file will contain:
+
 ```
 PGS000001.txt
 PGS000002.txt
 ```
 
-Each of the PGS will contains 3 columns: SNP, A1, BETA represent SNP ID, Effect allele and effect size
+
 
 ```
 harmonize_snpeffect_toALT(
