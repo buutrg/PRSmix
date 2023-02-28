@@ -86,12 +86,12 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 #' @export
 eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	
-	# data_df = test_df
-	
 	pred_acc_test = NULL
 	for (prs_i in 1:length(pgs_list)) {
 		
-		if (prs_i %% 100 == 0) print(prs_i)
+		if (prs_i %% 100 == 0) {
+			writeLines(paste0("Evaluated ",  prs_i, " scores"))
+		}
 		
 		prs_name = pgs_list[prs_i]
 		pred_acc_test_tmp = eval_single_PRS(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, alpha=alpha, isbinary=isbinary)
