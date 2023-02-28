@@ -13,9 +13,11 @@ library(PRSmix)
 
 # MANUAL
 We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evaluated on an independent cohort
-- Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort
-- Calculate PRS with all scores
-- Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
+- Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort (with `harmonize_snpeffect_toALT` function)
+- Calculate PRS with all scores (with `compute_PRS` function)
+- Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PGS` function)
+
+NOTE 1: if you already have the sum-of-SNP-effects scores estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score]) with <score>_SCORESUM columns via `--score <your weight file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PGS` function.
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
@@ -135,7 +137,7 @@ The output of the combination framework contains several files:
 - Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates). Filename ends with  `_OR_bestPGS.txt`, `_OR_PRSmix.txt` and `_OR_PRSmixPlus.txt`
 - The mixing weights of the scores used in combination. Filename ends with `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt`
 - The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE). Filename ends with `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt`
-- The prediction accuracy in partial R2 or liability R2 or Nagelkerke R2 of PRSmix and PRSmix+. Filename ends with `_test_summary_traitPRS_withPRSmix.txt` and `_test_summary_traitPRS_withPRSmixPlus.txt`
+
 
 
 For example, 
