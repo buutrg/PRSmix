@@ -33,12 +33,6 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 		nk = cs/(1 - exp(2/N * n))
 		R2 = nk
 		
-		if (liabilityR2) {
-			ncase = sum(data_df$trait == 1)
-			ncont = sum(data_df$trait == 0)
-			
-		}
-		
 	} else {
 		data_df$trait = as.numeric(data_df$trait)
 		
