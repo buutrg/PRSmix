@@ -11,12 +11,12 @@ library(PRSmix)
 ```
 
 # MANUAL
-We demonstrate the usage of PRSmix with PGS obtained from PGS catalog and evaluated on an independent cohort
+We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) PGS catalog and evaluated on an independent cohort
 - Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort (with `harmonize_snpeffect_toALT` function)
 - Calculate PRS with all scores (with `compute_PRS` function)
 - Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PRS` function)
 
-NOTE 1: if you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score]) with <score>_SCORESUM columns via `--score <your weight file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function.
+NOTE 1: if you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score]) with <score>_SUM columns via `--score <your weight file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function.
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
