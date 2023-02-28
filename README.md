@@ -11,12 +11,12 @@ library(PRSmix)
 ```
 
 # MANUAL
-We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) PGS catalog and evaluated on an independent cohort
-- Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort (with `harmonize_snpeffect_toALT` function)
-- Calculate PRS with all scores (with `compute_PRS` function)
-- Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PRS` function)
+We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) PGS catalog and evaluated on an independent cohort. The steps are:
+1) Harmonize SNP effect sizes corresponding to Alternative allele in the target cohort (with `harmonize_snpeffect_toALT` function)
+2) Calculate PRS with all scores (with `compute_PRS` function)
+3) Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PRS` function)
 
-**Bonus**:
+**BONUS**:
 - If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
 
 **NOTE**: 
@@ -120,7 +120,7 @@ The *combine_PRS* function:
 | `score_files_list` | | A vector contains directories of the PGSs to be read |
 | `trait_specific_score_file` | | A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line |
 | `pheno_name` | | Column name of the phenotype in phenofile |
-| `isbinary` | | TRUE if this is binary |
+| `isbinary` | | TRUE if the phenotype is a binary trait |
 | `out` | | Prefix of output |
 | `liabilityR2` | `FALSE` | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
 | `IID_pheno` | `IID` | Column name of IID of phenotype file (e.g IID, person_id) |
@@ -241,7 +241,7 @@ The *eval_single_PRS* function can be used to evaluate a single score:
 | `pheno` | | Name of phenotype column |
 | `prs_name` | | PGS list of the trait, must exist in the column name of data_df |
 | `covar_list` | | Array of covariates, must exist in the column name of data_df |
-| `isbinary` | FALSE | TRUE if binary and FALSE otherwise |
+| `isbinary` | FALSE | TRUE if the phenotype is a binary trait |
 | `liabilityR2` | FALSE | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
 
 For example: `data_df` can be formatted as:
