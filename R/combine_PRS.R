@@ -52,7 +52,7 @@ combine_PRS = function(
 	out,
 	metascore = NULL,
 	liabilityR2 = F,
-	IID_pheno = "person_id",
+	IID_pheno = "IID",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
 	ncores = 1,
 	is_extract_adjSNPeff = F,
