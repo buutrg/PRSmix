@@ -13,7 +13,7 @@ compute_PRS(geno, weight_file, out, start_col = 4)
 
 \item{out}{Name of output file.}
 
-\item{start_col}{Index of starting column to estimate PRS in the reference file (DEFAULT = 4).}
+\item{start_col}{Index of starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).}
 }
 \value{
 Execute plink. Return 0 if successful.

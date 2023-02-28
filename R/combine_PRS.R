@@ -43,7 +43,7 @@
 #' @importFrom caret train trainControl
 #' @importFrom utils head read.table
 #' @export
-combine_PGS = function(
+combine_PRS = function(
 	pheno_file,
 	covariate_file,
 	score_files_list,
