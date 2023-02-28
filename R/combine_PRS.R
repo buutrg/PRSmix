@@ -2,7 +2,6 @@
 #'
 #' This function perform a linear combination of the scores
 #'
-# ' @param trait The name of the trait
 #' @param pheno_file Directory to the phenotype file
 #' @param covariate_file Directory to file with covariate information (age,sex,PC1..10)
 #' @param score_files_list A vector contain directories of the PGS to be read
