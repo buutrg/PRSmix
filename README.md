@@ -20,7 +20,7 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 - If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
 
 **NOTE**: 
-- If you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score)) with <score>_SUM columns (via `--score <your SNP effect file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function.
+- If you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score)) with <score>_SUM columns (via `--score <your SNP effect file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function. If you want to return the adjusted SNP effect sizes, you will need the harmonized SNP effect sizes to the alternative allele of the target cohort (Step 1).
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
@@ -122,17 +122,17 @@ The *combine_PRS* function:
 | `pheno_name` | | Column name of the phenotype in phenofile |
 | `isbinary` | | TRUE if the phenotype is a binary trait |
 | `out` | | Prefix of output |
-| `liabilityR2` | `FALSE` | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
-| `IID_pheno` | `IID` | Column name of IID of phenotype file (e.g IID, person_id) |
+| `liabilityR2` | FALSE | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
+| `IID_pheno` | IID | Column name of IID of phenotype file (e.g IID, person_id) |
 | `covar_list` | `c("age", "sex", paste0("PC", 1:10))` | A vector of of covariates, must exists as columns in covariate_file |
-| `ncores` | `1` | Number of CPU cores for parallel processing |
-| `is_extract_adjSNPeff` | `FALSE` | TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory |
-| `original_beta_files_list` | `NULL` | The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) |
-| `train_size_list` | `NULL` | A vector of training sample sizes. If NULL, a random 80% of the samples will be used |
-| `power_thres_list` | `0.95` | A vector of power thresholds to select scores |
-| `pval_thres_list` | `0.05` | A vector of P-value thresholds to select scores |
-| `read_pred_training` | `FALSE` | TRUE if PRSs were assessed in the training set was already run and can be read from file |
-| `read_pred_testing` | `FALSE` | TRUE if PRSs were assessed in the testing set was already run and can be read from file |
+| `ncores` | 1 | Number of CPU cores for parallel processing |
+| `is_extract_adjSNPeff` | FALSE | TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory |
+| `original_beta_files_list` | NULL | The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) |
+| `train_size_list` | NULL | A vector of training sample sizes. If NULL, a random 80% of the samples will be used |
+| `power_thres_list` | 0.95 | A vector of power thresholds to select scores |
+| `pval_thres_list` | 0.05 | A vector of P-value thresholds to select scores |
+| `read_pred_training` | FALSE | TRUE if PRSs were assessed in the training set was already run and can be read from file |
+| `read_pred_testing` | FALSE | TRUE if PRSs were assessed in the testing set was already run and can be read from file |
 
 
 The output of the combination framework contains several files:
