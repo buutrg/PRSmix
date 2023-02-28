@@ -233,7 +233,7 @@ combine_PRS(
 
 # Bonus
 
-The *eval_single_PRS* function can be used to evaluate a single score:
+The *eval_single_PRS* function can be used to evaluate a single score and return prediction accuracy R2 as partial R2, liability R2 or Nagelkerke R2:
 
 | Argument | Default | Description |
 | --- | --- | --- |
