@@ -185,7 +185,7 @@ combine_PRS = function(
 		pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
 
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
-		pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval_partial_R2), decreasing=F),]
+		pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval), decreasing=F),]
 		head(pred_acc_train_trait_summary)
 
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary %>%
@@ -203,7 +203,7 @@ combine_PRS = function(
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
-			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval_partial_R2), decreasing=F),]
+			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval), decreasing=F),]
 			head(pred_acc_test_trait_summary)
 
 			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_allPRS.txt"), row.names=F, sep="\t", quote=F)
@@ -285,7 +285,7 @@ combine_PRS = function(
 				writeLines("PRSmix:")
 
 				topprs = pred_acc_train_trait_summary %>%
-					filter(pval_partial_R2 <= pval_thres & power >= power_thres)
+					filter(pval <= pval_thres & power >= power_thres)
 
 				head(topprs)
 				topprs = topprs$pgs
@@ -479,7 +479,7 @@ combine_PRS = function(
 				writeLines("PRSmix+:")
 
 				topprs = pred_acc_train_allPGS_summary %>%
-					filter(pval_partial_R2 <= pval_thres & power >= power_thres)
+					filter(pval <= pval_thres & power >= power_thres)
 				topprs = topprs$pgs
 				print(length(topprs))
 
