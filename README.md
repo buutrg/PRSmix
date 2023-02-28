@@ -25,12 +25,13 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
 The *harmonize_snpeffect_toALT* function:
-```
-- ref_file: Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)
-- pgs_folder: Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt
-- pgs_list: File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder
-- out: Filename of the output for the weight file
-```
+
+| Argument | Description |
+| --- | --- |
+| `ref_file` | Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2) |
+| `pgs_folder` | Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt |
+| `pgs_list` | File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder |
+| `out` | Filename of the output for the weight file |
 
 For example:
 
@@ -89,12 +90,14 @@ The output file will contains SNP ID, A1, A2, and columns of SNP effect sizes ha
 ## Compute PRSs for all scores
 
 The *compute_PRS* function: 
-```
-- geno: Prefix of genotype file in plink format (bed/bim/fam).
-- weight_file: The per-allele SNP effect output from harmonize_snpeffect_toALT function above.
-- start_col: Index of the starting column of SNP effect sizes to estimate PRS in the weight file (DEFAULT = 4).
-- out: Name of output file, suffix *sscore* from PLINK2 will be added.
-```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `geno` | --- | Prefix of genotype file in plink format (bed/bim/fam) |
+| `weight_file` | --- | The per-allele SNP effect output from harmonize_snpeffect_toALT function above |
+| `start_col` | 4 | Index of the starting column of SNP effect sizes to estimate PRS in the weight file |
+| `out` | --- | Name of output file, suffix *sscore* from PLINK2 will be added |
+
 
 Then, to compute PRSs:
 ```
@@ -109,37 +112,42 @@ compute_PRS(
 ## Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 The *combine_PRS* function:
-```
-- pheno_file: Directory to the phenotype file
-- covariate_file: Directory to file with covariate information (age,sex,PC1..10)
-- score_files_list: A vector contains directories of the PGSs to be read
-- trait_specific_score_file: A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line
-- pheno_name: Column name of the phenotype in phenofile
-- isbinary: TRUE if this is binary
-- out: Prefix of output
-- liabilityR2: TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported (DEFAULT = FALSE)
-- IID_pheno: Column name of IID of phenotype file (e.g IID, person_id)
-- covar_list: A vector of of covariates, must exists as columns in covariate_file (DEFAULT = age, sex, PC1..10))
-- ncores: Number of CPU cores for parallel processing (DEFAULT = 1)
-- is_extract_adjSNPeff: TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory (DEFAULT = FALSE)
-- original_beta_files_list: The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) (DEFAULT = NULL)
-- train_size_list: A vector of training sample sizes. If NULL, a random 80% of the samples will be used (DEFAULT = NULL)
-- power_thres_list: A vector of power thresholds to select scores (DEFAULT = 0.95)
-- pval_thres_list: A vector of P-value thresholds to select scores (DEFAULT = 0.05)
-- read_pred_training: TRUE if PRSs were assessed in the training set was already run and can be read from file (DEFAULT = FALSE)
-- read_pred_testing: TRUE if PRSs were assessed in the testing set was already run and can be read from file (DEFAULT = FALSE)
-```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `pheno_file` | --- | Directory to the phenotype file |
+| `covariate_file` | --- | Directory to file with covariate information (age,sex,PC1..10) |
+| `score_files_list` | --- | A vector contains directories of the PGSs to be read |
+| `trait_specific_score_file` | --- | A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line |
+| `pheno_name` | --- | Column name of the phenotype in phenofile |
+| `isbinary` | `TRUE` | TRUE if this is binary |
+| `out` | --- | Prefix of output |
+| `liabilityR2` | `FALSE` | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
+| `IID_pheno` | `IID` | Column name of IID of phenotype file (e.g IID, person_id) |
+| `covar_list` | `c("age", "sex", paste0("PC", 1:10))` | A vector of of covariates, must exists as columns in covariate_file |
+| `ncores` | `1` | Number of CPU cores for parallel processing |
+| `is_extract_adjSNPeff` | `FALSE` | TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory |
+| `original_beta_files_list` | `NULL` | The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) |
+| `train_size_list` | `NULL` | A vector of training sample sizes. If NULL, a random 80% of the samples will be used |
+| `power_thres_list` | `0.95` | A vector of power thresholds to select scores |
+| `pval_thres_list` | `0.05` | A vector of P-value thresholds to select scores |
+| `read_pred_training` | `FALSE` | TRUE if PRSs were assessed in the training set was already run and can be read from file |
+| `read_pred_testing` | `FALSE` | TRUE if PRSs were assessed in the testing set was already run and can be read from file |
+
 
 The output of the combination framework contains several files:
-- The number of cases and controls (for binary trait). Filename ends with `_case_counts.txt`
-- The dataframe of training and testing sample split from the main dataframe. Filename ends with `_train_df.txt` and `_test_df.txt`
-- The prediction accuracy in the training set for all PRSs. Filename ends with `_train_allPRS.txt`
-- The prediction accuracy in the testing set for trait-specific PRSs. Filename ends with `_test_allPRS.txt`
-- The prediction accuracy assessed in the testing set of the best PRS selected from the training set. Filename ends with `_best_acc.txt`
-- The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates). Filename ends with `_auc_NULL.txt`, `_auc_BestPGS.txt`, `_auc_PRSmix.txt` and `_auc_PRSmixPlus.txt`
-- Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates). Filename ends with  `_OR_bestPGS.txt`, `_OR_PRSmix.txt` and `_OR_PRSmixPlus.txt`
-- The mixing weights of the scores used in combination. Filename ends with `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt`
-- The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE). Filename ends with `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt`
+
+| Description | Suffix |
+| --- | --- |
+| The number of cases and controls (for binary trait) | `_case_counts.txt` |
+| The dataframe of training and testing sample split from the main dataframe | `_train_df.txt` and `_test_df.txt` |
+| The prediction accuracy in the training set for all PRSs | `_train_allPRS.txt` |
+| The prediction accuracy in the testing set for trait-specific PRSs | `_test_allPRS.txt` |
+| The prediction accuracy assessed in the testing set of the best PRS selected from the training set | `_best_acc.txt` |
+| The AUC (for binary trait) of the NULL model of only covariates, the best PGS, PRSmix and PRSmix+ (adjusted for covariates) | `_auc_NULL.txt`, `_auc_BestPGS.txt`, `_auc_PRSmix.txt` and `_auc_PRSmixPlus.txt` |
+| Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates) |  `_OR_bestPGS.txt`, `_OR_PRSmix.txt` and `_OR_PRSmixPlus.txt` |
+| The mixing weights of the scores used in combination | `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt` |
+| The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE) | `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt` |
 
 
 
