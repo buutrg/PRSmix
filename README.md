@@ -148,7 +148,7 @@ The output of the combination framework contains several files:
 | Odds Ratio of the best PGS, PRSmix and PRSmix+ (for binary trait) (adjusted for covariates) |  `_OR_bestPGS.txt`, `_OR_PRSmix.txt` and `_OR_PRSmixPlus.txt` |
 | The mixing weights of the scores used in combination | `_weight_PRSmix.txt` and `_weight_PRSmixPlus.txt` |
 | The adjusted SNP effects to estimate PRSmix and PRSmix+ (if is_extract_adjSNPeff=TRUE) | `_adjSNPeff_PRSmix.txt` and `_adjSNPeff_PRSmixPlus.txt` |
-
+| The prediction accuracy of PRSmix and PRSmix+ | `_test_summary_traitPRS_withPRSmix.txt` and `_test_summary_traitPRS_withPRSmixPlus.txt` |
 
 
 For example, 
