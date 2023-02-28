@@ -15,14 +15,14 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @param alpha Significance level to estimate power (default = 0.05)
 #' @return A dataframe for prediction accuracy of a single PRS and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
-eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
+eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
 	
 	if (isbinary & !liabilityR2) {
-		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = glm(formula, data=data_df, family="binomial")
 		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
 		
-		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0(pheno, " ~ ", paste0(covar_list, collapse="+")))
 		model_null = glm(formula, data=data_df, family="binomial")
 		r_null = suppressWarnings(logLik(model_null, REML=FALSE))[1]
 		
@@ -36,11 +36,11 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 	} else {
 		data_df$trait = as.numeric(data_df$trait)
 		
-		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
 		r_full = summary(model_full)$r.squared
 		
-		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0(pheno, " ~ ", paste0(covar_list, collapse="+")))
 		model_null = lm(formula, data=data_df)
 		r_null = summary(model_null)$r.squared
 		
@@ -67,7 +67,7 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 	
 	r2_out = paste0(rr(R2,3), " (", rr(lower_r2,3), "-", rr(upper_r2,3), ")")
 	
-	return(data.frame(pgs=prs_name, R2=R2, R2_outformat=r2_out, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power))
+	return(data.frame(pgs=prs_name, R2=R2, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power))
 }
 
 
@@ -94,7 +94,7 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 		}
 		
 		prs_name = pgs_list[prs_i]
-		pred_acc_test_tmp = eval_single_PRS(data_df, prs_name, covar_list=covar_list, liabilityR2=liabilityR2, alpha=alpha, isbinary=isbinary)
+		pred_acc_test_tmp = eval_single_PRS(data_df=data_df, pheno="trait", prs_name=prs_name, covar_list=covar_list, isbinary=isbinary, liabilityR2=liabilityR2, alpha=alpha)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	
