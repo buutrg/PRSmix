@@ -1,9 +1,9 @@
 Package: PRSmix
-Title: An combination framework to integrative PRS and improve PRS prediction accuracy
+Title: Integrative Polygenic Risk Score Improves The Prediction Accuracy Of Complex Traits And Diseases
 Version: 1.0
 Authors@R:
 	c(person("Buu", "Truong", role = c("aut","cre", "cph"),email = "btruong@broadinstitute.org"))
-Description: What the package does (one paragraph).
+Description: This package helps to benchmark and combine scores, leveraging multiple PRSs to improve prediction accuracy.
 License: GPL (>=3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
