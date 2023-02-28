@@ -93,10 +93,10 @@ The *compute_PRS* function:
 
 | Argument | Default | Description |
 | --- | --- | --- |
-| `geno` | --- | Prefix of genotype file in plink format (bed/bim/fam) |
-| `weight_file` | --- | The per-allele SNP effect output from harmonize_snpeffect_toALT function above |
+| `geno` | | Prefix of genotype file in plink format (bed/bim/fam) |
+| `weight_file` | | The per-allele SNP effect output from harmonize_snpeffect_toALT function above |
 | `start_col` | 4 | Index of the starting column of SNP effect sizes to estimate PRS in the weight file |
-| `out` | --- | Name of output file, suffix *sscore* from PLINK2 will be added |
+| `out` | | Name of output file, suffix *sscore* from PLINK2 will be added |
 
 
 Then, to compute PRSs:
@@ -115,13 +115,13 @@ The *combine_PRS* function:
 
 | Argument | Default | Description |
 | --- | --- | --- |
-| `pheno_file` | --- | Directory to the phenotype file |
-| `covariate_file` | --- | Directory to file with covariate information (age,sex,PC1..10) |
-| `score_files_list` | --- | A vector contains directories of the PGSs to be read |
-| `trait_specific_score_file` | --- | A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line |
-| `pheno_name` | --- | Column name of the phenotype in phenofile |
-| `isbinary` | `TRUE` | TRUE if this is binary |
-| `out` | --- | Prefix of output |
+| `pheno_file` | | Directory to the phenotype file |
+| `covariate_file` | | Directory to file with covariate information (age,sex,PC1..10) |
+| `score_files_list` | | A vector contains directories of the PGSs to be read |
+| `trait_specific_score_file` | | A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line |
+| `pheno_name` | | Column name of the phenotype in phenofile |
+| `isbinary` | | TRUE if this is binary |
+| `out` | | Prefix of output |
 | `liabilityR2` | `FALSE` | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
 | `IID_pheno` | `IID` | Column name of IID of phenotype file (e.g IID, person_id) |
 | `covar_list` | `c("age", "sex", paste0("PC", 1:10))` | A vector of of covariates, must exists as columns in covariate_file |
@@ -234,14 +234,16 @@ combine_PRS(
 # Bonus
 
 The *eval_single_PRS* function can be used to evaluate a single score:
-```
-- data_df: Data to assess prediction accuracy which at least contains the phenotype, covariates and a PRS
-- pheno: Name of phenotype column
-- prs_name: PGS list of the trait, must exist in the column name of data_df
-- covar_list: Array of covariates, must exist in the column name of data_df
-- isbinary: TRUE if binary and FALSE otherwise (default = FALSE)
-- liabilityR2: TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported (DEFAULT = FALSE)
-```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `data_df` | | Data to assess prediction accuracy which at least contains the phenotype, covariates and a PRS |
+| `pheno` | | Name of phenotype column |
+| `prs_name` | | PGS list of the trait, must exist in the column name of data_df |
+| `covar_list` | | Array of covariates, must exist in the column name of data_df |
+| `isbinary` | FALSE | TRUE if binary and FALSE otherwise |
+| `liabilityR2` | FALSE | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
+
 For example: `data_df` can be formatted as:
 
 | CAD | PRS_example | sex | age | PC1 | ... | PC10 |
