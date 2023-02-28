@@ -67,7 +67,7 @@ eval_single_PRS = function(data_df, prs_name, covar_list, isbinary=F, liabilityR
 	
 	r2_out = paste0(rr(R2,3), " (", rr(lower_r2,3), "-", rr(upper_r2,3), ")")
 	
-	return(data.frame(pgs=prs_name, R2=R2, R2_outformat=r2_out, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval_partial_R2=pval, power=power))
+	return(data.frame(pgs=prs_name, R2=R2, R2_outformat=r2_out, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power))
 }
 
 
