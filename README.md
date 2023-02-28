@@ -165,7 +165,7 @@ Therefore,
 ``` 
 pheno_name = "CAD"
 isbinary = TRUE
-liabilityR2 = TRUE
+liabilityR2 = TRUE # FALSE if Nagelkerke R2 should be reported
 IID_pheno = "IID"
 ```
 ---
@@ -231,7 +231,7 @@ combine_PRS(
 )
 ```
 
-# Bonus
+# BONUS
 
 The *eval_single_PRS* function can be used to evaluate a single score and return prediction accuracy R2 as partial R2, liability R2 or Nagelkerke R2:
 
