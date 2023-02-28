@@ -6,7 +6,6 @@ The *PRSmix* package can be used to benchmark PRSs and compute the linear combin
 To use PRSmix:
 ```
 install.packages("devtools")
-library(devtools)
 devtools::install_github("buutrg/PRSmix")
 library(PRSmix)
 ```
