@@ -16,7 +16,11 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 - Calculate PRS with all scores (with `compute_PRS` function)
 - Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PRS` function)
 
-NOTE 1: if you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score]) with <score>_SUM columns via `--score <your weight file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function.
+**Bonus**:
+- If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
+
+**NOTE**: 
+- If you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score]) with <score>_SUM columns via `--score <your SNP effect file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function.
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
@@ -218,6 +222,39 @@ combine_PRS(
 	read_pred_testing = FALSE
 )
 ```
+
+# Bonus
+
+The *eval_single_PRS* function can be used to evaluate a single score:
+```
+- data_df: Data to assess prediction accuracy which at least contains the phenotype, covariates and a PRS
+- pheno: Name of phenotype column
+- prs_name: PGS list of the trait, must exist in the column name of data_df
+- covar_list: Array of covariates, must exist in the column name of data_df
+- isbinary: TRUE if binary and FALSE otherwise (default = FALSE)
+- liabilityR2: TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported (DEFAULT = FALSE)
+```
+For example: `data_df` can be formatted as:
+
+| CAD | PRS_example | sex | age | PC1 | ... | PC10 |
+| --- | --- | --- | --- | --- | --- | --- | 
+| 1 | 0.02 | 1 | 40 | 0.02 | ... | 0.03 |
+| 0 | 0.03 | 0 | 50 | 0.01 | ... | 0.04 |
+
+Therefore, to evaluate `PRS_example`:
+```
+eval_single_PRS(
+	data_df,
+	pheno = "CAD",
+	prs_name = "PRS_example",
+	covar_list = c("age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"),
+	isbinary = TRUE,
+	liabilityR2 = TRUE
+)
+```
+
+The output of the function will contain the R2, standard error, 95% lower and upper bound, P-value and power
+
 # References
 Truong, B., Hull, L. E., Ruan, Y., Huang, Q. Q., Hornsby, W., Martin, H. C., van Heel, D. A., Wang, Y., Martin, A. R., Lee, H. and Natarajan, P. 2023. "Integrative Polygenic Risk Score Improves The Prediction Accuracy Of Complex Traits And Diseases". *doi:10.1101/2023.02.21.23286110*.
 
