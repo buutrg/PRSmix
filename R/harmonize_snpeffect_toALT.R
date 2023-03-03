@@ -9,7 +9,10 @@
 #' @return A file is written containing SNP effects harmonized to the ALT allelle with columns SNP ID, ALT allele and BETAs
 #' @export
 harmonize_snpeffect_toALT = function(
-	ref_file, 
+	ref_file,
+	snp_col = "SNP",
+	a1_col = "A1",
+	beta_col = "BETA",
 	pgs_folder, 
 	pgs_list,
 	out) {
@@ -39,6 +42,7 @@ harmonize_snpeffect_toALT = function(
 		f = paste0(pgs_folder, "/", pgs_list[prs_i], ".txt")
 		if (file.exists(f) && file.size(f) > 0) {
 			panel = fread(f)
+			panel = panel[,c(snp_col, a1_col, beta_col)]
 			colnames(panel) = c("SNP", "A1", "BETA")
 		} else {
 			next()
