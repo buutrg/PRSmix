@@ -104,7 +104,7 @@ Then, to compute PRSs:
 compute_PRS(
 	geno = "~/example/geno",
 	weight_file = "~/example/weights.txt",
-	starts_col = 4,
+	start_col = 4,
 	out = "~/example/pgs"
 )
 ```
