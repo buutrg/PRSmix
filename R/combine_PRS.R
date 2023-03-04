@@ -158,12 +158,12 @@ combine_PRS = function(
 		################################ training #################################
 
 		writeLines("--- Evaluating PRS in training set ---")
-				
+		
 		training_file = paste0(out, "_train_allPRS.txt")
-		read_pred_training_1 = (read_pred_training | file.exists(training_file))
+		read_pred_training_1 = (read_pred_training & file.exists(training_file))
 		
 		testing_file = paste0(out, "_test_allPRS.txt")
-		read_pred_testing_1 = (read_pred_testing | file.exists(testing_file))
+		read_pred_testing_1 = (read_pred_testing & file.exists(testing_file))
 		
 		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
