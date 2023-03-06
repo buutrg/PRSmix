@@ -123,7 +123,7 @@ combine_PRS = function(
 		
 		# train_size = train_size_list[1]
 		
-		writeLines(paste("--- Using ", train_size, " for training sample ---"))
+		writeLines(paste("--- Using ", train_size, " individuals for training sample ---"))
 		
 		if (!null_train_size_list) out = paste0(out_save, "_train.", train_size)
 		
@@ -628,10 +628,10 @@ combine_PRS = function(
 						################### OR ######################
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model = glm(ff, data=test_df1, family="binomial")
-						models = summary(model)
-						mm = exp(models$coefficients[2,1])
-						ll = exp(models$coefficients[2,1] - 1.97*models$coefficients[2,2])
-						uu = exp(models$coefficients[2,1] + 1.97*models$coefficients[2,2])
+						model1s = summary(model)
+						mm = exp(model1s$coefficients[2,1])
+						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
+						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 						pval = format.pval(model1s$coefficients[2,4])
 						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
 						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
