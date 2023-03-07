@@ -588,7 +588,7 @@ combine_PRS = function(
 							set.seed(123)
 							model_prsmix = train(
 								formula, data = train_tmp, method = "glmnet",
-								trControl = ctrl,
+								trControl = ctrl, family = "binomial",
 								tuneLength = 50, verbose=T
 							)
 							
