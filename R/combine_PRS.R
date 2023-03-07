@@ -243,14 +243,14 @@ combine_PRS = function(
 			set.seed(123)
 			model_prsmix_null = train(
 				formula_null, data = train_tmp, method = "glmnet",
-				trControl = ctrl,
+				trControl = ctrl, family = "binomial",
 				tuneLength = 50, verbose=T
 			)
 			
 			set.seed(123)
 			model_prsmix_bestPRS = train(
 				formula_bestPRS, data = train_tmp, method = "glmnet",
-				trControl = ctrl,
+				trControl = ctrl, family = "binomial",
 				tuneLength = 50, verbose=T
 			)
 
