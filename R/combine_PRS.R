@@ -203,6 +203,9 @@ combine_PRS = function(
 		writeLines("--- Evaluating PRS in testing set ---")
 
 		if (!read_pred_testing_1) {
+
+			if (debug)	writeLines("Running NULL model ---- ")
+
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
@@ -240,8 +243,6 @@ combine_PRS = function(
 
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
-
-			if (debug)	writeLines("Running NULL model ---- ")
 
 			set.seed(123)
 			model_prsmix_null = train(

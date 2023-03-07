@@ -18,6 +18,7 @@ rr = function(x,digit=10) return(round(x,digit))
 eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
 	
 	if (isbinary & !liabilityR2) {
+		data_df$trait = as.numeric(data_df$trait)
 		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = glm(formula, data=data_df, family="binomial")
 		r_full = suppressWarnings(logLik(model_full, REML=FALSE))[1]
@@ -86,6 +87,9 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 #' @export
 eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	
+	writeLines("Eval all PGS")
+	print(table(data_df$trait))
+
 	pred_acc_test = NULL
 	for (prs_i in 1:length(pgs_list)) {
 		
