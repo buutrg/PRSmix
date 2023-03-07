@@ -61,7 +61,8 @@ combine_PRS = function(
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
 	read_pred_training = FALSE,
-	read_pred_testing = FALSE
+	read_pred_testing = FALSE,
+	debug = F
 	) {
 
 	options(datatable.fread.datatable=FALSE)
@@ -239,6 +240,8 @@ combine_PRS = function(
 
 			cl = makePSOCKcluster(ncores)
 			registerDoParallel(cl)
+
+			if (debug)	writeLines("Running NULL model ---- ")
 
 			set.seed(123)
 			model_prsmix_null = train(
