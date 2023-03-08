@@ -73,7 +73,12 @@ PGS000001
 PGS000002
 ```
 
-Optional: To split all scores into chunks with size of 20 scores/chunk and use 16 cores at once and 
+Optional: To split all scores into smaller chunks:
+E.g. for 20 scores/chunk and 16 cores at once:
+```
+chunk_size = 20
+ncores = 16
+```
 
 Then, to harmonize SNP effect sizes:
 ```
@@ -85,8 +90,8 @@ harmonize_snpeffect_toALT(
 	a1_col = 2,
 	beta_col = 3,
 	isheader = F,
-	chunk_size = 20, # Number of scores per chunk
-	ncores = 16, # ~6GB RAM per core for at the largest 6x10^6 variants
+	chunk_size = 20,
+	ncores = 16,
 	out = "~/example/weights.txt"
 )
 ```
