@@ -16,7 +16,7 @@ harmonize_snpeffect_toALT = function(
 	pgs_folder, 
 	pgs_list,
 	suffix = ".txt",
-	isheader = T
+	isheader = T,
 	out) {
 	
 	options(datatable.fread.datatable=FALSE)
