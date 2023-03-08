@@ -16,6 +16,7 @@ harmonize_snpeffect_toALT = function(
 	pgs_folder, 
 	pgs_list,
 	suffix = ".txt",
+	isheader = T
 	out) {
 	
 	options(datatable.fread.datatable=FALSE)
@@ -42,7 +43,7 @@ harmonize_snpeffect_toALT = function(
 		
 		f = paste0(pgs_folder, "/", pgs_list[prs_i], suffix)
 		if (file.exists(f) && file.size(f) > 0) {
-			panel = fread(f)
+			panel = fread(f, header = isheader)
 			panel = panel[,c(snp_col, a1_col, beta_col)]
 			colnames(panel) = c("SNP", "A1", "BETA")
 		} else {
