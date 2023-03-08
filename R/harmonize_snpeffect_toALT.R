@@ -87,9 +87,6 @@ harmonize_snpeffect_toALT = function(
 				return(NULL)
 			}
 			
-			# if (prs_i %% 50 == 0) print(prs_i)
-			cc = cc + 1
-			
 			idx = match(panel$SNP, snp_weight_all$SNP)
 			idx1 = which(is.na(idx))
 			
