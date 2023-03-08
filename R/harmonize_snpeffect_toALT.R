@@ -87,10 +87,7 @@ harmonize_snpeffect_toALT = function(
 				return(NULL)
 			}
 			
-			idx = match(panel$SNP, snp_weight_all$SNP)
-			idx1 = which(is.na(idx))
-			
-			idx = match(panel$SNP, snp_weight_all$SNP)
+			idx = match(panel$SNP, snp_weight_all$SNP)			
 			same_a1 = panel$A1 == snp_weight_all$A1[idx]
 			
 			idx_notsame = which(!same_a1)
@@ -121,7 +118,7 @@ harmonize_snpeffect_toALT = function(
 		relocate(A1, .after=SNP) %>%
 		relocate(A2, .after=A1)
 	writeLines(paste0("Writing output file: ", out))
-	fwrite(snp_weight_all, out, row.names=F, sep=" ", quote=F, na=0)
+	fwrite(res_chunk_all, out, row.names=F, sep=" ", quote=F, na=0)
 	
 	return(0)
 }
