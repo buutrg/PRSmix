@@ -69,7 +69,7 @@ harmonize_snpeffect_toALT = function(
 
 	for (chunk_i in 1:length(pgs_list_chunk_list)) {
 
-		# chunk_i = 2
+		chunk_i = 1
 		writeLines(paste0("Chunk ", chunk_i))
 
 		pgs_list_chunk = pgs_list_chunk_list[[chunk_i]]
@@ -118,7 +118,6 @@ harmonize_snpeffect_toALT = function(
 		print(dim(res_chunk_all))
 	}
 
-	print(cc)
 	res_chunk_all$A1 = snp_weight_all$A1[match(res_chunk_all$SNP, snp_weight_all$SNP)]
 	res_chunk_all$A2 = snp_weight_all$A2[match(res_chunk_all$SNP, snp_weight_all$SNP)]
 	res_chunk_all = res_chunk_all %>% 
