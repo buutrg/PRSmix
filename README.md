@@ -26,12 +26,18 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 
 The *harmonize_snpeffect_toALT* function:
 
-| Argument | Description |
-| --- | --- |
-| `ref_file` | Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2) |
-| `pgs_folder` | Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt |
-| `pgs_list` | File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder |
-| `out` | Filename of the output for the weight file |
+| Argument | Default | Description |
+| --- | --- | --- |
+| `ref_file` | | Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2) |
+| `pgs_folder` | | Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt |
+| `pgs_list` | | File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder |
+| `out` | | Filename of the output for the weight file |
+| `isheader` | TRUE | TRUE if the weight files contain header |
+| `snp_col` | SNP | Column name of SNP IDs. Can be a number of column index with isheader=FALSE |
+| `a1_col` | A1 | Column name of effect allele. Can be a number of column index with isheader=FALSE |
+| `beta_col` | BETA | Column name of effect size. Can be a number of column index with isheader=FALSE |
+| `ncores` | 1 | Number of cores for parallel processing |
+| `chunk_size` | 1 | Number of scores to process each chunk |
 
 For example:
 
@@ -67,12 +73,20 @@ PGS000001
 PGS000002
 ```
 
+Optional: To split all scores into chunks with size of 20 scores/chunk and use 16 cores at once and 
+
 Then, to harmonize SNP effect sizes:
 ```
 harmonize_snpeffect_toALT(
 	ref_file = "~/example/geno.afreq", 
 	pgs_folder = "~/example/allPGScatalog/",
 	pgs_list = "~/example/allscoresID.txt",
+	snp_col = 1,
+	a1_col = 2,
+	beta_col = 3,
+	isheader = F,
+	chunk_size = 20, # Number of scores per chunk
+	ncores = 16, # ~6GB RAM per core for at the largest 6x10^6 variants
 	out = "~/example/weights.txt"
 )
 ```

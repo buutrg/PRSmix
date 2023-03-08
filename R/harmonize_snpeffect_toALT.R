@@ -38,8 +38,8 @@ harmonize_snpeffect_toALT = function(
 	pgs_folder, 
 	pgs_list,
 	suffix = ".txt",
-	ncores = 4,
-	chunk_size = 20,
+	ncores = 1,
+	chunk_size = 1,
 	isheader = T,
 	out) {
 
