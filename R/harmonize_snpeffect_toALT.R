@@ -22,7 +22,7 @@ merge_SNP_df = function(res_chunk) {
 
 merge_SNP_df_binary = function(res_chunk, left, right) {
 
-	print(paste0(left, "..", right))
+	# print(paste0(left, "..", right))
 	if (left == right) { return(res_chunk[[left]]) }
 	if (left < right) {
 		mid = floor((left + right) / 2)
