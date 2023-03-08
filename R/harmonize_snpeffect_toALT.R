@@ -20,6 +20,28 @@ merge_SNP_df = function(res_chunk) {
 }
 
 
+merge_SNP_df_binary = function(res_chunk, left, right) {
+
+	print(paste0(left, "..", right))
+	if (left == right) { return(res_chunk[[left]]) }
+	if (left < right) {
+		mid = floor((left + right) / 2)
+		left_df = merge_SNP_df_binary(res_chunk, left, mid)
+		right_df = merge_SNP_df_binary(res_chunk, mid+1, right)
+		
+		shared_snp = intersect(left_df$SNP, right_df$SNP)
+		idx1 = match(shared_snp, left_df$SNP)
+		idx2 = match(shared_snp, right_df$SNP)
+		if (length(shared_snp)>0) left_df[idx1,colnames(right_df)] = right_df[idx2, ]
+
+		nonshared = which(!left_df$SNP %in% shared_snp)
+		if (length(nonshared)>0) left_df = bind_rows(left_df, right_df[-idx2, ])
+		return(left_df)
+	}
+
+}
+
+
 #' Harmonize snp effects across PGS to the alternative allele
 #'
 #' This function harmonize SNP effect across PGS to the alternative allele
@@ -103,11 +125,11 @@ harmonize_snpeffect_toALT = function(
 		}, mc.cores = ncores)
 
 		writeLines(paste0("Merging chunk ", chunk_i))
-		res_chunk_fin = merge_SNP_df(res_chunk)
+		res_chunk_fin = merge_SNP_df_binary(res_chunk, 1, length(res_chunk))
 		if (is.null(res_chunk_all)) {
 			res_chunk_all = res_chunk_fin
 		} else {
-			res_chunk_all = merge_SNP_df(list(res_chunk_all, res_chunk_fin))
+			res_chunk_all = merge_SNP_df_binary(list(res_chunk_all, res_chunk_fin), 1, 2)
 		}
 		print(dim(res_chunk_all))
 	}
