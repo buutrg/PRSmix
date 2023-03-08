@@ -71,7 +71,7 @@ harmonize_snpeffect_toALT = function(
 	length(pgs_list)
 
 	writeLines("Reading freq file")
-	freq = fread(ref_file)
+	freq = fread(ref_file, verbose=F)
 	freq = freq %>% select(ID, ALT, REF)
 
 	snp_weight_all = freq
@@ -102,7 +102,7 @@ harmonize_snpeffect_toALT = function(
 			f = paste0(pgs_folder, "/", pgs_list[prs_i], suffix)
 
 			if (file.exists(f) && file.size(f) > 0) {
-				panel = fread(f, header = isheader)
+				panel = fread(f, header = isheader, verbose=F)
 				panel = panel[,c(snp_col, a1_col, beta_col)]
 				colnames(panel) = c("SNP", "A1", "BETA")
 			} else {
