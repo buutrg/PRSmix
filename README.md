@@ -32,7 +32,7 @@ The *harmonize_snpeffect_toALT* function:
 | `pgs_folder` | | Directory to folder contain each PGS per-allele SNP effect sizes ending with .txt |
 | `pgs_list` | | File contain suffixes of file names (don't include suffix .txt) of single PGS on each line. The files must exist in the pgs_folder folder |
 | `out` | | Filename of the output for the weight file |
-| `isheader` | TRUE | TRUE if the weight files contain header |
+| `isheader` | TRUE | TRUE if the weight files contain header, otherwise the file would be read as SNP IDs, effect allele and effect size for column 1, 2, 3, respectively |
 | `snp_col` | SNP | Column name of SNP IDs. Can be a number of column index with isheader=FALSE |
 | `a1_col` | A1 | Column name of effect allele. Can be a number of column index with isheader=FALSE |
 | `beta_col` | BETA | Column name of effect size. Can be a number of column index with isheader=FALSE |
