@@ -69,7 +69,7 @@ harmonize_snpeffect_toALT = function(
 
 	for (chunk_i in 1:length(pgs_list_chunk_list)) {
 
-		chunk_i = 1
+		# chunk_i = 1
 		writeLines(paste0("Chunk ", chunk_i))
 
 		pgs_list_chunk = pgs_list_chunk_list[[chunk_i]]
