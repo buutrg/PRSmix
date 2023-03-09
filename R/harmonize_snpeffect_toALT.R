@@ -91,15 +91,15 @@ harmonize_snpeffect_toALT = function(
 
 	for (chunk_i in 1:length(pgs_list_chunk_list)) {
 
-		# chunk_i = 1
+		# chunk_i = 3
 		writeLines(paste0("Chunk ", chunk_i))
 
 		pgs_list_chunk = pgs_list_chunk_list[[chunk_i]]
 
 		res_chunk = mclapply(1:length(pgs_list_chunk), function(prs_i) {
-			# prs_i = 2
+			# prs_i = 28
 			
-			f = paste0(pgs_folder, "/", pgs_list[prs_i], suffix)
+			f = paste0(pgs_folder, "/", pgs_list_chunk[prs_i], suffix)
 
 			if (file.exists(f) && file.size(f) > 0) {
 				panel = fread(f, header = isheader, verbose=F)
