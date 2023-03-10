@@ -71,6 +71,7 @@ combine_PRS = function(
 	basic_data = fread(covariate_file)
 
 	writeLines("--- Reading all polygenic risk scores ---")
+	
 	all_scores = NULL
 
 	for (score_file_i in 1:length(score_files_list)) {
@@ -206,6 +207,12 @@ combine_PRS = function(
 
 			if (debug)	writeLines("Running NULL model ---- ")
 
+			sumscore = apply(test_df[,3:ncol(test_df)], 2, sum)
+			idx = which(sumscore==0)
+			idx2 = which(names(idx)=="sex")
+			if (length(idx2)>0) idx = idx[-idx2]
+			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
+
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
@@ -272,6 +279,16 @@ combine_PRS = function(
 			auc_out = data.frame(method="bestPGS", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
 			fwrite(auc_out, paste0(out, "_auc_BestPGS.txt"), row.names=F, sep="\t", quote=F)
 			
+
+			model1 = glm(formula_bestPRS, data=test_df1, family="binomial")
+			model1s = summary(model1)
+			mm = exp(model1s$coefficients[2,1])
+			ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
+			uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
+			pval = format.pval(model1s$coefficients[2,4])
+			writeLines(paste0("OR in testing set: ", mm, " (", ll, "-", uu, "); P-value=", pval))			
+			fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_OR_BestPGS.txt"), row.names=F, sep="\t", quote=F)
+
 		}
 
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
@@ -434,16 +451,6 @@ combine_PRS = function(
 						res_lm1
 						
 						############## OR ###################
-						formula_bestPRS = as.formula(paste0("trait ~ scale(", bestPRS, ")+", paste0(covar_list, collapse="+")))
-						model1 = glm(formula_bestPRS, data=test_df1, family="binomial")
-						model1s = summary(model1)
-						mm = exp(model1s$coefficients[2,1])
-						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
-						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
-						pval = format.pval(model1s$coefficients[2,4])
-						print(paste0(mm, " (", ll, "-", uu, "); P-value=", pval))
-						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_bestPGS.txt"), row.names=F, sep="\t", quote=F)
-						
 						
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model1 = glm(ff, data=test_df1, family="binomial")
