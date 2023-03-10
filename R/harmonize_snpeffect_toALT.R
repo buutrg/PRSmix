@@ -141,7 +141,7 @@ harmonize_snpeffect_toALT = function(
 			return(panel)
 		}, mc.cores = ncores)
 
-		res_chunk = compact(res_chunk)
+		res_chunk = res_chunk[which(!sapply(res_chunk, is.null))]
 
 		writeLines(paste0("Merging chunk ", chunk_i))
 

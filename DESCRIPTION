@@ -13,6 +13,7 @@ Depends:
 	stringr,
     data.table,
 	dplyr,
+	plyr,
 	tidyr,
 	glmnet,
 	R.utils,
@@ -20,7 +21,6 @@ Depends:
 	doParallel,
 	caret,
 	DescTools,
-	tidyverse,
 	rcompanion,
 	datasets,
 	magrittr
