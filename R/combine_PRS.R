@@ -179,10 +179,13 @@ combine_PRS = function(
 			pgs_list_all = pgs_list_all[which(pgs_list_all %in% colnames(all_scores)[2:ncol(all_scores)])]
 			pred_acc_train_allPGS_summary = eval_multiple_PRS(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
-			fwrite(pred_acc_train_allPGS_summary, paste0(out, "_train_allPRS.txt"), row.names=F, sep="\t", quote=F)
+			# pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary
+			# pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary1
+
+			fwrite(pred_acc_train_allPGS_summary, training_file, row.names=F, sep="\t", quote=F)
 		} else {
-			writeLines("Reading training file: ", training_file)
-			pred_acc_train_allPGS_summary = fread(paste0(out, "_train_allPRS.txt"))
+			writeLines(paste0("Reading training file: ", training_file))
+			pred_acc_train_allPGS_summary = fread(training_file)
 		}
 
 		pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
@@ -219,10 +222,10 @@ combine_PRS = function(
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval), decreasing=F),]
 			head(pred_acc_test_trait_summary)
 
-			fwrite(pred_acc_test_trait_summary, paste0(out, "_test_allPRS.txt"), row.names=F, sep="\t", quote=F)
+			fwrite(pred_acc_test_trait_summary, testing_file, row.names=F, sep="\t", quote=F)
 		} else {
-			writeLines("Reading testing file: ", testing_file)
-			pred_acc_test_trait_summary = fread(paste0(out, "_test_allPRS.txt"))
+			writeLines(paste0("Reading testing file: ", testing_file))
+			pred_acc_test_trait_summary = fread(testing_file)
 		}
 
 		###########################################################################
