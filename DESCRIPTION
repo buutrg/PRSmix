@@ -20,6 +20,7 @@ Depends:
 	doParallel,
 	caret,
 	DescTools,
+	tidyverse,
 	rcompanion,
 	datasets,
 	magrittr
