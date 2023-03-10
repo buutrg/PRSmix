@@ -88,7 +88,10 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
 	
 	writeLines("Eval all PGS")
-	if (isbinary) print(table(data_df$trait))
+	if (isbinary) {
+		writeLines("Case - control numbers:")
+		print(table(data_df$trait))
+	}
 
 	idx = which(!pgs_list %in% colnames(data_df))
 	if (length(idx)>0) {
