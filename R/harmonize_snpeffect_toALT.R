@@ -3,6 +3,7 @@ merge_SNP_df = function(res_chunk) {
 	res_chunk_fin = NULL
 	for (subchunk_i in 1:length(res_chunk)) {
 
+		# subchunk_i = 2
 		cat(subchunk_i, "..")
 		res_chunk_sub = res_chunk[[subchunk_i]]
 
@@ -12,9 +13,15 @@ merge_SNP_df = function(res_chunk) {
 		idx1 = match(shared_snp, res_chunk_fin$SNP)
 		idx2 = match(shared_snp, res_chunk_sub$SNP)
 		if (length(shared_snp)>0) res_chunk_fin[idx1,colnames(res_chunk_sub)] = res_chunk_sub[idx2, ]
-
-		nonshared = which(!res_chunk_fin$SNP %in% shared_snp)
-		if (length(nonshared)>0) res_chunk_fin = bind_rows(res_chunk_fin, res_chunk_sub[-idx2, ])
+		
+		nonshared = which(!res_chunk_sub$SNP %in% shared_snp)
+		if (length(nonshared)>0) {
+			if (length(shared_snp)>0) {
+				res_chunk_fin = bind_rows(res_chunk_fin, res_chunk_sub[-idx2, ])
+			} else {
+				res_chunk_fin = bind_rows(res_chunk_fin, res_chunk_sub)
+			}
+		}
 	}
 	return(res_chunk_fin)
 }
@@ -30,12 +37,19 @@ merge_SNP_df_binary = function(res_chunk, left, right) {
 		right_df = merge_SNP_df_binary(res_chunk, mid+1, right)
 		
 		shared_snp = intersect(left_df$SNP, right_df$SNP)
+
 		idx1 = match(shared_snp, left_df$SNP)
 		idx2 = match(shared_snp, right_df$SNP)
 		if (length(shared_snp)>0) left_df[idx1,colnames(right_df)] = right_df[idx2, ]
-
-		nonshared = which(!left_df$SNP %in% shared_snp)
-		if (length(nonshared)>0) left_df = bind_rows(left_df, right_df[-idx2, ])
+		
+		nonshared = which(!right_df$SNP %in% shared_snp)
+		if (length(nonshared)>0) {
+			if (length(shared_snp)>0) {
+				left_df = bind_rows(left_df, right_df[-idx2, ])
+			} else {
+				left_df = bind_rows(left_df, right_df)
+			}
+		}
 		return(left_df)
 	}
 
@@ -91,7 +105,7 @@ harmonize_snpeffect_toALT = function(
 
 	for (chunk_i in 1:length(pgs_list_chunk_list)) {
 
-		# chunk_i = 3
+		# chunk_i = 1
 		writeLines(paste0("Chunk ", chunk_i))
 
 		pgs_list_chunk = pgs_list_chunk_list[[chunk_i]]
@@ -125,6 +139,7 @@ harmonize_snpeffect_toALT = function(
 		}, mc.cores = ncores)
 
 		writeLines(paste0("Merging chunk ", chunk_i))
+		
 		res_chunk_fin = merge_SNP_df_binary(res_chunk, 1, length(res_chunk))
 		if (is.null(res_chunk_all)) {
 			res_chunk_all = res_chunk_fin
