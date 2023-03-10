@@ -289,7 +289,7 @@ combine_PRS = function(
 			ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 			uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 			pval = format.pval(model1s$coefficients[2,4])
-			writeLines(paste0("OR in testing set: ", mm, " (", ll, "-", uu, "); P-value=", pval))			
+			writeLines(paste0("OR in testing set: ", rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))			
 			fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_OR_BestPGS.txt"), row.names=F, sep="\t", quote=F)
 
 		}
