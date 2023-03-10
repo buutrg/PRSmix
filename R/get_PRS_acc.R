@@ -90,6 +90,12 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 	writeLines("Eval all PGS")
 	if (isbinary) print(table(data_df$trait))
 
+	idx = which(!pgs_list %in% colnames(data_df))
+	if (length(idx)>0) {
+		writeLines(paste0(length(idx), " scores not found or sum equal to 0 in data"))
+		pgs_list = pgs_list[-idx]
+	}
+
 	pred_acc_test = NULL
 	for (prs_i in 1:length(pgs_list)) {
 		
