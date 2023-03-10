@@ -280,7 +280,7 @@ combine_PRS = function(
 			fwrite(auc_out, paste0(out, "_auc_BestPGS.txt"), row.names=F, sep="\t", quote=F)
 			
 
-			model1 = glm(formula_bestPRS, data=test_df1, family="binomial")
+			model1 = glm(formula_bestPRS, data=test_data1, family="binomial")
 			model1s = summary(model1)
 			mm = exp(model1s$coefficients[2,1])
 			ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
