@@ -158,7 +158,7 @@ harmonize_snpeffect_toALT = function(
 		} else {
 			res_chunk_all = merge_SNP_df_binary(list(res_chunk_all, res_chunk_fin), 1, 2)
 		}
-		if ("PGS000010" %in% colnames(res_chunk_all)) print(min(res_chunk_all$PGS000010, na.rm=T))
+		# if ("PGS000010" %in% colnames(res_chunk_all)) print(min(res_chunk_all$PGS000010, na.rm=T))
 
 		print(dim(res_chunk_all))
 	}
