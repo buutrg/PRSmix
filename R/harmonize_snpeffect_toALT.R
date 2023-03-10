@@ -87,7 +87,7 @@ harmonize_snpeffect_toALT = function(
 	pgs_list = fread(pgs_list, header=F)[,1]
 	length(pgs_list)
 
-	writeLines("Reading freq file")
+	writeLines("Reading reference file")
 	freq = fread(ref_file, verbose=F)
 	freq = freq %>% select(ID, ALT, REF)
 
