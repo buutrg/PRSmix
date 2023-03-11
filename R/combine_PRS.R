@@ -289,7 +289,7 @@ combine_PRS = function(
 			ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 			uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 			pval = format.pval(model1s$coefficients[2,4])
-			writeLines(paste0("OR in testing set: ", rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))			
+			writeLines(paste0("OR = ", rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))			
 			fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_OR_BestPGS.txt"), row.names=F, sep="\t", quote=F)
 
 		}
@@ -463,7 +463,7 @@ combine_PRS = function(
 						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 						pval = format.pval(model1s$coefficients[2,4])
-						print(paste0(rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))
+						print(paste0("OR = ", rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))
 						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 
 						####################################
@@ -657,7 +657,7 @@ combine_PRS = function(
 						ll = exp(model1s$coefficients[2,1] - 1.97*model1s$coefficients[2,2])
 						uu = exp(model1s$coefficients[2,1] + 1.97*model1s$coefficients[2,2])
 						pval = format.pval(model1s$coefficients[2,4])
-						print(paste0(rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))
+						print(paste0("OR = ", rr(mm), " (", rr(ll), "-", rr(uu), "); P-value=", pval))
 						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 						
 					}
