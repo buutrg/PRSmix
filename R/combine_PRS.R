@@ -429,6 +429,13 @@ combine_PRS = function(
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
+							end_time = Sys.time()
+							timerunning = end_time - start_time
+							timedf = data.frame(pgs="PRSmix", npgs=length(ww_raw), time=timerunning)
+							print(timedf)
+
+							fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmix.txt"), row.names=F, sep="\t", quote=F)			
+
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
@@ -492,13 +499,6 @@ combine_PRS = function(
 					fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
 					
 				}
-				end_time <- Sys.time()
-				timerunning = end_time - start_time
-				timedf = data.frame(pgs="PRSmix", time=timerunning)
-				print(timedf)
-
-				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmix.txt"), row.names=F, sep="\t", quote=F)
-				
 
 				############################
 
@@ -622,6 +622,14 @@ combine_PRS = function(
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww_raw = ww
 							
+							end_time = Sys.time()
+							timerunning = end_time - start_time
+							timedf = data.frame(pgs="PRSmix+", npgs=length(ww_raw), time=timerunning)
+							print(timedf)
+
+							fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+							
+							
 							ww = ww / sd_train[match(names(ww), names(sd_train))]
 							
 							if (all(ww==0)) {
@@ -683,13 +691,6 @@ combine_PRS = function(
 					##############################################
 				}
 
-				end_time <- Sys.time()
-				timerunning = end_time - start_time
-				timedf = data.frame(pgs="PRSmix+", time=timerunning)
-				print(timedf)
-
-				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
-				
 			}
 	}
 	writeLines("Finished")
