@@ -296,7 +296,7 @@ combine_PRS = function(
 
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary %>%
 			filter(pgs %in% pgs_list)
-
+		
 		pred_acc_test_trait_summary_out = pred_acc_test_trait_summary
 
 		writeLines("--- Iterating power and p-value parameters --- ")
@@ -317,6 +317,7 @@ combine_PRS = function(
 				topprs = topprs$pgs
 				print(length(topprs))
 				
+				start_time = Sys.time()
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
 				} else {
@@ -491,6 +492,10 @@ combine_PRS = function(
 					fwrite(prs_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_prsmix.txt"), row.names=F, sep="\t", quote=F)
 					
 				}
+				end_time <- Sys.time()
+				timerunning = end_time - start_time
+				timedf = data.frame(pgs="PRSmix", time=timerunning)
+				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 
 				############################
 
@@ -501,7 +506,8 @@ combine_PRS = function(
 				topprs = topprs$pgs
 				print(length(topprs))
 
-
+				start_time = Sys.time()
+				
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
 				} else {
@@ -673,6 +679,11 @@ combine_PRS = function(
 					
 					##############################################
 				}
+
+				end_time <- Sys.time()
+				timerunning = end_time - start_time
+				timedf = data.frame(pgs="PRSmix+", time=timerunning)
+				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 			}
 	}
 	writeLines("Finished")
