@@ -495,7 +495,10 @@ combine_PRS = function(
 				end_time <- Sys.time()
 				timerunning = end_time - start_time
 				timedf = data.frame(pgs="PRSmix", time=timerunning)
+				print(timedf)
+
 				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmix.txt"), row.names=F, sep="\t", quote=F)
+				
 
 				############################
 
@@ -507,7 +510,7 @@ combine_PRS = function(
 				print(length(topprs))
 
 				start_time = Sys.time()
-				
+
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
 				} else {
@@ -683,7 +686,10 @@ combine_PRS = function(
 				end_time <- Sys.time()
 				timerunning = end_time - start_time
 				timedf = data.frame(pgs="PRSmix+", time=timerunning)
+				print(timedf)
+
 				fwrite(timedf, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_time_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+				
 			}
 	}
 	writeLines("Finished")
