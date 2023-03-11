@@ -494,7 +494,8 @@ combine_PRS = function(
 				}
 
 				end_time = Sys.time()
-				timerunning = end_time - start_time
+				timerunning = difftime(end_time, start_time, units = "secs")[[1]]
+
 				timedf = data.frame(pgs="PRSmix", npgs=length(ww_raw), time=timerunning)
 				print(timedf)
 
@@ -685,7 +686,7 @@ combine_PRS = function(
 
 
 				end_time = Sys.time()
-				timerunning = end_time - start_time
+				timerunning = difftime(end_time, start_time, units = "secs")[[1]]
 				timedf = data.frame(pgs="PRSmix+", npgs=length(ww_raw), time=timerunning)
 				print(timedf)
 
