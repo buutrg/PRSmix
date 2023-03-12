@@ -47,14 +47,13 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 		
 		N = nobs(model_full)
 		R2 = r_full - r_null		
-		
-		if (liabilityR2) {
-			N = nrow(data_df)
-			K = mean(data_df$trait)
-			R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
-		}
-		
 	}
+	if (isbinary & liabilityR2) {
+		N = nrow(data_df)
+		K = mean(data_df$trait)
+		R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
+	}
+	
 	
 	NCP = N * R2 / (1-R2)
 	power = 1-pnorm(qnorm(1-alpha/2)-NCP^0.5) + pnorm(qnorm(alpha/2)-NCP^0.5)
