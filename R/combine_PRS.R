@@ -58,6 +58,7 @@ combine_PRS = function(
 	is_extract_adjSNPeff = F,
 	original_beta_files_list = NULL,
 	train_size_list = NULL,
+	training_result_files = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
 	read_pred_training = FALSE,
