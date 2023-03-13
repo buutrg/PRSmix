@@ -94,6 +94,7 @@ combine_PRS = function(
 
 	pgs_list = NULL
 	for (ff_i in 1:length(trait_specific_score_file)) {
+		writeLines(paste0("Reading: ", trait_specific_score_file[ff_i]))
 		pgs_list_tmp = fread(trait_specific_score_file[ff_i], header=F)[,1]
 		pgs_list = c(pgs_list, pgs_list_tmp)
 	}
@@ -173,8 +174,10 @@ combine_PRS = function(
 			training_file = training_result_file
 			read_pred_training_1 = all(unlist(lapply(training_file, function(x) (read_pred_training & file.exists(x)))) == T)
 			if (!read_pred_training_1) {
-				writeLines("There is at least one missing training result file. Please check parameter <training_result_file>!")
-				writeLines("The program will benchmark ALL scores again and write to the first file in <training_result_file>!")
+				writeLines("Declared:")
+				writeLines(paste0("read_pred_training = ", read_pred_training))
+				writeLines(paste0("training_result_file = ", paste(training_result_file, collapse=";")))
+				stop("Reading existing training result but there is at least one missing training result file. Please check parameter all files available in <training_result_file> or set read_pred_testing=F and training_result_file=NULL")
 			}
 		}
 		
@@ -222,8 +225,6 @@ combine_PRS = function(
 		writeLines("--- Evaluating PRS in testing set ---")
 
 		if (!read_pred_testing_1) {
-
-			if (debug)	writeLines("Running NULL model ---- ")
 
 			sumscore = apply(test_df[,3:ncol(test_df)], 2, sum)
 			idx = which(sumscore==0)
