@@ -58,7 +58,7 @@ combine_PRS = function(
 	is_extract_adjSNPeff = F,
 	original_beta_files_list = NULL,
 	train_size_list = NULL,
-	training_result_files = NULL,
+	training_result_file = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
 	read_pred_training = FALSE,
@@ -166,15 +166,15 @@ combine_PRS = function(
 
 		writeLines("--- Evaluating PRS in training set ---")
 		
-		if (!read_pred_training | is.null(training_result_files)) {
+		if (!read_pred_training | is.null(training_result_file)) {
 			training_file = paste0(out, "_train_allPRS.txt")
 			read_pred_training_1 = (read_pred_training & file.exists(training_file))
 		} else {
-			training_file = training_result_files
+			training_file = training_result_file
 			read_pred_training_1 = all(unlist(lapply(training_file, function(x) (read_pred_training & file.exists(x)))) == T)
 			if (!read_pred_training_1) {
-				writeLines("There is at least one missing training result file. Please check parameter <training_result_files>!")
-				writeLines("The program will benchmark ALL scores again and write to the first file in <training_result_files>!")
+				writeLines("There is at least one missing training result file. Please check parameter <training_result_file>!")
+				writeLines("The program will benchmark ALL scores again and write to the first file in <training_result_file>!")
 			}
 		}
 		
