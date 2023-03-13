@@ -494,6 +494,7 @@ combine_PRS = function(
 						extract_adjSNPeff(mixing_weight_file, original_beta_files_list, outfile)
 					}
 					
+					print(res_lm1)
 					res_lm1_summary = res_lm1
 					res_lm1_summary$pgs = "PRSmix"
 					pred_acc_test_trait_summary_out = bind_rows(res_lm1, pred_acc_test_trait_summary)
@@ -677,7 +678,8 @@ combine_PRS = function(
 						fwrite(data.frame(mm, ll, uu, pval), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_OR_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
 						
 					}
-
+					
+					print(res_lm)
 					pred_acc_test_trait_summary_out = bind_rows(res_lm, pred_acc_test_trait_summary_out)
 					head(pred_acc_test_trait_summary_out)
 
