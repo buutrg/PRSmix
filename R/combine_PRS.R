@@ -181,9 +181,6 @@ combine_PRS = function(
 			}
 		}
 		
-		testing_file = paste0(out, "_test_allPRS.txt")
-		read_pred_testing_1 = (read_pred_testing & file.exists(testing_file))
-		
 		if (!read_pred_training_1) {
 			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
 			idx = which(sumscore==0)
@@ -223,6 +220,9 @@ combine_PRS = function(
 		################################ testing #################################
 
 		writeLines("--- Evaluating PRS in testing set ---")
+
+		testing_file = paste0(out, "_test_allPRS.txt")
+		read_pred_testing_1 = (read_pred_testing & file.exists(testing_file))
 
 		if (!read_pred_testing_1) {
 
@@ -319,7 +319,7 @@ combine_PRS = function(
 		for (power_thres in power_thres_list)
 			for (pval_thres in pval_thres_list) {
 
-				# pval_thres = pval_thres_list[2]
+				# pval_thres = pval_thres_list[1]
 				# power_thres = power_thres_list[1]
 				
 				writeLines(paste0("P = ", pval_thres))
