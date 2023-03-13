@@ -91,7 +91,11 @@ combine_PRS = function(
 
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
 
-	pgs_list = fread(trait_specific_score_file, header=F)[,1]
+	pgs_list = NULL
+	for (ff_i in 1:length(trait_specific_score_file)) {
+		pgs_list_tmp = fread(trait_specific_score_file[ff_i], header=F)[,1]
+		pgs_list = c(pgs_list, pgs_list_tmp)
+	}
 	pgs_list = intersect(pgs_list, colnames(all_scores))
 
 	pheno = fread(pheno_file)
@@ -161,8 +165,17 @@ combine_PRS = function(
 
 		writeLines("--- Evaluating PRS in training set ---")
 		
-		training_file = paste0(out, "_train_allPRS.txt")
-		read_pred_training_1 = (read_pred_training & file.exists(training_file))
+		if (!read_pred_training | is.null(training_result_files)) {
+			training_file = paste0(out, "_train_allPRS.txt")
+			read_pred_training_1 = (read_pred_training & file.exists(training_file))
+		} else {
+			training_file = training_result_files
+			read_pred_training_1 = all(unlist(lapply(training_file, function(x) (read_pred_training & file.exists(x)))) == T)
+			if (!read_pred_training_1) {
+				writeLines("There is at least one missing training result file. Please check parameter <training_result_files>!")
+				writeLines("The program will benchmark ALL scores again and write to the first file in <training_result_files>!")
+			}
+		}
 		
 		testing_file = paste0(out, "_test_allPRS.txt")
 		read_pred_testing_1 = (read_pred_testing & file.exists(testing_file))
@@ -175,17 +188,18 @@ combine_PRS = function(
 			if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
 
 			pgs_list_all = colnames(train_df)
-			# pgs_list_all = pgs_list_all[which(startsWith(pgs_list_all, "PGS"))]
 			pgs_list_all = pgs_list_all[which(pgs_list_all %in% colnames(all_scores)[2:ncol(all_scores)])]
 			pred_acc_train_allPGS_summary = eval_multiple_PRS(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
-			# pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary
-			# pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary1
-
 			fwrite(pred_acc_train_allPGS_summary, training_file, row.names=F, sep="\t", quote=F)
 		} else {
-			writeLines(paste0("Reading training file: ", training_file))
-			pred_acc_train_allPGS_summary = fread(training_file)
+			pred_acc_train_allPGS_summary = NULL
+			for (file_i in 1:length(training_file)) {
+				writeLines(paste0("Reading training file: ", training_file))
+				pred_acc_train_allPGS_summary_tmp = fread(training_file)
+				pred_acc_train_allPGS_summary = rbind(pred_acc_train_allPGS_summary, pred_acc_train_allPGS_summary_tmp)
+			}
+			pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary[!duplicated(pred_acc_train_allPGS_summary$pgs),]
 		}
 
 		pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
