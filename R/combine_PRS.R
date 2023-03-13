@@ -172,13 +172,14 @@ combine_PRS = function(
 			read_pred_training_1 = (read_pred_training & file.exists(training_file))
 		} else {
 			training_file = training_result_file
-			read_pred_training_1 = all(unlist(lapply(training_file, function(x) (read_pred_training & file.exists(x)))) == T)
+			read_pred_training_1 = read_pred_training & all(file.exists(training_file))
 			if (!read_pred_training_1) {
 				writeLines("Declared:")
 				writeLines(paste0("read_pred_training = ", read_pred_training))
 				writeLines(paste0("training_result_file = ", paste(training_result_file, collapse=";")))
 				stop("Reading existing training result but there is at least one missing training result file. Please check parameter all files available in <training_result_file> or set read_pred_testing=F and training_result_file=NULL")
 			}
+			writeLines(paste0("Reading all files in training_result_file"))
 		}
 		
 		if (!read_pred_training_1) {
@@ -196,8 +197,8 @@ combine_PRS = function(
 		} else {
 			pred_acc_train_allPGS_summary = NULL
 			for (file_i in 1:length(training_file)) {
-				writeLines(paste0("Reading training file: ", training_file))
-				pred_acc_train_allPGS_summary_tmp = fread(training_file)
+				writeLines(paste0("Reading training file: ", training_file[file_i]))
+				pred_acc_train_allPGS_summary_tmp = fread(training_file[file_i])
 				pred_acc_train_allPGS_summary = rbind(pred_acc_train_allPGS_summary, pred_acc_train_allPGS_summary_tmp)
 			}
 			pred_acc_train_allPGS_summary = pred_acc_train_allPGS_summary[!duplicated(pred_acc_train_allPGS_summary$pgs),]
