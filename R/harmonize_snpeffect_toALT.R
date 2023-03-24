@@ -84,7 +84,18 @@ harmonize_snpeffect_toALT = function(
 
 	options(datatable.fread.datatable=FALSE)
 
-	pgs_list = fread(pgs_list, header=F)[,1]
+	pgs_list = fread(pgs_list, header=F)
+
+	if (ncol(pgs_list)==2) {
+		if (any(is.na(pgs_list[,2])) | any(duplicated(pgs_list[,2]))) 
+			stop("There are 2 columns in PGS list file and second column contain NA or duplicated values")
+		writeLines("There are 2 columns in PGS list and the second column will be assigned as names")
+		name_pgs_list = pgs_list[,2]
+		pgs_list = pgs_list[,1]
+	} else {
+		name_pgs_list = pgs_list[,1]
+		pgs_list = pgs_list[,1]
+	}
 	length(pgs_list)
 
 	writeLines("Reading reference file")
@@ -103,6 +114,7 @@ harmonize_snpeffect_toALT = function(
 
 	chunk_size = min(chunk_size, length(pgs_list))
 	pgs_list_chunk_list = split(pgs_list, ceiling(seq_along(pgs_list)/chunk_size))
+	pgs_list_chunk_list_name = split(name_pgs_list, ceiling(seq_along(pgs_list)/chunk_size))
 
 	res_chunk_all = NULL
 
@@ -112,6 +124,7 @@ harmonize_snpeffect_toALT = function(
 		writeLines(paste0("Chunk ", chunk_i))
 
 		pgs_list_chunk = pgs_list_chunk_list[[chunk_i]]
+		pgs_list_chunk_name = pgs_list_chunk_list_name[[chunk_i]]
 
 		res_chunk = mclapply(1:length(pgs_list_chunk), function(prs_i) {
 			# prs_i = 28
@@ -137,7 +150,8 @@ harmonize_snpeffect_toALT = function(
 			}
 			
 			panel = panel[,c(1,3)]
-			colnames(panel) = c("SNP", pgs_list_chunk[prs_i])
+			# colnames(panel) = c("SNP", pgs_list_chunk[prs_i])
+			colnames(panel) = c("SNP", pgs_list_chunk_name[prs_i])
 			return(panel)
 		}, mc.cores = ncores)
 
