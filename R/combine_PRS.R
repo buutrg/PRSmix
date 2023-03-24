@@ -320,7 +320,7 @@ combine_PRS = function(
 		for (power_thres in power_thres_list)
 			for (pval_thres in pval_thres_list) {
 
-				# pval_thres = pval_thres_list[1]
+				# pval_thres = pval_thres_list[2]
 				# power_thres = power_thres_list[1]
 				
 				writeLines(paste0("P = ", pval_thres))
@@ -380,15 +380,16 @@ combine_PRS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							ww_raw = ww
-							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / sd_train[match(names(ww), names(sd_train))]
+							ww_raw = ww							
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
+							} else {
+								ww = ww[which(!names(ww) %in% covar_list)]
+								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
 						}
 						
@@ -439,22 +440,23 @@ combine_PRS = function(
 							)
 
 							stopCluster(cl)
-
+							
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww_raw = ww
-							ww = ww[which(!names(ww) %in% covar_list)]
-							ww = ww / sd_train[match(names(ww), names(sd_train))]
-
+							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
-							}							
+							} else {
+								ww = ww[which(!names(ww) %in% covar_list)]
+								ww = ww / sd_train[match(names(ww), names(sd_train))]
+							}
 							
 							test_data1 = test_data
-							test_data1[,topprs] = scale(test_data[,topprs])
+							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))							
 							
 							test_pred = predict(model_prsmix, test_data1, type = "prob")[,2]
 							auc_ci = ci.auc(test_data1$trait, test_pred)
@@ -486,7 +488,7 @@ combine_PRS = function(
 						####################################
 
 					}
-
+					
 					fwrite(data.frame(c(topprs), ww), paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_weight_PRSmix.txt"), sep="\t", quote=F)
 					
 					if (is_extract_adjSNPeff) {
@@ -577,14 +579,15 @@ combine_PRS = function(
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							
 							ww = ww[which(!names(ww) %in% covar_list)]
-							ww_raw = ww
-							ww = ww / sd_train[match(names(ww), names(sd_train))]
+							ww_raw = ww							
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
+							} else {
+								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
 						}
 
@@ -641,13 +644,13 @@ combine_PRS = function(
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww_raw = ww							
 							
-							ww = ww / sd_train[match(names(ww), names(sd_train))]
-							
 							if (all(ww==0)) {
 								writeLines("No weight for PRS")
 								ww = c(1)
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
+							} else {
+								ww = ww / sd_train[match(names(ww), names(sd_train))]							
 							}
 							
 							test_data1 = test_data
@@ -657,6 +660,7 @@ combine_PRS = function(
 							auc_ci = ci.auc(test_data1$trait, test_pred)
 							auc_out = data.frame(method="prsmixP", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
 							fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_auc_PRSmixPlus.txt"), row.names=F, sep="\t", quote=F)
+
 						}
 
 						test_df1 = cbind(test_data, IID=test_df$IID)
