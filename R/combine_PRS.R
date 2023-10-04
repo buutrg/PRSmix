@@ -336,6 +336,7 @@ combine_PRS = function(
 				start_time = Sys.time()
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
+					ww_raw = 1
 				} else {
 
 					if (!isbinary) {
@@ -533,6 +534,7 @@ combine_PRS = function(
 
 				if (length(topprs) == 0) {
 					print("No high power trait-specific PRS for PRSmix")
+					ww_raw = 1
 				} else {
 
 					if (!isbinary) {
