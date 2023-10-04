@@ -70,6 +70,7 @@ combine_PRS = function(
 
 	writeLines("--- Reading covariate data ---")
 	basic_data = fread(covariate_file)
+	basic_data = basic_data[,c(IID_pheno, covar_list)]
 
 	writeLines("--- Reading all polygenic risk scores ---")
 	
@@ -91,6 +92,7 @@ combine_PRS = function(
 	}
 
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
+	score_names = colnames(all_scores)[2:ncol(all_scores)]
 
 	pgs_list = NULL
 	for (ff_i in 1:length(trait_specific_score_file)) {
@@ -183,10 +185,9 @@ combine_PRS = function(
 		}
 		
 		if (!read_pred_training_1) {
-			sumscore = apply(train_df[,3:ncol(train_df)], 2, sum)
+
+			sumscore = apply(train_df[,score_names], 2, var)
 			idx = which(sumscore==0)
-			idx2 = which(names(idx)=="sex")
-			if (length(idx2)>0) idx = idx[-idx2]
 			if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
 
 			pgs_list_all = colnames(train_df)
@@ -227,10 +228,8 @@ combine_PRS = function(
 
 		if (!read_pred_testing_1) {
 
-			sumscore = apply(test_df[,3:ncol(test_df)], 2, sum)
+			sumscore = apply(test_df[,score_names], 2, var)
 			idx = which(sumscore==0)
-			idx2 = which(names(idx)=="sex")
-			if (length(idx2)>0) idx = idx[-idx2]
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
@@ -514,7 +513,7 @@ combine_PRS = function(
 				}
 
 				end_time = Sys.time()
-				timerunning = difftime(end_time, start_time, units = "secs")[[1]]
+				timerunning asdfasd<tab>ifftime(end_time, start_time, units = "secs")[[1]]
 
 				timedf = data.frame(pgs="PRSmix", npgs=length(ww_raw), time=timerunning)
 				print(timedf)

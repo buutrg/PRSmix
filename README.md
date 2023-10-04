@@ -128,6 +128,12 @@ compute_PRS(
 )
 ```
 
+The output contains multiple column names ending with `_SUM` represent for PGS for each set of SNP effect.
+
+| FID | IID | ALLELE_CT | NAMED_ALLELE_DOSAGE_SUM | <Score name>_AVG | <Score name>_SUM |
+
+See more at: [https://www.cog-genomics.org/plink/2.0/formats#sscore]<https://www.cog-genomics.org/plink/2.0/formats#sscore>
+
 ## Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
 The *combine_PRS* function:
@@ -136,7 +142,7 @@ The *combine_PRS* function:
 | --- | --- | --- |
 | `pheno_file` | | Directory to the phenotype file |
 | `covariate_file` | | Directory to file with covariate information (age,sex,PC1..10) |
-| `score_files_list` | | A vector contains directories of the PGSs to be read |
+| `score_files_list` | | A vector contains directories of the PGSs to be read as result of the `compute_PRS` function |
 | `trait_specific_score_file` | | A filename contain PGS IDs of trait-specific to combine (PRSmix), one score per line |
 | `pheno_name` | | Column name of the phenotype in phenofile |
 | `isbinary` | | TRUE if the phenotype is a binary trait |
@@ -231,7 +237,7 @@ To run the linear combination (PRSmix and PRSmix+):
 combine_PRS(
 	pheno_file = "~/example/phenotype.txt",
 	covariate_file = "~/example/covariate.txt",
-	score_files_list = "~/example/pgs.sscore",
+	score_files_list = c("~/example/pgs.sscore"),
 	trait_specific_score_file = "cad_list.txt",
 	pheno_name = "CAD",
 	isbinary = TRUE,
