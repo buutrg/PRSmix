@@ -73,7 +73,6 @@ combine_PRS = function(
 	basic_data = fread(covariate_file)
 	basic_data = basic_data[,c(IID_pheno, covar_list)]
 
-	print(cat_covar)
 	if (length(cat_covar)>0) {
 		for (cat_covar_i in 1:length(cat_covar))
 			basic_data[,cat_covar[cat_covar_i]] = as.factor(basic_data[,cat_covar[cat_covar_i]])
