@@ -128,11 +128,12 @@ compute_PRS(
 )
 ```
 
-The output contains multiple column names ending with `_SUM` represent for PGS for each set of SNP effect.
+The output contains multiple column names ending with `_SUM` (and `_AVG`) represent for PGS for each set of SNP effect.
 
-| FID | IID | ALLELE_CT | NAMED_ALLELE_DOSAGE_SUM | <Score name>_AVG | <Score name>_SUM |
+| FID | IID | ALLELE_CT | NAMED_ALLELE_DOSAGE_SUM | PGS000001_AVG | PGS000001_SUM | PGS000002_AVG | PGS000002_SUM | ... |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-See more at: [https://www.cog-genomics.org/plink/2.0/formats#sscore]<https://www.cog-genomics.org/plink/2.0/formats#sscore>
+See more at: https://www.cog-genomics.org/plink/2.0/formats#sscore
 
 ## Perform linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+)
 
