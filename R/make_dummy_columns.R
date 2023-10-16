@@ -3,7 +3,7 @@
 #' This function makes dummy columns for categorical variables
 #'
 #' @param df Dataframe with variables
-#' @param cat_covar_list Categorical variables 
+#' @param cat_covar_list A vector of categorical variables 
 #' @return This function will generate a list containing a dataframe and its dummy columns for categorical variables 
 #' - Return a list containing a dataframe and its dummy columns for categorical variables 
 #'
