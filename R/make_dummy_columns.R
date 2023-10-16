@@ -4,8 +4,8 @@
 #'
 #' @param df Dataframe with variables
 #' @param cat_covar_list Categorical variables 
-#' @return This function will generate dummy columns for categorical variables 
-#' - Return data frame with dummy variables of categorical variables 
+#' @return This function will generate a list containing a dataframe and its dummy columns for categorical variables 
+#' - Return a list containing a dataframe and its dummy columns for categorical variables 
 #'
 #' @importFrom data.table fread fwrite
 #' @importFrom dplyr bind_rows select all_of mutate group_by summarise rowwise filter
