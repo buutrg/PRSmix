@@ -345,9 +345,9 @@ combine_PRS = function(
 
 				topprs = pred_acc_train_trait_summary %>%
 					filter(pval <= pval_thres & power >= power_thres)
-
 				head(topprs)
 				topprs = topprs$pgs
+				topprs = intersect(topprs, colnames(train_df))
 				print(length(topprs))
 				
 				start_time = Sys.time()
@@ -545,6 +545,7 @@ combine_PRS = function(
 				topprs = pred_acc_train_allPGS_summary %>%
 					filter(pval <= pval_thres & power >= power_thres)
 				topprs = topprs$pgs
+				topprs = intersect(topprs, colnames(train_df))
 				print(length(topprs))
 
 				start_time = Sys.time()
