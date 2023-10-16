@@ -151,7 +151,7 @@ The *combine_PRS* function:
 | `liabilityR2` | FALSE | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
 | `IID_pheno` | IID | Column name of IID of phenotype file (e.g IID, person_id) |
 | `covar_list` | `c("age", "sex", paste0("PC", 1:10))` | A vector of of covariates, must exists as columns in covariate_file |
-| `cat_covar_list` | | Array of categorical covariates, must exist in covar_list and column names of data_df. The program will generate dummy columns |
+| `cat_covar_list` | sex | Array of categorical covariates, must exists as columns in covariate_file. The program will generate dummy columns |
 | `ncores` | 1 | Number of CPU cores for parallel processing |
 | `is_extract_adjSNPeff` | FALSE | TRUE if extract adjusted SNP effects from PRSmix and PRSmix+, FALSE if only calculate the combined PRS as linear combination of PRS x mixing weights. May consume extended memory |
 | `original_beta_files_list` | NULL | The vector contains directories to SNP effect sizes used to compute original PRSs (as weight_file argument from compute PRS above) |
@@ -206,6 +206,7 @@ IID_pheno = "IID"
 Therefore, 
 ```
 covar_list = c("sex", "age", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+cat_covar_list = c("sex")
 ```
 ---
 *trait_specific_score_file* as (i.e. PGS IDs for *EFO_0001645* of coronary artery disease from PGS Catalog):
