@@ -74,10 +74,10 @@ combine_PRS = function(
 	basic_data = fread(covariate_file)
 	basic_data = basic_data[,c(IID_pheno, covar_list)]
 
-	if (length(cat_covar)>0) {
+	if (length(cat_covar_list)>0) {
 
 		writeLines("Generating dummy variables from categorical variables")
-		basic_data_list = make_dummy_columns(basic_data, cat_covar)
+		basic_data_list = make_dummy_columns(basic_data, cat_covar_list)
 
 		covar_list = covar_list[-match(cat_covar_list, covar_list)]
 		covar_list = c(covar_list, basic_data_list[[2]])
