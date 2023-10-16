@@ -246,6 +246,7 @@ combine_PRS(
 	liabilityR2 = TRUE,
 	IID_pheno = "IID",
 	covar_list = c("age", "sex", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"),
+	cat_covar_list = c("sex"),
 	ncores = 4,
 	is_extract_adjSNPeff = TRUE,
 	original_beta_files_list = "~/example/weights.txt",
@@ -267,6 +268,7 @@ The *eval_single_PRS* function can be used to evaluate a single score and return
 | `pheno` | | Name of phenotype column |
 | `prs_name` | | PGS list of the trait, must exist in the column name of data_df |
 | `covar_list` | | Array of covariates, must exist in the column name of data_df |
+| `cat_covar_list` | | Array of categorical covariates, must exist in covar_list and column names of data_df |
 | `isbinary` | FALSE | TRUE if the phenotype is a binary trait |
 | `liabilityR2` | FALSE | TRUE if liability R2 should be reported, otherwise partial R2 (for continuous traits) or Nagelkerke R2 (for binary traits) will be reported |
 
