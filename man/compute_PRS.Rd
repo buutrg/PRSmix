@@ -4,7 +4,7 @@
 \alias{compute_PRS}
 \title{Estimate PRS}
 \usage{
-compute_PRS(geno, weight_file, out, start_col = 4)
+compute_PRS(geno, weight_file, out, start_col = 4, ispgen = F)
 }
 \arguments{
 \item{geno}{Genotype file in plink format (bed/bim/fam).}

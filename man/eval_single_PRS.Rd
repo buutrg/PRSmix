@@ -6,6 +6,7 @@
 \usage{
 eval_single_PRS(
   data_df,
+  pheno = "trait",
   prs_name,
   covar_list,
   isbinary = F,

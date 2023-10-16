@@ -4,7 +4,19 @@
 \alias{harmonize_snpeffect_toALT}
 \title{Harmonize snp effects across PGS to the alternative allele}
 \usage{
-harmonize_snpeffect_toALT(ref_file, pgs_folder, pgs_list, out)
+harmonize_snpeffect_toALT(
+  ref_file,
+  snp_col = "SNP",
+  a1_col = "A1",
+  beta_col = "BETA",
+  pgs_folder,
+  pgs_list,
+  suffix = ".txt",
+  ncores = 1,
+  chunk_size = 1,
+  isheader = T,
+  out
+)
 }
 \arguments{
 \item{ref_file}{Reference file contain SNP ID (ID), reference allele (REF) and alternative allele (ALT) columns (e.g allele frequency output --freq from PLINK2)}

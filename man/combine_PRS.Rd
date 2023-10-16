@@ -8,22 +8,26 @@ combine_PRS(
   pheno_file,
   covariate_file,
   score_files_list,
+  allPGS_list = NULL,
   trait_specific_score_file,
   pheno_name,
   isbinary,
   out,
   metascore = NULL,
   liabilityR2 = F,
-  IID_pheno = "person_id",
+  IID_pheno = "IID",
   covar_list = c("age", "sex", paste0("PC", 1:10)),
+  cat_covar = NULL,
   ncores = 1,
   is_extract_adjSNPeff = F,
   original_beta_files_list = NULL,
   train_size_list = NULL,
+  training_result_file = NULL,
   power_thres_list = c(0.95),
   pval_thres_list = c(0.05),
   read_pred_training = FALSE,
-  read_pred_testing = FALSE
+  read_pred_testing = FALSE,
+  debug = F
 )
 }
 \arguments{
