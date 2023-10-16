@@ -46,6 +46,7 @@ combine_PRS = function(
 	pheno_file,
 	covariate_file,
 	score_files_list,
+	allPGS_list = NULL,
 	trait_specific_score_file,
 	pheno_name,
 	isbinary,
@@ -98,6 +99,12 @@ combine_PRS = function(
 	}
 
 	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
+
+	if (!is.null(allPGS_list)) {
+		pgs_extract = intersect(colnames(all_scores[2:ncol(all_scores)]), allPGS_list)
+		all_scores = all_scores[,c(1,match(pgs_extract, colnames(all_scores)))]
+	}
+
 	score_names = colnames(all_scores)[2:ncol(all_scores)]
 
 	pgs_list = NULL
@@ -253,11 +260,12 @@ combine_PRS = function(
 		###########################################################################
 		
 		if (isbinary) {
-			x_train = as.matrix(train_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
+
+			x_train = (train_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
 			y_train = as.vector(train_df$trait)
 			train_data = data.frame(x_train,trait=y_train)
 
-			x_test = as.matrix(test_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
+			x_test = (test_df %>% select(all_of(c(bestPRS, covar_list)), -trait))
 			y_test = as.vector(test_df$trait)
 			test_data = data.frame(x_test,trait=y_test)
 
@@ -271,9 +279,12 @@ combine_PRS = function(
 				method = "repeatedcv",
 				allowParallel = TRUE,
 				number = 3,
+				returnData = FALSE,
+				trim = T,
 				verboseIter = T)
 
 			cl = makePSOCKcluster(ncores)
+			cl = makeCluster(ncores)
 			registerDoParallel(cl)
 
 			set.seed(123)
@@ -347,13 +358,13 @@ combine_PRS = function(
 
 					if (!isbinary) {
 						
-						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_train = (train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])					
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
-						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_test = (test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -409,13 +420,13 @@ combine_PRS = function(
 
 					} else {
 						
-						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_train = (train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])						
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
-						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_test = (test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -545,13 +556,13 @@ combine_PRS = function(
 
 					if (!isbinary) {
 
-						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_train = (train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
-						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_test = (test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 
@@ -608,13 +619,13 @@ combine_PRS = function(
 
 					} else {
 
-						x_train = as.matrix(train_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_train = (train_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						if (length(topprs) > 1)	sd_train = apply(as.data.frame(x_train[,topprs]), 2, sd, na.rm=T)
 						x_train[,topprs] = scale(x_train[,topprs])
 						y_train = as.vector(train_df$trait)
 						train_data = data.frame(x_train,trait=y_train)
 
-						x_test = as.matrix(test_df %>% select(all_of(c(topprs, covar_list)), -trait))
+						x_test = (test_df %>% select(all_of(c(topprs, covar_list)), -trait))
 						y_test = as.vector(test_df$trait)
 						test_data = data.frame(x_test,trait=y_test)
 						
