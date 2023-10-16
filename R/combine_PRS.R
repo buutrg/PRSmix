@@ -55,6 +55,7 @@ combine_PRS = function(
 	liabilityR2 = F,
 	IID_pheno = "IID",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
+	cat_covar_list = c("sex"),
 	ncores = 1,
 	is_extract_adjSNPeff = F,
 	original_beta_files_list = NULL,
@@ -72,6 +73,17 @@ combine_PRS = function(
 	writeLines("--- Reading covariate data ---")
 	basic_data = fread(covariate_file)
 	basic_data = basic_data[,c(IID_pheno, covar_list)]
+
+	if (length(cat_covar)>0) {
+
+		writeLines("Generating dummy variables from categorical variables")
+		basic_data_list = make_dummy_columns(basic_data, cat_covar)
+
+		covar_list = covar_list[-match(cat_covar_list, covar_list)]
+		covar_list = c(covar_list, basic_data_list[[2]])
+
+		basic_data = basic_data_list[[1]]
+	}
 
 	writeLines("--- Reading all polygenic risk scores ---")
 	
