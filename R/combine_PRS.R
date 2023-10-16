@@ -55,7 +55,6 @@ combine_PRS = function(
 	liabilityR2 = F,
 	IID_pheno = "IID",
 	covar_list = c("age", "sex", paste0("PC", 1:10)),
-	cat_covar = NULL,
 	ncores = 1,
 	is_extract_adjSNPeff = F,
 	original_beta_files_list = NULL,
@@ -73,11 +72,6 @@ combine_PRS = function(
 	writeLines("--- Reading covariate data ---")
 	basic_data = fread(covariate_file)
 	basic_data = basic_data[,c(IID_pheno, covar_list)]
-
-	if (length(cat_covar)>0) {
-		for (cat_covar_i in 1:length(cat_covar))
-			basic_data[,cat_covar[cat_covar_i]] = as.factor(basic_data[,cat_covar[cat_covar_i]])
-	}
 
 	writeLines("--- Reading all polygenic risk scores ---")
 	
