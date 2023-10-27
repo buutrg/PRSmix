@@ -63,6 +63,7 @@ combine_PRS = function(
 	training_result_file = NULL,
 	power_thres_list = c(0.95),
 	pval_thres_list = c(0.05),
+	nfold_cv = 3,
 	read_pred_training = FALSE,
 	read_pred_testing = FALSE,
 	debug = F
@@ -144,6 +145,8 @@ combine_PRS = function(
 		writeLines("--- Selecting 80% as training data ---")
 		train_size_list = floor(0.8*nrow(pheno_prs_cov))
 		null_train_size_list = T
+	} else {
+		writeLines("Using custom data split!")
 	}
 
 	out_save = out
@@ -164,7 +167,7 @@ combine_PRS = function(
 		test_df = pheno_prs_cov[-train_idx,]
 
 		#### custom sensitivity train percentage
-		set.seed(1)
+		# set.seed(1)
 		# train_idx_sub = sample(1:nrow(train_df), train_size)
 		# train_df = train_df[train_idx_sub,]
 		#############
@@ -282,7 +285,7 @@ combine_PRS = function(
 			ctrl = trainControl(
 				method = "repeatedcv",
 				allowParallel = TRUE,
-				number = 3,
+				number = nfold_cv,
 				returnData = FALSE,
 				trim = T,
 				verboseIter = T)
@@ -384,7 +387,7 @@ combine_PRS = function(
 							ctrl = trainControl(
 								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3,
+								number = nfold_cv,
 								verboseIter = T)
 
 							cl = makePSOCKcluster(ncores)
@@ -447,7 +450,7 @@ combine_PRS = function(
 							ctrl = trainControl(
 								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3,
+								number = nfold_cv,
 								verboseIter = T)
 							
 							cl = makePSOCKcluster(ncores)
@@ -583,7 +586,7 @@ combine_PRS = function(
 							ctrl = trainControl(
 								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3,
+								number = nfold_cv,
 								verboseIter = T)
 
 							cl = makePSOCKcluster(ncores)
@@ -647,7 +650,7 @@ combine_PRS = function(
 							ctrl = trainControl(
 								method = "repeatedcv",
 								allowParallel = TRUE,
-								number = 3,
+								number = nfold_cv,
 								verboseIter = T)
 							
 							cl = makePSOCKcluster(ncores)
