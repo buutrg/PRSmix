@@ -506,6 +506,8 @@ combine_PRS = function(
 						
 						res_lm1$pgs = "PRSmix"
 						res_lm1
+
+						print(ww)
 						
 						############## OR ###################
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
