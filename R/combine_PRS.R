@@ -474,6 +474,7 @@ combine_PRS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww_raw = ww
+
 							print(ww)
 							print(sd_train)
 							
@@ -486,6 +487,8 @@ combine_PRS = function(
 								ww = ww[which(!names(ww) %in% covar_list)]
 								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
+
+							print(ww)
 							
 							test_data1 = test_data
 							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))							
@@ -497,13 +500,13 @@ combine_PRS = function(
 							
 						}
 
-						print(head(test_data))	
-						print(head(test_df))	
+						# print(head(test_data))	
+						# print(head(test_df))	
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
 						writeLines("Header of testing data")
-						print(head(test_df1))	
+						# print(head(test_df1))	
 						print(ww)
 						res_lm1 = eval_single_PRS(test_df1, pheno="trait", prs_name="newprs", covar_list=covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						
