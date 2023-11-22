@@ -95,7 +95,7 @@ combine_PRS = function(
 		print(score_file_i)
 		score_file = score_files_list[score_file_i]
 		dd = fread(score_file)
-		idx = which(endsWith(colnames(dd), "_SUM") || colnames(dd)!="NAMED_ALLELE_DOSAGE_SUM")
+		idx = which(endsWith(colnames(dd), "_SUM") && colnames(dd)!="NAMED_ALLELE_DOSAGE_SUM")
 		idx2 = which(colnames(dd)=="IID")
 
 		dd_sub = dd[,c(idx2,idx)]
