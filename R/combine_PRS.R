@@ -207,7 +207,7 @@ combine_PRS = function(
 		
 		if (!read_pred_training_1) {
 
-			sumscore = apply(train_df[,score_names], 2, var)
+			sumscore = apply(as.data.frame(train_df[,score_names]), 2, var)
 			idx = which(sumscore==0)
 			if (length(idx)>0) train_df = train_df[,-match(names(idx), colnames(train_df))]
 
@@ -249,7 +249,7 @@ combine_PRS = function(
 
 		if (!read_pred_testing_1) {
 
-			sumscore = apply(test_df[,score_names], 2, var)
+			sumscore = apply(as.data.frame(test_df[,score_names]), 2, var)
 			idx = which(sumscore==0)
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
@@ -475,8 +475,8 @@ combine_PRS = function(
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww_raw = ww
 
-							print(ww)
-							print(sd_train)
+							# print(ww)
+							# print(sd_train)
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
@@ -488,10 +488,14 @@ combine_PRS = function(
 								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
 
-							print(ww)
+							# print(ww)
+							if (all(ww == 0)) {
+								writeLines("All weights are 0, covariates explained phenotype. Quitting...")
+								q()
+							}
 							
 							test_data1 = test_data
-							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))							
+							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))
 
 							test_pred = predict(model_prsmix, test_data1, type = "prob")[,2]
 							auc_ci = ci.auc(test_data1$trait, test_pred)
@@ -505,9 +509,6 @@ combine_PRS = function(
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
-						writeLines("Header of testing data")
-						# print(head(test_df1))	
-						print(ww)
 						res_lm1 = eval_single_PRS(test_df1, pheno="trait", prs_name="newprs", covar_list=covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						
 						res_lm1$pgs = "PRSmix"
@@ -718,8 +719,6 @@ combine_PRS = function(
 						nonzero_w = names(ww[which(ww!=0)])
 						
 						################### OR ######################
-						writeLines("Header of testing data")
-						print(head(test_df1))
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model = glm(ff, data=test_df1, family="binomial")
 						model1s = summary(model)
