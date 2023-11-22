@@ -474,6 +474,8 @@ combine_PRS = function(
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
 							ww_raw = ww
+							print(ww)
+							print(sd_train)
 							
 							if (all(ww == 0)) {
 								writeLines("No weight for PRS")
