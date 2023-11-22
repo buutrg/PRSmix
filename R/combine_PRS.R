@@ -502,12 +502,12 @@ combine_PRS = function(
 						
 						writeLines("Header of testing data")
 						print(head(test_df1))	
+						print(ww)
 						res_lm1 = eval_single_PRS(test_df1, pheno="trait", prs_name="newprs", covar_list=covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 
-						print(ww)
 						
 						############## OR ###################
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
