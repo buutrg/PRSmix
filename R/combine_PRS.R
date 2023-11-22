@@ -504,7 +504,8 @@ combine_PRS = function(
 						res_lm1
 						
 						############## OR ###################
-						
+						writeLines("Header of testing data")
+						print(head(test_df1))	
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model1 = glm(ff, data=test_df1, family="binomial")
 						model1s = summary(model1)
