@@ -249,7 +249,7 @@ combine_PRS = function(
 
 		if (!read_pred_testing_1) {
 
-			sumscore = apply(as.data.frame(test_df[,score_names]), 2, var)
+			sumscore = apply(test_df[,score_names], 2, var)
 			idx = which(sumscore==0)
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
@@ -489,11 +489,6 @@ combine_PRS = function(
 							}
 
 							# print(ww)
-							if (all(ww == 0)) {
-								writeLines("All weights are 0, covariates explained phenotype. Quitting...")
-								q()
-							}
-							
 							test_data1 = test_data
 							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))
 

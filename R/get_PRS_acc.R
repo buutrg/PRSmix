@@ -16,7 +16,11 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @return A dataframe for prediction accuracy of a single PRS and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
 eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
-	
+
+	if (var(data_df[prs_name])==0) {
+		writeLines(paste0("Variance of ", prs_name, "=0. If this is a combined PRS, then covariates already explained the phenotype"))
+		res = data.frame(pgs=NA, R2=NA, se=NA, lowerCI=NA, upperCI=NA, pval=NA, power=NA)
+	}
 	if (isbinary & !liabilityR2) {
 		data_df$trait = as.numeric(data_df$trait)
 		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
