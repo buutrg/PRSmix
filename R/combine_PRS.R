@@ -487,14 +487,16 @@ combine_PRS = function(
 							
 							test_data1 = test_data
 							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))							
-							
+
 							test_pred = predict(model_prsmix, test_data1, type = "prob")[,2]
 							auc_ci = ci.auc(test_data1$trait, test_pred)
 							auc_out = data.frame(method="prsmix", auc=auc_ci[2], lowerCI=auc_ci[1], upperCI=auc_ci[3])
 							fwrite(auc_out, paste0(out, "_power.", power_thres, "_pthres.", pval_thres, "_auc_PRSmix.txt"), row.names=F, sep="\t", quote=F)
 							
 						}
-						
+
+						print(head(test_data))	
+						print(head(test_df))	
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
