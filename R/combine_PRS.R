@@ -498,14 +498,14 @@ combine_PRS = function(
 						test_df1 = cbind(test_data, IID=test_df$IID)
 						test_df1$newprs = as.matrix(test_df1[,topprs]) %*% as.vector(ww)
 						
+						writeLines("Header of testing data")
+						print(head(test_df1))	
 						res_lm1 = eval_single_PRS(test_df1, pheno="trait", prs_name="newprs", covar_list=covar_list, liabilityR2 = liabilityR2, alpha=pval_thres, isbinary=isbinary)
 						
 						res_lm1$pgs = "PRSmix"
 						res_lm1
 						
 						############## OR ###################
-						writeLines("Header of testing data")
-						print(head(test_df1))	
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model1 = glm(ff, data=test_df1, family="binomial")
 						model1s = summary(model1)
