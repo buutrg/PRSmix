@@ -380,6 +380,9 @@ combine_PRS = function(
 
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 
+						writeLines("Header of training data")
+						print(head(train_tmp))
+
 						if (length(topprs) == 1) {
 							ww = ww_raw = c(1)
 							names(ww) = names(ww_raw) = topprs
@@ -442,6 +445,8 @@ combine_PRS = function(
 						
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						train_tmp$trait = as.factor(train_tmp$trait)
+						writeLines("Header of training data")
+						print(head(train_tmp))
 
 						if (length(topprs) == 1) {
 							ww = ww_raw = c(1)
@@ -578,6 +583,8 @@ combine_PRS = function(
 						formula = as.formula(paste0("trait ~ ", paste0(topprs, collapse="+"), "+", paste0(covar_list, collapse="+")))
 
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
+						writeLines("Header of training data")
+						print(head(train_tmp))
 
 						if (length(topprs) == 1) {
 							ww = c(1)
@@ -642,6 +649,8 @@ combine_PRS = function(
 
 						train_tmp = train_data[,c("trait", topprs, covar_list)]
 						train_tmp$trait = as.factor(train_tmp$trait)
+						writeLines("Header of training data")
+						print(head(train_tmp))
 
 						if (length(topprs) == 1) {
 							ww = c(1)
@@ -699,6 +708,8 @@ combine_PRS = function(
 						nonzero_w = names(ww[which(ww!=0)])
 						
 						################### OR ######################
+						writeLines("Header of testing data")
+						print(head(test_df1))
 						ff = paste0("trait ~ scale(newprs) + ", paste0(covar_list, collapse="+"))
 						model = glm(ff, data=test_df1, family="binomial")
 						model1s = summary(model)
