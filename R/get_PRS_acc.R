@@ -50,7 +50,7 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	}
 	if (isbinary & liabilityR2) {
 		N = nrow(data_df)
-		K = mean(data_df$trait)
+		K = mean(data_df$trait, na.rm=T)
 		R2 = R2 * K * (1-K) / (dnorm(qnorm(p=1-K, lower.tail=T))^2)
 	}
 	
