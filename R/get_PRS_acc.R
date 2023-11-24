@@ -20,6 +20,7 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	if (var(data_df[prs_name])==0) {
 		writeLines(paste0("WARNING: Variance of ", prs_name, "=0. If this is a combined PRS, then covariates already explained the phenotype"))
 		res = data.frame(pgs=NA, R2=NA, se=NA, lowerCI=NA, upperCI=NA, pval=NA, power=NA)
+		return(res)
 	}
 	if (isbinary & !liabilityR2) {
 		data_df$trait = as.numeric(data_df$trait)
