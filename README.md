@@ -16,11 +16,11 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 2) Calculate PRS with all scores (with `compute_PRS` function)
 3) Evaluate PRSs and performed linear combination: trait-specific (PRSmix) and cross-trait (PRSmix+) (with `combine_PRS` function)
 
-**BONUS**:
-- If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
-
 **NOTE**: 
 - If you already have the PRSs estimated in the target cohort (e.g. similar to [plink2 format](https://www.cog-genomics.org/plink/2.0/score)) with [`_SUM` columns](https://www.cog-genomics.org/plink/2.0/formats#sscore) (via `--score <your SNP effect file> cols=+scoresums no-mean-imputation`) and want to benchmark and combine scores, you can directly go to step 3 (evaluate and perform linear combination of the scores) with the `combine_PRS` function. If you want to return the adjusted SNP effect sizes, you will need the harmonized SNP effect sizes to the alternative allele of the target cohort (Step 1).
+
+**BONUS**:
+- If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
 
 ## Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
 
