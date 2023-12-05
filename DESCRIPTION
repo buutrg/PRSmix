@@ -12,6 +12,7 @@ Depends:
 	pROC,
 	stringr,
     data.table,
+	fastDummies,
 	dplyr,
 	tidyr,
 	glmnet,
