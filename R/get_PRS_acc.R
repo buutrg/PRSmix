@@ -17,11 +17,11 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @export
 eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
 
-	if (var(data_df[,prs_name])==0) {
-		writeLines(paste0("WARNING: Variance of ", prs_name, "=0. If this is a combined PRS, then covariates already explained the phenotype"))
-		res = data.frame(pgs=NA, R2=NA, se=NA, lowerCI=NA, upperCI=NA, pval=NA, power=NA)
-		return(res)
-	}
+	# if (var(data_df[,prs_name],na.rm=T)==0) {
+	# 	writeLines(paste0("WARNING: Variance of ", prs_name, "=0. If this is a combined PRS, then covariates already explained the phenotype"))
+	# 	res = data.frame(pgs=prs_name, R2=0, se=0, lowerCI=0, upperCI=0, pval=0, power=0)
+	# 	return(res)
+	# }
 	if (isbinary & !liabilityR2) {
 		data_df$trait = as.numeric(data_df$trait)
 		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
