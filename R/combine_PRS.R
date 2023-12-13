@@ -488,6 +488,9 @@ combine_PRS = function(
 								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
 
+							if (debug) {
+								print(ww)
+							}
 							# print(ww)
 							test_data1 = test_data
 							test_data1[,topprs] = as.numeric(scale(test_data[,topprs]))
