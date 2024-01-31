@@ -22,6 +22,9 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	# 	res = data.frame(pgs=prs_name, R2=0, se=0, lowerCI=0, upperCI=0, pval=0, power=0)
 	# 	return(res)
 	# }
+
+	colnames(data_df)[which(colnames(data_df)==pheno)] = "trait"
+
 	if (isbinary & !liabilityR2) {
 		data_df$trait = as.numeric(data_df$trait)
 		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
@@ -42,11 +45,11 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	} else {
 		data_df$trait = as.numeric(data_df$trait)
 		
-		formula = as.formula(paste0(pheno, " ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0("trait ~ scale(", prs_name, ") + ", paste0(covar_list, collapse="+")))
 		model_full = lm(formula, data=data_df)
 		r_full = summary(model_full)$r.squared
 		
-		formula = as.formula(paste0(pheno, " ~ ", paste0(covar_list, collapse="+")))
+		formula = as.formula(paste0("trait ~ ", paste0(covar_list, collapse="+")))
 		model_null = lm(formula, data=data_df)
 		r_null = summary(model_null)$r.squared
 		
