@@ -1,0 +1,9 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Buu
+  given-names: Truong
+orcid: https://orcid.org/0000-0003-0043-0812
+title: Integrative Polygenic Risk Score Improves The Prediction Accuracy Of Complex Traits And Diseases
+version: PRSmix_v1.0
+date-released: 2024-01-29
