@@ -26,9 +26,9 @@ compute_PRS = function(
 	}
 
 	if (!ispgen) {
-		cmd = system(paste0(plink2_path, " --bfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
+		cmd = paste0(plink2_path, " --bfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out)
 	} else {
-		cmd = system(paste0(plink2_path, " --pfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
+		cmd = paste0(plink2_path, " --pfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out)
 	}
 	
 	print(cmd)
