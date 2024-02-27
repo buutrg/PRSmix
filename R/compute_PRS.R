@@ -21,6 +21,7 @@ compute_PRS = function(
 	if (is.null(plink2_path)) {
 		download.file("https://s3.amazonaws.com/plink2-assets/alpha5/plink2_linux_x86_64_20240105.zip", "plink.zip")
 		unzip("plink.zip")
+		system("chmod +x plink2")
 		plink2_path = "./plink2"
 	}
 
