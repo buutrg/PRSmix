@@ -12,18 +12,22 @@ compute_PRS = function(
 	geno,
 	weight_file,
 	out,
+	plink2_path = NULL,
 	start_col = 4,
 	ispgen = F) {
 	
 	n = length(read.table(pipe(paste0("head -n1 ", weight_file)), header=F)[1,])
-	
-	download.file("https://s3.amazonaws.com/plink2-assets/alpha3/plink2_linux_x86_64_20221024.zip", "plink.zip")
-	unzip("plink.zip")
-	
+
+	if (is.null(plink2_path)) {
+		download.file("https://s3.amazonaws.com/plink2-assets/alpha5/plink2_linux_x86_64_20240105.zip", "plink.zip")
+		unzip("plink.zip")
+		plink2_path = "./plink2"
+	}
+
 	if (!ispgen) {
-		cmd = system(paste0("plink2 --bfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
+		cmd = system(paste0(plink2_path, " --bfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
 	} else {
-		cmd = system(paste0("plink2 --pfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
+		cmd = system(paste0(plink2_path, " --pfile ", geno, " --score ", weight_file, " cols=+scoresums no-mean-imputation header-read --score-col-nums ", start_col, "-", n, " --out ", out))
 	}
 	
 	print(cmd)
