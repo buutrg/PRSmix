@@ -46,11 +46,11 @@ combine_PRS = function(
 	pheno_file,
 	covariate_file,
 	score_files_list,
-	allPGS_list = NULL,
 	trait_specific_score_file,
 	pheno_name,
 	isbinary,
 	out,
+	allPGS_list = NULL,
 	metascore = NULL,
 	liabilityR2 = F,
 	IID_pheno = "IID",
@@ -154,7 +154,7 @@ combine_PRS = function(
 
 	for (train_size in train_size_list) {
 		
-		# train_size = train_size_list[1]
+		train_size = train_size_list[1]
 		
 		writeLines(paste("--- Using ", train_size, " individuals for training sample ---"))
 		
