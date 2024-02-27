@@ -22,7 +22,7 @@ We demonstrate the usage of PRSmix with PGS obtained from (but not limited to) P
 **BONUS**:
 - If you want to evaluate a single score, you can use the `eval_single_PRS` function (described below).
 
-## 1. Harmonize per-allele effect sizes to the effects of alternative allele in the target cohort
+## 1. Harmonize per-allele effect sizes to the same risk allele
 
 The *harmonize_snpeffect_toALT* function:
 
@@ -41,7 +41,7 @@ The *harmonize_snpeffect_toALT* function:
 
 For example:
 
-The *ref_file* contains 3 columns: **ID**, **REF** and **ALT** (This could be called via PLINK2 to calculate the allele frequencies with `--freq`):
+The *ref_file* contains 3 columns: **ID**, **REF** and **ALT** (This could be called via PLINK2 to calculate the allele frequencies in your target data with `--freq`):
 
 | ID | ALT | REF |
 | --- | --- | --- |
