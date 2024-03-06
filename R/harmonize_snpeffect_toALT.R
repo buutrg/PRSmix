@@ -182,6 +182,9 @@ harmonize_snpeffect_toALT = function(
 	res_chunk_all = res_chunk_all %>% 
 		relocate(A1, .after=SNP) %>%
 		relocate(A2, .after=A1)
+
+	res_chunk_all[is.na(res_chunk_all)] = 0
+
 	writeLines(paste0("Writing output file: ", out))
 	fwrite(res_chunk_all, out, row.names=F, sep=" ", quote=F, na=0)
 	
