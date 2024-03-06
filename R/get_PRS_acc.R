@@ -75,7 +75,7 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	
 	r2_out = paste0(rr(R2,3), " (", rr(lower_r2,3), "-", rr(upper_r2,3), ")")
 
-	if (regresssion_output) {
+	if (regression_output) {
 		return(data.frame(
 			pgs=prs_name, 
 			R2=R2, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power, 
