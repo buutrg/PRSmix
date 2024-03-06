@@ -15,7 +15,7 @@ rr = function(x,digit=10) return(round(x,digit))
 #' @param alpha Significance level to estimate power (default = 0.05)
 #' @return A dataframe for prediction accuracy of a single PRS and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #' @export
-eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05) {
+eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbinary=F, liabilityR2=F, alpha=0.05, regression_output=F) {
 
 	# if (var(data_df[,prs_name],na.rm=T)==0) {
 	# 	writeLines(paste0("WARNING: Variance of ", prs_name, "=0. If this is a combined PRS, then covariates already explained the phenotype"))
@@ -74,8 +74,17 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 	pval = pchisq((R2/se)^2, df=1, lower.tail=F)
 	
 	r2_out = paste0(rr(R2,3), " (", rr(lower_r2,3), "-", rr(upper_r2,3), ")")
-	
-	return(data.frame(pgs=prs_name, R2=R2, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power, pval_regression=coef(summary(model_full))[2,4]))
+
+	if (regresssion_output) {
+		return(data.frame(
+			pgs=prs_name, 
+			R2=R2, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power, 
+			coef_regression=coef(summary(model_full))[2,1], 
+			se_regression=coef(summary(model_full))[2,2], 
+			pval_regression=coef(summary(model_full))[2,4]))
+	} else {
+		return(data.frame(pgs=prs_name, R2=R2, R2_out=r2_out, se=se, lowerCI=lower_r2, upperCI=upper_r2, pval=pval, power=power))
+	}
 }
 
 
@@ -92,7 +101,7 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 #' @return A dataframe for prediction accuracy of multiple PRSss and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #'
 #' @export
-eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F) {
+eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F, ncores=1, regression_output=F) {
 	
 	writeLines("Eval all PGS")
 	if (isbinary) {
@@ -114,7 +123,7 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 		}
 		
 		prs_name = pgs_list[prs_i]
-		pred_acc_test_tmp = eval_single_PRS(data_df=data_df, pheno="trait", prs_name=prs_name, covar_list=covar_list, isbinary=isbinary, liabilityR2=liabilityR2, alpha=alpha)
+		pred_acc_test_tmp = eval_single_PRS(data_df=data_df, pheno="trait", prs_name=prs_name, covar_list=covar_list, isbinary=isbinary, liabilityR2=liabilityR2, alpha=alpha, regression_output=regression_output)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
 	
