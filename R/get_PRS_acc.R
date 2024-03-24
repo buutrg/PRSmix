@@ -101,8 +101,10 @@ eval_single_PRS = function(data_df, pheno = "trait", prs_name, covar_list, isbin
 #' @return A dataframe for prediction accuracy of multiple PRSss and their power with R2, R2 for output form, standard error, lower 95% CI, upper 95% CI, P-value and power
 #'
 #' @export
-eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F, ncores=1, regression_output=F) {
-	
+eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha=0.05, isbinary=F, ncores=1, regression_output=F, pheno="trait") {
+
+	colnames(data_df)[which(colnames(data_df)==pheno)] = "trait"	
+
 	writeLines("Eval all PGS")
 	if (isbinary) {
 		writeLines("Case - control numbers:")
