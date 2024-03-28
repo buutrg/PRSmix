@@ -87,6 +87,7 @@ combine_PRS = function(
 	}
 
 	writeLines("--- Reading all polygenic risk scores ---")
+	writeLines("Please make sure the column names for the scores ends with _SUM")
 	
 	all_scores = NULL
 
