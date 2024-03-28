@@ -114,6 +114,7 @@ The *compute_PRS* function:
 | --- | --- | --- |
 | `geno` | | Prefix of genotype file in plink format (bed/bim/fam) |
 | `weight_file` | | The per-allele SNP effect output from harmonize_snpeffect_toALT function above |
+| `plink2_path` | | Path to executable PLINK2 (downloaded from https://www.cog-genomics.org/plink/2.0/) |
 | `start_col` | 4 | Index of the starting column of SNP effect sizes to estimate PRS in the weight file |
 | `out` | | Name of output file, suffix *sscore* from PLINK2 will be added |
 
@@ -123,6 +124,7 @@ Then, to compute PRSs:
 compute_PRS(
 	geno = "~/example/geno",
 	weight_file = "~/example/weights.txt",
+	plink2_path = "./plink2",
 	start_col = 4,
 	out = "~/example/pgs"
 )
