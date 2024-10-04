@@ -409,6 +409,7 @@ combine_PRS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
+							ww = ww[which(!names(ww) %in% covar_list)]
 							ww_raw = ww							
 							
 							if (all(ww == 0)) {
@@ -417,7 +418,6 @@ combine_PRS = function(
 								names(ww) = bestPRS_acc$pgs
 								topprs = bestPRS_acc$pgs
 							} else {
-								ww = ww[which(!names(ww) %in% covar_list)]
 								ww = ww / sd_train[match(names(ww), names(sd_train))]
 							}
 						}
@@ -621,7 +621,6 @@ combine_PRS = function(
 
 							model_prsmix$bestTune
 							ww = coef(model_prsmix$finalModel, model_prsmix$bestTune$lambda)[,1][-1]
-							
 							ww = ww[which(!names(ww) %in% covar_list)]
 							ww_raw = ww							
 							
