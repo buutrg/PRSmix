@@ -251,15 +251,18 @@ combine_PRS = function(
 
 		if (!read_pred_testing_1) {
 
+			print("Debug 3")
 			sumscore = apply(test_df[,score_names], 2, var)
 			idx = which(sumscore==0)
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
+			print("Debug 4")
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+			print("Debug 5")
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval), decreasing=F),]
-			head(pred_acc_test_trait_summary)
+			print(head(pred_acc_test_trait_summary))
 
 			fwrite(pred_acc_test_trait_summary, testing_file, row.names=F, sep="\t", quote=F)
 		} else {
