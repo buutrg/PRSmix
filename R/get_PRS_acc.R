@@ -124,9 +124,10 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 			writeLines(paste0("Evaluated ",  prs_i, " scores"))
 		}
 		print(prs_i)
-		print(var(data_df[,prs_i]))
 		      
 		prs_name = pgs_list[prs_i]
+		
+		print(var(data_df[,prs_name]))
 		pred_acc_test_tmp = eval_single_PRS(data_df=data_df, pheno="trait", prs_name=prs_name, covar_list=covar_list, isbinary=isbinary, liabilityR2=liabilityR2, alpha=alpha, regression_output=regression_output)
 		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
 	}
