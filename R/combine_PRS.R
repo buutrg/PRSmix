@@ -230,17 +230,15 @@ combine_PRS = function(
 
 		pred_acc_train_allPGS_summary = as.data.frame(pred_acc_train_allPGS_summary)
 
-		print("Debug 2.1")
 		pred_acc_train_trait_summary = pred_acc_train_allPGS_summary
 		pred_acc_train_trait_summary = pred_acc_train_trait_summary[order(as.numeric(pred_acc_train_trait_summary$pval), decreasing=F),]
 		head(pred_acc_train_trait_summary)
 
-		print("Debug 2.2")
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary %>%
 			filter(pgs %in% pgs_list)
 		pred_acc_train_allPGS_summary1 = pred_acc_train_allPGS_summary1[order(as.numeric(pred_acc_train_allPGS_summary1$R2), decreasing=T),]
 		bestPRS = pred_acc_train_allPGS_summary1[1,1]
-		print(bestPRS)
+		writeLines(paste0("The best single trait-specific score in the training set is ", bestPRS))
 		bestPRS_acc = eval_single_PRS(test_df, pheno = "trait", prs_name=bestPRS, covar_list=covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
 
 		fwrite(bestPRS_acc, paste0(out, "_best_acc.txt"), row.names=F, sep="\t", quote=F)
@@ -254,14 +252,11 @@ combine_PRS = function(
 
 		if (!read_pred_testing_1) {
 
-			print("Debug 3")
 			sumscore = apply(test_df[,score_names], 2, var)
 			idx = which(sumscore==0)
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
-			print("Debug 4")
 			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
-			print("Debug 5")
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval), decreasing=F),]
