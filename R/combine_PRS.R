@@ -108,12 +108,12 @@ combine_PRS = function(
 		print(dim(dd_sub))
 		if (is.null(all_scores)) {
 			all_scores = dd_sub
-		} else 	
+		} else 	{
 			all_scores = merge(all_scores, dd_sub, by="IID")
-		
+		}
 	}
 	
-	if (is.null(score_files_ids){
+	if (is.null(score_files_ids)){
 		colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
 	} else {
 		if(length(score_files_ids) == (ncol(all_scores) - 1)){ 
