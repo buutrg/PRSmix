@@ -97,7 +97,10 @@ combine_PRS = function(
 		score_file = score_files_list[score_file_i]
 		dd = fread(score_file)
 		idx = which(endsWith(colnames(dd), "_SUM") & colnames(dd)!="NAMED_ALLELE_DOSAGE_SUM")
-		idx2 = which(colnames(dd)=="IID")
+		idx2 = grep("IID",colnames(dd)) #accepts both IID and #IID as column name inputs
+		if(colnames(dd)[idx2] != "IID"){
+			colnames(dd)[idx2] = "IID" #changes column name to IID 
+		}
 
 		dd_sub = dd[,c(idx2,idx)]
 		print(dim(dd_sub))
