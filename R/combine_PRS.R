@@ -136,7 +136,7 @@ combine_PRS = function(
 		pgs_list_tmp = fread(trait_specific_score_file[ff_i], header=F)[,1]
 		
 		if(!is.null(score_files_ids)){
-			pgs_list_tmp = score_files_ids[which(score_files_list == pgs_list_tmp])]
+			pgs_list_tmp = score_files_ids[which(score_files_list == pgs_list_tmp)])]
 		}
 
 		pgs_list = c(pgs_list, pgs_list_tmp)
