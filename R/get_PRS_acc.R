@@ -117,8 +117,9 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 		pgs_list = pgs_list[-idx]
 	}
 
-	pred_acc_test = NULL
-	for (prs_i in 1:length(pgs_list)) {
+	# pred_acc_test = NULL
+	tmp = mclapply(1:length(pgs_list), function(prs_i) {
+	# for (prs_i in 1:length(pgs_list)) {
 		
 		if (prs_i %% 100 == 0) {
 			writeLines(paste0("Evaluated ",  prs_i, " scores"))
@@ -126,13 +127,18 @@ eval_multiple_PRS = function(data_df, pgs_list, covar_list, liabilityR2=F, alpha
 		      
 		prs_name = pgs_list[prs_i]
 
-		print(prs_i)
-		print(prs_name)
-		print(var(data_df[,prs_name]))
+		# print(prs_i)
+		# print(prs_name)
+		# print(var(data_df[,prs_name]))
+
 		pred_acc_test_tmp = eval_single_PRS(data_df=data_df, pheno="trait", prs_name=prs_name, covar_list=covar_list, isbinary=isbinary, liabilityR2=liabilityR2, alpha=alpha, regression_output=regression_output)
-		pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
-	}
+		# pred_acc_test = rbind(pred_acc_test, pred_acc_test_tmp)
+
+		return(pred_acc_test_tmp)
+
+	}, mc.cores=ncores)
 	
+	pred_acc_test = do.call(rbind, tmp)
 	pred_acc_test = pred_acc_test[order(pred_acc_test$R2, decreasing=T),]
 	
 	return(pred_acc_test)

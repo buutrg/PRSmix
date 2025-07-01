@@ -23,4 +23,5 @@ Depends:
 	DescTools,
 	rcompanion,
 	datasets,
+	parallel,
 	magrittr
