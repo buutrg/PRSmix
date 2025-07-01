@@ -214,7 +214,7 @@ combine_PRS = function(
 
 			pgs_list_all = colnames(train_df)
 			pgs_list_all = pgs_list_all[which(pgs_list_all %in% colnames(all_scores)[2:ncol(all_scores)])]
-			pred_acc_train_allPGS_summary = eval_multiple_PRS(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+			pred_acc_train_allPGS_summary = eval_multiple_PRS(train_df, pgs_list_all, covar_list, liabilityR2, alpha=0.05, isbinary=isbinary, ncores=ncores)
 			head(pred_acc_train_allPGS_summary)
 
 			fwrite(pred_acc_train_allPGS_summary, training_file, row.names=F, sep="\t", quote=F)
