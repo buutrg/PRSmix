@@ -256,7 +256,7 @@ combine_PRS = function(
 			idx = which(sumscore==0)
 			if (length(idx)>0) test_df = test_df[,-match(names(idx), colnames(test_df))]
 
-			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary)
+			pred_acc_test_trait = eval_multiple_PRS(test_df, pgs_list,  covar_list, liabilityR2, alpha=0.05, isbinary=isbinary, ncores=ncores)
 
 			pred_acc_test_trait_summary = pred_acc_test_trait
 			pred_acc_test_trait_summary = pred_acc_test_trait_summary[order(as.numeric(pred_acc_test_trait_summary$pval), decreasing=F),]
