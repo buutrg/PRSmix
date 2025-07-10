@@ -133,6 +133,7 @@ harmonize_snpeffect_toALT = function(
 
 			if (file.exists(f) && file.size(f) > 0) {
 				panel = fread(f, header = isheader, verbose=F)
+				if (nrow(panel) == 0) return(NULL)
 				panel = panel[,c(snp_col, a1_col, beta_col)]
 				colnames(panel) = c("SNP", "A1", "BETA")
 			} else {
