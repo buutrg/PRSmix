@@ -66,6 +66,7 @@ combine_PRS = function(
 	nfold_cv = 3,
 	read_pred_training = FALSE,
 	read_pred_testing = FALSE,
+	training_iids = NULL,
 	debug = F
 	) {
 
@@ -155,7 +156,7 @@ combine_PRS = function(
 
 	for (train_size in train_size_list) {
 		
-		train_size = train_size_list[1]
+		# train_size = train_size_list[1]
 		
 		writeLines(paste("--- Using ", train_size, " individuals for training sample ---"))
 		
@@ -164,6 +165,11 @@ combine_PRS = function(
 		
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), train_size)
+
+		if (!is.null(training_iids)) {
+			writeLines("Using custom training set!")
+			train_idx = which(pheno_prs_cov$IID %in% training_iids)
+		}
 		
 		train_df = pheno_prs_cov[train_idx,]
 		test_df = pheno_prs_cov[-train_idx,]
