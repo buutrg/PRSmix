@@ -66,7 +66,7 @@ combine_PRS = function(
 	nfold_cv = 3,
 	read_pred_training = FALSE,
 	read_pred_testing = FALSE,
-	training_iids = NULL,
+	training_iids_file = NULL,
 	debug = F
 	) {
 
@@ -166,9 +166,9 @@ combine_PRS = function(
 		set.seed(1)
 		train_idx = sample(1:nrow(pheno_prs_cov), train_size)
 
-		if (!is.null(training_iids)) {
+		if (!is.null(training_iids_file)) {
 			writeLines("Using custom training set!")
-			tmpids = fread(training_iids, header=F)[,1]
+			tmpids = fread(training_iids_file, header=F)[,1]
 			train_idx = which(pheno_prs_cov$IID %in% tmpids)
 		}
 		
