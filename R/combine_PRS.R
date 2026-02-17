@@ -168,7 +168,8 @@ combine_PRS = function(
 
 		if (!is.null(training_iids)) {
 			writeLines("Using custom training set!")
-			train_idx = which(pheno_prs_cov$IID %in% training_iids)
+			tmpids = fread(training_iids, header=F)[,1]
+			train_idx = which(pheno_prs_cov$IID %in% tmpids)
 		}
 		
 		train_df = pheno_prs_cov[train_idx,]
