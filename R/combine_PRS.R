@@ -9,6 +9,7 @@
 #' @param pheno_name Column name of the phenotype in pheno_file
 #' @param isbinary True if this is binary
 #' @param out Prefix of output
+#' @param score_files_ids A vector of that contains the PGS catalog or PGS ids for each PGS file (order must match score_files_list)
 #' @param metascore Meta-information from PGS Catalog contain PGS id and trait names. Must contains information for ALL the scores (DEFAULT = NULL)
 #' @param liabilityR2 TRUE if liability R2 should be reported (DEFAULT = FALSE)
 #' @param IID_pheno Column name of IID of phenotype file (e.g IID, person_id)
@@ -50,6 +51,7 @@ combine_PRS = function(
 	pheno_name,
 	isbinary,
 	out,
+	score_files_ids = NULL,
 	allPGS_list = NULL,
 	metascore = NULL,
 	liabilityR2 = F,
@@ -99,18 +101,30 @@ combine_PRS = function(
 		score_file = score_files_list[score_file_i]
 		dd = fread(score_file)
 		idx = which(endsWith(colnames(dd), "_SUM") & colnames(dd)!="NAMED_ALLELE_DOSAGE_SUM")
-		idx2 = which(colnames(dd)=="IID")
+		idx2 = grep("IID",colnames(dd)) #accepts both IID and #IID as column name inputs
+		if(colnames(dd)[idx2] != "IID"){
+			colnames(dd)[idx2] = "IID" #changes column name to IID 
+		}
 
 		dd_sub = dd[,c(idx2,idx)]
 		print(dim(dd_sub))
 		if (is.null(all_scores)) {
 			all_scores = dd_sub
-		} else
+		} else 	{
 			all_scores = merge(all_scores, dd_sub, by="IID")
+		}
 	}
-
-	colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
-
+	
+	if (is.null(score_files_ids)){
+		colnames(all_scores)[2:ncol(all_scores)] = substring(colnames(all_scores)[2:ncol(all_scores)], 1, nchar(colnames(all_scores)[2:ncol(all_scores)])-4)
+	} else {
+		if(length(score_files_ids) == (ncol(all_scores) - 1)){ 
+			colnames(all_scores)[2:ncol(all_scores)] = score_files_ids
+		} else {
+			stop(sprintf("Error: The PGS id vector length (score_files_ids) does not match the number of PGS files in score_files_list"))  
+		}
+	}
+	    
 	if (!is.null(allPGS_list)) {
 		pgs_extract = intersect(colnames(all_scores[2:ncol(all_scores)]), allPGS_list)
 		all_scores = all_scores[,c(1,match(pgs_extract, colnames(all_scores)))]
@@ -122,6 +136,11 @@ combine_PRS = function(
 	for (ff_i in 1:length(trait_specific_score_file)) {
 		writeLines(paste0("Reading: ", trait_specific_score_file[ff_i]))
 		pgs_list_tmp = fread(trait_specific_score_file[ff_i], header=F)[,1]
+		
+		if(!is.null(score_files_ids)){
+			pgs_list_tmp = score_files_ids[which(score_files_list == pgs_list_tmp)]
+		}
+
 		pgs_list = c(pgs_list, pgs_list_tmp)
 	}
 	pgs_list = intersect(pgs_list, colnames(all_scores))
