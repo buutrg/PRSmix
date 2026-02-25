@@ -299,5 +299,8 @@ The output of the function will contain the R2, standard error, 95% lower and up
 # References
 Truong, B., Hull, L. E., Ruan, Y., Huang, Q. Q., Hornsby, W., Martin, H. C., van Heel, D. A., Wang, Y., Martin, A. R., Lee, H. and Natarajan, P. 2023. "Integrative Polygenic Risk Score Improves The Prediction Accuracy Of Complex Traits And Diseases". *doi:10.1101/2023.02.21.23286110*.
 
+# License
+This software is released under the [MGB Source Available License (NC-ND)](LICENSE). It is available for non-commercial, non-revenue generating, research purposes. For commercial use, please contact Mass General Brigham Innovation.
+
 # Contact information
 Please contact Buu Truong (btruong@broadinstitute.org) or Pradeep Natarajan (pradeep@broadinstitute.org) if you have any queries.
