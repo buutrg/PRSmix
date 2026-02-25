@@ -73,6 +73,7 @@ combine_PRS = function(
 	options(datatable.fread.datatable=FALSE)
 
 	writeLines("--- Reading covariate data ---")
+	
 	basic_data = fread(covariate_file)
 	basic_data = basic_data[,c(IID_pheno, covar_list)]
 
